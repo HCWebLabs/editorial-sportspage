@@ -1,1 +1,803 @@
+<!doctype html>
+<html lang="en" data-font="A">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Submit a Deal — Gameday Sportspage</title>
 
+  <!-- Preconnects -->
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- Fonts + Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=League+Spartan:wght@600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+
+  <style>
+    /* =========================
+       MAIN-PAGE LOOK (glass) — exact header, glass cards
+       ========================= */
+    :root{
+      --ink:#0e241b; --ink-dim:#35594a; --ink-mute:#6f8c7e;
+      --bg-0:#f7faf8;
+
+      /* glass header */
+      --glass-1a:rgba(255,255,255,.86);
+      --glass-1b:rgba(255,255,255,.70);
+      --glass-brd:#ffd29a;
+      --glass-shadow:0 8px 24px rgba(16,24,20,.08), inset 0 1px 0 rgba(255,255,255,.55);
+
+      --accent:#ff8a00;
+      --accent-2:#22c55e;
+
+      /* field green glass cards */
+      --card-glass-a:rgba(14,53,41,.90);
+      --card-glass-b:rgba(11,43,34,.85);
+      --card-brd:#1d5c48;
+      --card-ink:#ffffff; --card-ink-dim:rgba(255,255,255,.92); --card-ink-mute:rgba(255,255,255,.76);
+
+      --radius:12px; --gap:16px; --hair:1px;
+
+      --font-head:"League Spartan",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+      --font-body:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+      --head-w:800;
+
+      /* unified buttons (same as main page) */
+      --btn-bg-a:#ffffff; --btn-bg-b:#faf7f2; --btn-ink:#0f2019; --btn-brd:#ffd29a;
+      --btn-shadow:0 6px 18px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.85);
+      --btn-hover-a:#ffbd6a; --btn-hover-b:#ff8a00; --btn-hover-ink:#ffffff; --btn-hover-brd:#ffb86b;
+    }
+
+    *{box-sizing:border-box} html,body{height:100%}
+    body{ margin:0; color:var(--ink); background:var(--bg-0); font:500 16px/1.45 var(--font-body) }
+
+    /* SAME background as main page */
+    body::before{
+      content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+      background:url("https://heather-cooper.com/staging/7584/wp-content/uploads/2025/09/tn-metallic-1.jpg") center/cover no-repeat;
+      opacity:1; mix-blend-mode:normal;
+    }
+
+    h1,h2,h3{ font-family:var(--font-head); font-weight:var(--head-w); text-transform:uppercase; letter-spacing:.01em; line-height:1.22; margin:0 0 .6rem }
+    h1{ font-size: clamp(1.8rem, 2.4vw + 1rem, 2.6rem) } h2{ font-size: clamp(1.4rem, 1.4vw + .9rem, 1.9rem) } h3{ font-size: clamp(1.05rem, .8vw + .8rem, 1.3rem) }
+
+    .wrap{ width:min(1200px, 100% - 32px); margin-inline:auto; }
+    .page{ margin-block: 18px 40px; }
+    .sr-only{ position:absolute!important; inline-size:1px!important; block-size:1px!important; clip:rect(1px,1px,1px,1px)!important; overflow:hidden!important; white-space:nowrap!important }
+
+    /* ===== Header — EXACT match to main ===== */
+    .site-header{ position:sticky; top:0; z-index:50; backdrop-filter:saturate(130%) blur(8px); background:linear-gradient(180deg,var(--glass-1a),var(--glass-1b)); border-bottom:1px solid var(--glass-brd); border-bottom-width:var(--hair); box-shadow:var(--glass-shadow) }
+    .site-header .bar{ height:72px; display:grid; align-items:center; gap:14px; grid-template-columns:1fr auto 1fr; max-width:1200px; margin-inline:auto; padding-inline:16px }
+    .brand{ display:flex; align-items:center; gap:.6rem; text-decoration:none; color:var(--ink); font-weight:800; letter-spacing:.02em }
+    .brand .logo{ width:28px; height:28px; border-radius:7px; display:grid; place-items:center; background:linear-gradient(#ffb347,#ff8a00); color:#151515; font-weight:900; box-shadow:inset 0 1px 0 rgba(255,255,255,.65) }
+    .brand .logo i{ font-size:16px; line-height:1 }
+    .logo [data-icon]{ display:none }
+    .brand[data-logo="football"] .logo [data-icon="football"]{ display:inline-block }
+    .brand[data-logo="flag"] .logo [data-icon="flag"]{ display:inline-block }
+    .brand[data-logo="football"] .logo .mark-text,
+    .brand[data-logo="flag"] .logo .mark-text{ display:none }
+    .brand:hover .logo{ transform:translateY(-1px); transition:transform .18s ease }
+
+    .site-nav{ justify-self:end; display:flex; align-items:center; gap:16px }
+    .site-nav a{ color:color-mix(in oklab, var(--ink) 78%, transparent); text-decoration:none; font-weight:600 }
+    .site-nav a:hover{ color:var(--ink) }
+
+    /* Mobile nav toggle (same as main) */
+    .nav-toggle{ display:none; position:relative; width:40px; height:34px; border:0; background:transparent; justify-self:end }
+    .nav-toggle .bars,.nav-toggle .bars::before,.nav-toggle .bars::after{ content:""; position:absolute; left:8px; right:8px; height:2px; background:#0f2019; border-radius:2px }
+    .nav-toggle .bars{ top:16px } .nav-toggle .bars::before{ top:-8px } .nav-toggle .bars::after{ top:8px }
+
+    @media (max-width:880px){
+      .site-header .bar{ grid-template-columns:1fr auto auto }
+      .site-nav{ position:fixed; inset:72px 0 auto 0; background:linear-gradient(180deg,var(--glass-1a),var(--glass-1b)); backdrop-filter:saturate(130%) blur(8px); border-top:1px solid var(--glass-brd); border-top-width:var(--hair); display:none; flex-direction:column; align-items:stretch; gap:0; padding:10px }
+      .site-nav a{ padding:12px 14px; border-bottom:1px solid #ffe7c2 } .site-nav a:last-child{ border-bottom:none }
+      .nav-toggle{ display:inline-flex }
+      .site-header[data-open="true"] .site-nav{ display:flex }
+      .site-header[data-open="true"] .nav-toggle .bars{ background:transparent }
+      .site-header[data-open="true"] .nav-toggle .bars::before{ transform:translateY(8px) rotate(45deg) }
+      .site-header[data-open="true"] .nav-toggle .bars::after{ transform:translateY(-8px) rotate(-45deg) }
+      #countdown .cd-label{ display:none } #countdown .cd-badge{ min-width:40px; padding:.28rem .45rem }
+    }
+
+    /* Countdown pills */
+    #countdown{ justify-self:center; display:flex; align-items:center; gap:6px; font-variant-numeric:tabular-nums }
+    .cd-badge{ min-width:46px; padding:.32rem .5rem; border-radius:10px; text-align:center; background:#fff; color:#14532d; border:1px solid var(--glass-brd); box-shadow:var(--glass-shadow); font-weight:900; line-height:1.1; text-shadow:0 1px 0 rgba(0,0,0,.06) }
+    .cd-label{ display:block; line-height:1.5em; font-size:.64rem; color:#ff8700; font-weight:800 }
+
+    /* ===== Buttons — unified ===== */
+    .btn{ display:inline-flex; align-items:center; gap:.5rem; padding:.62rem 1rem; border-radius:999px; line-height:1.15; font-weight:800; text-decoration:none; cursor:pointer; color:var(--btn-ink); background:linear-gradient(180deg,var(--btn-bg-a),var(--btn-bg-b)); border:1px solid var(--btn-brd); box-shadow:var(--btn-shadow); transition:transform .15s ease, filter .15s ease, background .2s ease, color .2s ease, border-color .2s ease }
+    .btn:hover{ transform:translateY(-1px); background:linear-gradient(180deg,var(--btn-hover-a),var(--btn-hover-b)); color:var(--btn-hover-ink); border-color:var(--btn-hover-brd) }
+    .btn:active{ transform:translateY(0); filter:brightness(.98) }
+    .btn[disabled]{ opacity:.6; cursor:not-allowed; transform:none; filter:none }
+    .btn i{ font-size:.95em }
+
+    /* ===== Cards — FIELD GREEN GLASS ===== */
+    .card{ background:linear-gradient(180deg,var(--card-glass-a),var(--card-glass-b)); backdrop-filter:saturate(140%) blur(14px); border:1px solid var(--card-brd); border-width:var(--hair); border-radius:var(--radius); box-shadow:0 12px 32px rgba(4,24,16,.35), inset 0 1px 0 rgba(255,255,255,.12); color:var(--card-ink); overflow:hidden; margin-block:var(--gap) }
+    .card > header{ display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-bottom:1px solid rgba(255,255,255,.28); border-bottom-width:var(--hair); background:linear-gradient(180deg,rgba(255,255,255,.05),transparent 60%); color:var(--card-ink) }
+    .card > header h2, .card > header h3{ margin:0; font-size:1.05rem; letter-spacing:.01em; color:var(--card-ink) }
+    .card > .body{ padding:14px 16px 16px; color:var(--card-ink) }
+
+    .muted{ color:var(--card-ink-mute) } .small{ color:var(--card-ink-dim) } .tiny{ color:var(--card-ink-mute) }
+    .card a{ color:#fff; text-decoration:underline; text-underline-offset:2px }
+    .bullets{ margin:0; padding-left:1.1rem } .bullets li{ margin:.3rem 0; line-height:1.35 }
+
+    /* HOW-TO visual tweaks */
+    #deal-howto .lede{ color:var(--card-ink-mute); margin:.25rem 0 var(--gap) }
+    #deal-howto .tablist{ gap:12px; padding:0 16px 14px; margin:0 -16px var(--gap); border-bottom:1px solid rgba(255,255,255,.20); display:flex; align-items:flex-end; flex-wrap:wrap }
+    #deal-howto .tab{ appearance:none; border:1px solid #ffe7c2; border-radius:999px; background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(255,255,255,.88)); color:#0f2019; font-weight:800; padding:.58rem .9rem; cursor:pointer; transition:transform .15s ease, background .15s ease, border-color .15s ease, color .15s ease }
+    #deal-howto .tab:hover{ transform:translateY(-1px); background:#ffefe1; border-color:#ffd7b0; color:#5a2a00 }
+    #deal-howto .tab[aria-selected="true"]{ background:linear-gradient(180deg,#ffbd6a,#ff8a00); color:#fff; border-color:#ffb86b }
+    #deal-howto .tabpanel{ padding:14px 16px 16px; margin-top:2px; background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02)); border:1px solid var(--card-brd); border-radius:10px; color:var(--card-ink) }
+
+    /* Mobile drawers */
+    .howto-drawers{ display:none }
+    @media (max-width:740px){
+      .howto-tabs{ display:none }
+      .howto-drawers{ display:grid; gap:12px }
+      .howto-drawers details{ border:1px solid var(--card-brd); border-radius:10px; overflow:hidden; background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02)) }
+      .howto-drawers summary{ list-style:none; cursor:pointer; padding:10px 16px; font-weight:800; color:#fff; background:#134233 }
+      .howto-drawers summary::-webkit-details-marker{ display:none }
+      .howto-drawers .pad{ padding:10px 16px 16px }
+    }
+
+    /* ===== FORM ===== */
+    .form-grid{ display:grid; gap:var(--gap); grid-template-columns: repeat(12, minmax(0,1fr)) }
+    .form-grid > .cell{ background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02)); border:1px solid var(--card-brd); border-radius:12px; padding:14px; min-width:0 }
+    .span-12{ grid-column:span 12 } .span-6{ grid-column:span 6 } .span-4{ grid-column:span 4 }
+    @media (max-width:980px){ .span-6{ grid-column:span 6 } .span-4{ grid-column:span 6 } }
+    /* <=640: single column; only direct .cell children span full width (fixes weird stacking) */
+    @media (max-width:640px){ .form-grid{ grid-template-columns:1fr } .form-grid > .cell{ grid-column:1 / -1 } }
+
+    .label{ display:block; font-weight:800; margin:0 0 8px }
+
+    /* Inputs styled like main page newsletter */
+    input, textarea, select{
+      width:100%; max-width:100%; min-width:0; resize:vertical;
+      padding:12px 14px; border-radius:10px;
+      background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(255,255,255,.88));
+      color:#0f2019; border:1px solid rgba(255,255,255,.72); border-width:var(--hair);
+      backdrop-filter:saturate(140%) blur(8px);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.55), 0 4px 18px rgba(0,0,0,.12);
+    }
+    input:focus, textarea:focus, select:focus{
+      outline:none; border-color:#ffbd6a;
+      box-shadow:0 0 0 3px rgba(255,138,0,.18), inset 0 1px 0 rgba(255,255,255,.55), 0 4px 18px rgba(0,0,0,.12);
+    }
+    .hint{ color:var(--card-ink-mute); font-size:.9rem; margin:.5rem 0 0 }
+
+    /* Action buttons area — meet in the middle; stack on mobile */
+    .actions{ display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:center; margin-top:10px }
+    #submitBtn, #clearBtn{ width:min(360px, 100%); justify-self:center; text-align:center }
+    #submitBtn{ justify-self:end }   /* right button meets from the right */
+    #clearBtn{ justify-self:start }  /* left button meets from the left */
+    @media (max-width:640px){
+      .actions{ grid-template-columns:1fr }
+      #submitBtn, #clearBtn{ justify-self:center; width:min(420px, 100%) }
+    }
+
+    /* Global checkbox accent */
+    input[type="checkbox"]{ accent-color: var(--accent-2) }
+
+    /* Consent */
+    fieldset{ border:1px solid var(--card-brd); border-radius:12px; padding:12px; margin:4px 0 6px }
+    legend{ font-weight:800; padding:0 6px; color:var(--card-ink-dim) }
+    .consent-list{ list-style:none; padding:0; margin:0; display:grid; gap:12px }
+    .consent-item{ display:flex; gap:10px; align-items:flex-start; padding:10px 12px; border:1px solid var(--card-brd); border-radius:10px; background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02)); color:var(--card-ink-dim) }
+    .consent-item input[type="checkbox"]{ width:20px; height:20px; margin-top:2px; flex:0 0 auto }
+    .consent-item label{ line-height:1.35; cursor:pointer }
+    .consent-item a{ color:#fff; text-decoration:underline; text-underline-offset:2px }
+
+    /* Checklist — thicker, brighter meter */
+    .checklist.card{ margin-top:var(--gap) }
+    .meter{height:12px; background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02)); border:1px solid var(--card-brd); border-radius:999px; overflow:hidden}
+    .fill{height:100%; width:0%; background:linear-gradient(90deg, #ffc168 0%, #ff8a00 60%, #ff6a00 100%); transition:width .25s ease}
+    .pre-head{ display:flex; align-items:center; justify-content:space-between; gap:var(--gap) }
+    .pre-small{ color:var(--card-ink-mute); font-weight:800; font-size:.86rem }
+    #precheck .pre-list{ list-style:none; padding:0; margin:10px 0 0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px }
+    #precheck .pre-list li{ padding:0; border:0; background:transparent }
+    #precheck .pre-list .consent-item input[type="checkbox"]{ width:20px; height:20px; margin-top:2px }
+    #precheck .pre-list .consent-item label{ line-height:1.35; cursor:pointer; display:block; pointer-events:none }
+    #precheck .pre-list .consent-item input[data-static]{ pointer-events:none }
+    #precheck .pre-list .consent-item.done{ background:#0d3a2d; border-color:#2f7b62; color:#ffffff }
+    @media (max-width:700px){ #precheck .pre-list{ grid-template-columns:1fr } }
+
+    /* Legal/Privacy details */
+    details.accord{ border:1px solid var(--card-brd); border-radius:10px; overflow:hidden; background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02)); margin-top:12px }
+    details.accord > summary{ list-style:none; cursor:pointer; padding:10px 14px; background:#134233; color:#fff; font-weight:800 }
+    details.accord > summary::-webkit-details-marker{ display:none }
+    details.accord .pad{ padding:10px 14px 14px }
+
+    /* ===== Footer — GLASS ===== */
+    .site-footer{ border-top:2px solid var(--glass-brd); padding:12px 0 16px; background:linear-gradient(180deg,var(--glass-1a),var(--glass-1b)); backdrop-filter:saturate(130%) blur(8px); box-shadow:0 8px 24px rgba(16,24,20,.04), inset 0 1px 0 rgba(255,255,255,.35) }
+    .site-footer .wrap{ width:min(920px, 100% - 32px); margin-inline:auto; text-align:center; display:grid; gap:6px }
+    .site-footer .tiny{ font-size:.72rem; line-height:1.35; color:var(--ink-mute); margin:0 }
+    .footer-nav{ display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:8px; margin:0 }
+    .footer-nav a{ color:color-mix(in oklab, var(--ink) 65%, transparent); text-decoration:none; padding:2px 4px }
+    .footer-nav a:hover{ color:var(--ink) }
+
+    /* Focus ring */
+    a:focus-visible, button:focus-visible, .btn:focus-visible, input:focus-visible{
+      outline:2px solid color-mix(in oklab, var(--accent) 70%, white);
+      outline-offset:2px; border-radius:8px;
+    }
+
+    @media (prefers-reduced-motion:reduce){ .card{ transition:none } }
+			
+			/* --- Mobile form fix (≤640px) --- */
+/* Put this AFTER your existing styles */
+@media (max-width:640px){
+  .form-grid{ grid-template-columns: 1fr !important; }
+
+  /* Force every direct form cell to span the single column */
+  .form-grid > .cell,
+  .form-grid > [class*="span-"],
+  .form-grid > .span-12,
+  .form-grid > .span-6,
+  .form-grid > .span-4{
+    grid-column: 1 / -1 !important;
+  }
+
+  /* Buttons: stack on mobile, centered */
+  .actions{ grid-template-columns: 1fr !important; margin-top: 8px; }
+  #submitBtn, #clearBtn{ justify-self: center; width: min(420px, 100%); }
+}
+/* === Actions area: bigger buttons, meet-in-the-middle, tighter spacing === */
+.actions{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  align-items:center;
+  gap:12px;
+  margin-top:10px !important; /* tighter gap below consent */
+}
+
+/* make each button a pill, centered text, fixed-ish width */
+#submitBtn, #clearBtn{
+  justify-content:center;          /* center label inside the inline-flex .btn */
+  text-align:center;               /* belts & suspenders */
+  padding:.9rem 1.15rem !important;/* bigger button */
+  line-height:1.2 !important;
+  min-height:48px;                 /* taller hit target */
+  font-size:1rem;
+  border-radius:999px;
+  width:clamp(180px, 32vw, 260px); /* not full-width */
+}
+
+/* meet in the middle: push edges toward the gutter */
+#submitBtn{ margin-left:auto;  }   /* right-align in its half */
+#clearBtn { margin-right:auto; }   /* left-align in its half */
+
+/* keep Clear’s neutral look (if yours differs) */
+#clearBtn{
+  background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(255,255,255,.88)) !important;
+  color:#0f2019 !important;
+  border:1px solid var(--glass-brd) !important;
+}
+
+/* (Optional) trim extra space inside the consent cell */
+.cell fieldset{ margin-bottom:6px; }
+
+/* Mobile: stack + center */
+@media (max-width:640px){
+  .actions{ grid-template-columns:1fr; }
+  #submitBtn, #clearBtn{
+    width:min(420px, 100%);
+    margin-left:auto; margin-right:auto; /* center each button */
+  }
+}
+/* Tighter gap between Consent and the buttons */
+.cell + .actions{
+  /* pull the actions row upward to cancel most of the grid row-gap */
+  margin-top:0px !important;   /* tweak to -14px if you want it tighter */
+}
+
+/* shave a bit of padding off the consent cell itself */
+.form-grid .cell:has(fieldset){
+  padding-bottom:10px;
+}
+
+/* no trailing margin inside the fieldset */
+fieldset{ margin-bottom:0; }
+
+@media (max-width:640px){
+  /* keep it tidy on phones too */
+  .cell + .actions{ margin-top:10px !important; }
+}
+
+			
+  </style>
+</head>
+
+<body>
+  <!-- ===== Header (matches main page) ===== -->
+  <header class="site-header" data-skin="glass">
+    <div class="bar">
+      <a class="brand" href="index.html" data-logo="football">
+        <span class="logo" aria-hidden="true">
+          <span class="mark-text">TN</span>
+          <i class="fa-solid fa-football" data-icon="football"></i>
+          <i class="fa-solid fa-flag-checkered" data-icon="flag"></i>
+        </span>
+        <span>Gameday Sportspage</span>
+      </a>
+
+      <!-- Centered countdown -->
+      <div id="countdown" aria-label="Countdown" data-kickoff="2025-09-27T15:30:00-04:00">
+        <div class="cd-badge"><span id="cd-days">00</span><span class="cd-label">days</span></div>
+        <div class="cd-badge"><span id="cd-hrs">00</span><span class="cd-label">hrs</span></div>
+        <div class="cd-badge"><span id="cd-min">00</span><span class="cd-label">mins</span></div>
+        <div class="cd-badge"><span id="cd-sec">00</span><span class="cd-label">secs</span></div>
+      </div>
+
+      <nav class="site-nav" id="primaryNav">
+        <a href="schedule.html">Schedule</a>
+        <a href="specials.html">Specials</a>
+        <a href="map.html">Map</a>
+        <a href="guide.html">Guide</a>
+        <a class="btn" href="submit.html"><i class="fa-solid fa-paper-plane" aria-hidden="true"></i> Submit</a>
+      </nav>
+
+      <button class="nav-toggle" aria-controls="primaryNav" aria-expanded="false">
+        <span class="sr-only">Toggle menu</span>
+        <span class="bars" aria-hidden="true"></span>
+      </button>
+    </div>
+  </header>
+
+  <main class="wrap page">
+
+    <!-- ===== HOW-TO ===== -->
+    <section id="deal-howto" class="tn-info card" aria-labelledby="howto-title">
+      <header><h2 id="howto-title">How to Submit a Gameday Deal</h2></header>
+      <div class="body">
+        <p class="lede">This is an <strong>unofficial Tennessee football fan site</strong>. We list community-submitted gameday deals to help fans plan their day. Listings are free, curated, and not guaranteed.</p>
+
+        <!-- DESKTOP/TABLET TABS -->
+        <div id="howtoTabs" class="howto-tabs" data-active="0">
+          <div class="tablist" role="tablist" aria-label="How-to tabs">
+            <button class="tab" role="tab" id="tab-who"      aria-controls="panel-who"      aria-selected="true">Who should submit?</button>
+            <button class="tab" role="tab" id="tab-what"     aria-controls="panel-what"     aria-selected="false" tabindex="-1">What to include</button>
+            <button class="tab" role="tab" id="tab-format"   aria-controls="panel-format"   aria-selected="false" tabindex="-1">Formatting tips</button>
+            <button class="tab" role="tab" id="tab-approve"  aria-controls="panel-approve"  aria-selected="false" tabindex="-1">Approval & updates</button>
+          </div>
+
+          <section id="panel-who" class="tabpanel" role="tabpanel" aria-labelledby="tab-who" aria-hidden="false" tabindex="0">
+            <h3>Who should submit?</h3>
+            <ul class="bullets">
+              <li>Restaurants, bars, cafés, bakeries</li>
+              <li>Retailers with gameday promos (merch, parking, tailgate supplies)</li>
+              <li>Venues with watch parties, live music, or pre/post-game events</li>
+              <li>Family-friendly options and brunch spots</li>
+            </ul>
+          </section>
+
+          <section id="panel-what" class="tabpanel" role="tabpanel" aria-labelledby="tab-what" aria-hidden="true" tabindex="0">
+            <h3>What to include</h3>
+            <ul class="bullets">
+              <li><strong>Deal title</strong> (short + punchy): “Wings + Pitchers”, “Post-Game Pancakes”</li>
+              <li><strong>Description</strong> (what’s included, exclusions, dine-in/takeout)</li>
+              <li><strong>Valid days</strong>: “Gameday only”, “Fri–Sun”, or “All week”</li>
+              <li><strong>Time window</strong>: e.g., <em>4pm–7pm</em> or <em>Kickoff → final whistle</em></li>
+              <li><strong>Dates</strong> (optional): start/end date if it’s seasonal</li>
+              <li><strong>Area</strong>: Downtown, Old City, The Strip, West Knoxville, etc.</li>
+              <li><strong>Link</strong> to menu/details and a <strong>phone number</strong></li>
+              <li><strong>Address</strong> (optional but helps) — add lat/lng for map pins</li>
+            </ul>
+          </section>
+
+          <section id="panel-format" class="tabpanel" role="tabpanel" aria-labelledby="tab-format" aria-hidden="true" tabindex="0">
+            <h3>Formatting tips</h3>
+            <ul class="bullets">
+              <li>Keep titles ≤ 60 characters; descriptions ≤ 200 where possible</li>
+              <li>Use one clear offer per listing (you can submit more than one)</li>
+              <li>Time format examples: <em>10am–2pm</em>, <em>9:30pm–1am</em></li>
+              <li>Family/age rules: note IDs for alcohol, minors after certain hours, etc.</li>
+            </ul>
+          </section>
+
+          <section id="panel-approve" class="tabpanel" role="tabpanel" aria-labelledby="tab-approve" aria-hidden="true" tabindex="0">
+            <h3>Approval & updates</h3>
+            <ul class="bullets">
+              <li>We review for clarity and may <strong>edit wording</strong> before publishing</li>
+              <li>Listings can be <strong>featured</strong> at our discretion</li>
+              <li>Need a change or removal? Email <a href="mailto:listings@yourdomain.com">listings@yourdomain.com</a></li>
+            </ul>
+          </section>
+        </div>
+
+        <!-- MOBILE DRAWERS -->
+        <div class="howto-drawers" id="howtoDrawers">
+          <details>
+            <summary>Who should submit?</summary>
+            <div class="pad">
+              <ul class="bullets">
+                <li>Restaurants, bars, cafés, bakeries</li>
+                <li>Retailers with gameday promos (merch, parking, tailgate supplies)</li>
+                <li>Venues with watch parties, live music, or pre/post-game events</li>
+                <li>Family-friendly options and brunch spots</li>
+              </ul>
+            </div>
+          </details>
+          <details>
+            <summary>What to include</summary>
+            <div class="pad">
+              <ul class="bullets">
+                <li><strong>Deal title</strong> (short + punchy): “Wings + Pitchers”, “Post-Game Pancakes”</li>
+                <li><strong>Description</strong> (what’s included, exclusions, dine-in/takeout)</li>
+                <li><strong>Valid days</strong>: “Gameday only”, “Fri–Sun”, or “All week”</li>
+                <li><strong>Time window</strong>: e.g., <em>4pm–7pm</em> or <em>Kickoff → final whistle</em></li>
+                <li><strong>Dates</strong> (optional): start/end date if it’s seasonal</li>
+                <li><strong>Area</strong>: Downtown, Old City, The Strip, West Knoxville, etc.</li>
+                <li><strong>Link</strong> to menu/details and a <strong>phone number</strong></li>
+                <li><strong>Address</strong> (optional but helps) — add lat/lng for map pins</li>
+              </ul>
+            </div>
+          </details>
+          <details>
+            <summary>Formatting tips</summary>
+            <div class="pad">
+              <ul class="bullets">
+                <li>Keep titles ≤ 60 characters; descriptions ≤ 200 where possible</li>
+                <li>Use one clear offer per listing (you can submit more than one)</li>
+                <li>Time format examples: <em>10am–2pm</em>, <em>9:30pm–1am</em></li>
+                <li>Family/age rules: note IDs for alcohol, minors after certain hours, etc.</li>
+              </ul>
+            </div>
+          </details>
+          <details>
+            <summary>Approval & updates</summary>
+            <div class="pad">
+              <ul class="bullets">
+                <li>We review for clarity and may <strong>edit wording</strong> before publishing</li>
+                <li>Listings can be <strong>featured</strong> at our discretion</li>
+                <li>Need a change or removal? Email <a href="mailto:listings@yourdomain.com">listings@yourdomain.com</a></li>
+              </ul>
+            </div>
+          </details>
+        </div>
+
+        <details class="accord">
+          <summary><strong>Legal & brand guidelines</strong></summary>
+          <div class="pad">
+            <ul class="bullets">
+              <li><strong>Unofficial site:</strong> Not affiliated with the University of Tennessee, UT Athletics, the SEC, or the NCAA.</li>
+              <li><strong>No logos/marks:</strong> Don’t upload or request use of official logos, mascots, or the Power T.</li>
+              <li><strong>Editorial use only:</strong> Team/opponent names appear for identification/news purposes.</li>
+              <li><strong>Accuracy:</strong> You’re responsible for truthful pricing and legal compliance (alcohol, age limits, etc.).</li>
+              <li><strong>Right to decline:</strong> We may refuse or remove any listing (e.g., unsafe, misleading, or off-topic).</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="accord">
+          <summary><strong>Privacy summary</strong></summary>
+          <div class="pad">
+            <ul class="bullets">
+              <li>We store the info you submit (business/contact/deal details) to review and publish listings.</li>
+              <li>We don’t sell your data. We may use a forms processor (e.g., Formspree/WPForms) to handle submissions.</li>
+              <li>Submitted content may be published on the site. To request edits/removal, email <a href="mailto:privacy@yourdomain.com">privacy@yourdomain.com</a>.</li>
+              <li>See the full <a href="#privacy">Privacy Policy</a> for retention and your choices.</li>
+            </ul>
+          </div>
+        </details>
+
+        <p class="footnote" role="note"><strong>Reminder:</strong> Deals can change without notice. Fans should call ahead to confirm.</p>
+      </div>
+    </section>
+
+    <!-- ===== Form card ===== -->
+    <section class="card" aria-labelledby="formTitle">
+      <header><h2 id="formTitle">Submit a Deal</h2></header>
+      <div class="body">
+        <form id="dealForm" novalidate>
+          <div class="form-grid">
+            <!-- row 1 -->
+            <div class="cell span-6">
+              <label class="label" for="biz">Business*</label>
+              <input id="biz" name="business_name" required aria-describedby="bizHelp">
+              <p class="hint" id="bizHelp">Legal name or DBA customers will recognize.</p>
+            </div>
+            <div class="cell span-6">
+              <label class="label" for="title">Deal title*</label>
+              <input id="title" name="deal_title" required aria-describedby="titleHelp">
+              <p class="hint" id="titleHelp">Keep it short, e.g., “$10 Wing Basket”.</p>
+            </div>
+
+            <!-- row 2 -->
+            <div class="cell span-12">
+              <label class="label" for="desc">Short description* <span class="tiny">(max 160 chars)</span></label>
+              <textarea id="desc" name="deal_desc" maxlength="160" rows="3" required aria-describedby="descHelp"></textarea>
+              <p class="hint" id="descHelp">Brief summary of the offer.</p>
+            </div>
+
+            <!-- row 3 -->
+            <div class="cell span-4">
+              <label class="label" for="days">Valid days*</label>
+              <input id="days" name="days" placeholder="Gameday only / Fri–Sun / All week" required>
+              <p class="hint">Tell fans when this applies.</p>
+            </div>
+            <div class="cell span-4">
+              <label class="label" for="email">Contact email*</label>
+              <input id="email" type="email" name="contact_email" required aria-describedby="emailHelp">
+              <p class="hint" id="emailHelp">For follow-ups (not published).</p>
+            </div>
+            <div class="cell span-4">
+              <label class="label" for="time">Time window (optional)</label>
+              <input id="time" name="time_window" placeholder="4pm–7pm">
+              <p class="hint">If specific hours apply.</p>
+            </div>
+
+            <!-- row 4 -->
+            <div class="cell span-6">
+              <label class="label" for="area">Area</label>
+              <input id="area" name="area" placeholder="Downtown / The Strip / Old City">
+              <p class="hint">Provide <strong>Area</strong> or <strong>Address</strong>.</p>
+            </div>
+            <div class="cell span-6">
+              <label class="label" for="addr">Address</label>
+              <input id="addr" name="address" placeholder="123 Market St, Knoxville, TN">
+            </div>
+
+            <!-- row 5 — consent -->
+            <div class="cell span-12">
+              <fieldset>
+                <legend>Consent</legend>
+                <ul class="consent-list">
+                  <li class="consent-item">
+                    <input id="auth" type="checkbox" name="auth">
+                    <label for="auth">I confirm I’m authorized to submit this deal.</label>
+                  </li>
+                  <li class="consent-item">
+                    <input id="consent" type="checkbox" name="consent">
+                    <label for="consent">I agree this info may be published and edited for clarity.</label>
+                  </li>
+                  <li class="consent-item">
+                    <input id="privacy" type="checkbox" name="privacy">
+                    <label for="privacy">I’ve read the <a href="#" target="_blank" rel="noopener">Privacy Policy</a>.</label>
+                  </li>
+                </ul>
+              </fieldset>
+            </div>
+
+            <!-- actions -->
+            <div class="span-12 actions">
+              <button id="submitBtn" type="submit" class="btn" disabled>Submit Deal</button>
+              <button id="clearBtn" type="button" class="btn btn-ghost">Clear</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ===== Checklist BELOW form ===== -->
+    <section id="precheck" class="card checklist" aria-labelledby="preTitle">
+      <header class="pre-head">
+        <h2 id="preTitle" style="margin:0">Before you submit</h2>
+        <div class="pre-small"><strong id="prePct" aria-live="polite">0%</strong> complete</div>
+      </header>
+      <div class="body" style="padding-top:10px">
+        <div class="meter" aria-hidden="true"><div class="fill" id="preFill"></div></div>
+        <ul class="pre-list" id="preList">
+          <li data-key="business">Business name</li>
+          <li data-key="title">Deal title</li>
+          <li data-key="desc">Short description</li>
+          <li data-key="days">Valid days (Gameday only / Fri–Sun / All week)</li>
+          <li data-key="contact">Contact email</li>
+          <li data-key="location">Area <em>or</em> Address</li>
+          <li data-key="auth">I’m authorized to submit this deal</li>
+          <li data-key="consent">Info may be published &amp; edited</li>
+          <li data-key="privacy">I’ve read the Privacy Policy</li>
+          <li class="opt" data-key="time">Time window <small>(optional)</small></li>
+          <li class="opt" data-key="dates">Seasonal dates <small>(optional)</small></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="site-footer">
+    <div class="wrap">
+      <p class="tiny muted">
+        Independent, fan-operated site. Not affiliated with, or endorsed by, any university, athletics program,
+        conference, or governing body. Weather by Open-Meteo • Schedule data via CollegeFootballData • Map data © OSM
+        contributors • Places data © Foursquare.
+      </p>
+      <nav class="footer-nav tiny">
+        <a href="#guide">Guide</a> • <a href="#specials">Specials</a> • <a href="#map">Map</a> •
+        <a href="#schedule">Schedule</a> • <a href="/terms.html">Terms &amp; Policies</a> •
+        <a href="mailto:contact@example.com">Contact</a> • <a href="https://github.com/" target="_blank" rel="noopener">Source</a>
+      </nav>
+      <p class="tiny muted">© 2025 HC Web Labs. Content licensed under CC BY-NC-ND 4.0.</p>
+    </div>
+  </footer>
+
+  <script>
+    /* ===== helpers ===== */
+    const $=(s,r=document)=>r.querySelector(s);
+    const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+
+    /* Mobile nav toggle (same behavior as main) */
+    (function wireNavToggle(){
+      const header=document.querySelector('.site-header');
+      const btn=header?.querySelector('.nav-toggle');
+      if(!header||!btn) return;
+      btn.addEventListener('click',()=>{
+        const open=header.dataset.open==='true';
+        header.dataset.open=String(!open);
+        btn.setAttribute('aria-expanded',String(!open));
+      });
+    })();
+
+    /* Header countdown */
+    function startHeaderCountdown(){
+      const wrap = $('#countdown'); if(!wrap) return;
+      const iso = wrap.dataset.kickoff; if(!iso) return;
+      const dEl=$('#cd-days'),hEl=$('#cd-hrs'),mEl=$('#cd-min'),sEl=$('#cd-sec');
+      const pad2=n=>String(n).padStart(2,'0');
+      function tick(){
+        const now=new Date(); const diff=new Date(iso)-now;
+        if(diff<=0){ dEl.textContent=hEl.textContent=mEl.textContent=sEl.textContent='00'; return; }
+        let secs=Math.floor(diff/1000);
+        const days=Math.floor(secs/86400); secs%=86400;
+        const hrs=Math.floor(secs/3600); secs%=3600;
+        const mins=Math.floor(secs/60); secs%=60;
+        dEl.textContent=pad2(days); hEl.textContent=pad2(hrs); mEl.textContent=pad2(mins); sEl.textContent=pad2(secs);
+      }
+      tick(); setInterval(tick,1000);
+    }
+    startHeaderCountdown();
+
+    /* Tabs */
+    function initTabs(root){
+      if(!root) return;
+      const tabs = Array.from(root.querySelectorAll('[role="tab"]'));
+      const panels = tabs.map(t => $('#'+t.getAttribute('aria-controls')));
+
+      function activate(i, focus=true){
+        tabs.forEach((t,idx)=>{
+          const on = idx===i;
+          t.setAttribute('aria-selected', on);
+          t.tabIndex = on ? 0 : -1;
+          panels[idx].setAttribute('aria-hidden', (!on).toString());
+          panels[idx].hidden = !on;
+        });
+        root.dataset.active = String(i);
+        if(focus) tabs[i].focus({preventScroll:true});
+      }
+
+      tabs.forEach((t,idx)=>{
+        t.addEventListener('click', ()=>activate(idx,false));
+        t.addEventListener('keydown', (e)=>{
+          if(e.key==='ArrowRight'||e.key==='ArrowDown'){ e.preventDefault(); activate((idx+1)%tabs.length); }
+          if(e.key==='ArrowLeft'||e.key==='ArrowUp'){ e.preventDefault(); activate((idx-1+tabs.length)%tabs.length); }
+          if(e.key==='Home'){ e.preventDefault(); activate(0); }
+          if(e.key==='End'){ e.preventDefault(); activate(tabs.length-1); }
+        });
+      });
+
+      activate(Number(root.dataset.active)||0, false);
+    }
+    initTabs(document.getElementById('howtoTabs'));
+
+    /* ===== Form + checklist logic ===== */
+    const form = $('#dealForm');
+    const submitBtn = $('#submitBtn');
+    const clearBtn = $('#clearBtn');
+
+    const preList = $('#preList');
+    const preFill = $('#preFill');
+    const prePct  = $('#prePct');
+
+    const SEL = {
+      business:'#biz', title:'#title', desc:'#desc', days:'#days', contact:'#email',
+      location:['#area','#addr'], auth:'#auth', consent:'#consent', privacy:'#privacy',
+      time:'#time', dates:['[name="start_date"]','[name="end_date"]']
+    };
+    const one = s => typeof s==='string' ? $(s, form) : null;
+    const many = arr => Array.isArray(arr)?arr.map(s=>$(s,form)).filter(Boolean):[];
+    const hasText  = el => !!el && String(el.value||'').trim().length>1;
+    const hasEmail = el => !!el && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(el.value||'').trim());
+    const isChecked= el => !!el && !!el.checked;
+    const anyFilled= els => els.some(hasText);
+
+    const tests = {
+      business:()=>hasText(one(SEL.business)),
+      title:()=>hasText(one(SEL.title)),
+      desc:()=>hasText(one(SEL.desc)),
+      days:()=>hasText(one(SEL.days)),
+      contact:()=>hasEmail(one(SEL.contact)),
+      location:()=>anyFilled(many(SEL.location)),
+      auth:()=>isChecked(one(SEL.auth)),
+      consent:()=>isChecked(one(SEL.consent)),
+      privacy:()=>isChecked(one(SEL.privacy)),
+      time:()=>hasText(one(SEL.time)),
+      dates:()=>false
+    };
+    const required=['business','title','desc','days','contact','location','auth','consent','privacy'];
+
+    function buildPreChecklistAsConsent(){
+      if (!preList) return;
+      [...preList.children].forEach(li=>{
+        if (li.querySelector('input[type="checkbox"]')) return;
+        const key = li.dataset.key; if (!key) return;
+        const labelHTML = li.innerHTML;
+        li.classList.add('consent-item');
+        li.innerHTML =
+          `<input id="pre_${key}" type="checkbox" data-static="true" tabindex="-1" aria-hidden="true" aria-disabled="true">
+           <label for="pre_${key}">${labelHTML}</label>`;
+      });
+    }
+
+    function renderChecklist(){
+      let done=0;
+
+      required.forEach(k=>{
+        const ok = tests[k]();
+        const li = preList.querySelector(`li[data-key="${k}"]`);
+        li?.classList.toggle('done', ok);
+        const cb = document.getElementById(`pre_${k}`);
+        if (cb){ cb.checked = ok; cb.setAttribute('aria-checked', ok); }
+        if (ok) done++;
+      });
+
+      ['time','dates'].forEach(k=>{
+        const ok = tests[k]();
+        const li = preList.querySelector(`li[data-key="${k}"]`);
+        li?.classList.toggle('done', ok);
+        const cb = document.getElementById(`pre_${k}`);
+        if (cb){ cb.checked = ok; cb.setAttribute('aria-checked', ok); }
+      });
+
+      const pct=Math.round((done/required.length)*100);
+      preFill.style.width=pct+'%';
+      prePct.textContent=pct+'%';
+      submitBtn.disabled = (done!==required.length);
+    }
+
+    preList.addEventListener('click', e=>{
+      const li=e.target.closest('li[data-key]'); if(!li) return;
+      const key=li.dataset.key;
+
+      if(['auth','consent','privacy'].includes(key)){
+        const cb=one(SEL[key]);
+        if(cb){ cb.checked=!cb.checked; cb.dispatchEvent(new Event('change',{bubbles:true})); }
+        return;
+      }
+
+      const sel=SEL[key]; const target=Array.isArray(sel)?many(sel)[0]:one(sel);
+      if(target?.focus){
+        target.focus();
+        target.scrollIntoView({behavior:'smooth', block:'center'});
+      }
+    });
+
+    form.addEventListener('input', renderChecklist, true);
+    form.addEventListener('change', renderChecklist, true);
+    form.addEventListener('submit', e=>{
+      e.preventDefault(); if(submitBtn.disabled) return;
+      submitBtn.textContent='Submitted ✓'; submitBtn.disabled=true;
+      setTimeout(()=>{ submitBtn.textContent='Submit Deal'; renderChecklist(); }, 1800);
+    });
+    clearBtn.addEventListener('click', ()=>{ form.reset(); submitBtn.disabled=true; renderChecklist(); $('#biz').focus(); });
+
+    buildPreChecklistAsConsent();
+    renderChecklist();
+  </script>
+
+  <!-- Optional: Font Awesome availability flag (unchanged) -->
+  <script>
+  (function(){
+    const ok = () => document.documentElement.classList.add('fa-ready');
+    const nope = () => document.documentElement.classList.add('no-fa');
+    if (!('fonts' in document)) { ok(); return; }
+    Promise.race([
+      document.fonts.load('900 12px "Font Awesome 6 Free"'),
+      new Promise(r => setTimeout(r, 2000))
+    ]).then(() => {
+      const has = [...document.fonts].some(f => /Font Awesome 6 Free/i.test(f.family));
+      (has ? ok : nope)();
+    }).catch(nope);
+  })();
+  </script>
+</body>
+</html>
