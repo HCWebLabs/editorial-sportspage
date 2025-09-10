@@ -42,9 +42,11 @@ html[data-font="B"]{ --font-head:"Bebas Neue",system-ui,-apple-system,"Segoe UI"
 body{ margin:0; color:var(--ink); background:var(--bg-0); font:500 16px/1.45 var(--font-body) }
 
 /* BACKGROUND IMAGE — no gradient or opacity applied */
+/* Background image (local file) */
 body::before{
-  content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
-  background:url("https://heather-cooper.com/staging/7584/wp-content/uploads/2025/09/tn-metallic-1.jpg") center/cover no-repeat;
+  content:"";
+  position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background:url("../tn-metallic-1.jpg") center/cover no-repeat;
   opacity:1; mix-blend-mode:normal;
 }
 
