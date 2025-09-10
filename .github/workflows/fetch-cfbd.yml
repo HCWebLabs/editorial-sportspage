@@ -1,0 +1,48 @@
+name: Refresh CFBD data
+
+on:
+  workflow_dispatch:        # run it manually any time
+    inputs:
+      year:
+        description: 'Season year (optional)'
+        required: false
+      team:
+        description: 'Team name (optional)'
+        required: false
+  schedule:
+    # More frequent in-season (Jul–Jan) if you want; start w/ every 6h:
+    - cron: '0 */6 * * *'
+
+permissions:
+  contents: write   # needed to commit updated JSON
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Make data dir
+        run: mkdir -p data
+
+      - name: Fetch CFBD -> data/*.json
+        env:
+          CFBD_API_KEY: ${{ secrets.CFBD_API_KEY }}
+          INPUT_YEAR:   ${{ github.event.inputs.year }}
+          INPUT_TEAM:   ${{ github.event.inputs.team }}
+        run: node scripts/fetch-cfbd.mjs
+
+      - name: Commit & push if changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/schedule.json data/next.json
+          git diff --quiet --cached || git commit -m "chore(data): refresh CFBD $(date -u +'%Y-%m-%dT%H:%MZ')"
+          git push
