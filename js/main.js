@@ -1,19 +1,19 @@
-// main.js — site boot + cards
+/* Enable JS styles */
 document.documentElement.classList.remove('no-js');
 
+/* Shorthand */
 const $  = (sel, root=document) => root.querySelector(sel);
 const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
-// Use relative paths so it works on GitHub Pages project URLs
+/* ---- Data paths (relative so GH Pages project sites work) ---- */
 const PATH_NEXT     = 'data/next.json';
 const PATH_SCHEDULE = 'data/schedule.json';
 const PATH_PLACES   = 'data/places.json';
 const PATH_SPECIALS = 'data/specials.json';
 
+/* Utils */
 function fmtDate(d){
-  return new Date(d).toLocaleString([], {
-    weekday:'short', month:'short', day:'numeric', hour:'numeric', minute:'2-digit'
-  });
+  return new Date(d).toLocaleString([], { weekday:'short', month:'short', day:'numeric', hour:'numeric', minute:'2-digit' });
 }
 function setUpdated(){
   const t = new Date().toLocaleString([], { dateStyle:'medium', timeStyle:'short' });
@@ -24,7 +24,7 @@ function escapeHtml(s=''){
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
-/* Countdown in header */
+/* Countdown (header) */
 function startHeaderCountdown(){
   const wrap = $('#countdown'); if(!wrap) return;
   const iso  = wrap.dataset.kickoff; if(!iso) return;
@@ -42,7 +42,7 @@ function startHeaderCountdown(){
   tick(); setInterval(tick,1000);
 }
 
-/* Mobile nav toggle */
+/* Mobile nav */
 function wireNavToggle(){
   const header = document.querySelector('.site-header');
   const btn = header?.querySelector('.nav-toggle');
@@ -76,7 +76,6 @@ function wireGuideMore(){
   btn.innerHTML = LABEL_MORE;
 
   let animating = false;
-
   const finish = (cb) => {
     const t = setTimeout(cb, 350);
     const once = () => { clearTimeout(t); cb(); };
@@ -125,7 +124,7 @@ function wireGuideMore(){
   });
 }
 
-/* SCHEDULE accordion + paint */
+/* SCHEDULE */
 async function paintSchedule(){
   const tbody = document.getElementById('schedRows');
   const btn   = document.getElementById('schedMore');
@@ -176,7 +175,7 @@ async function paintSchedule(){
   }
 }
 
-/* Places list (right rail) */
+/* Places list */
 async function paintPlacesList(){
   const ul = $('#placesList'); const empty = $('#placesEmpty'); if(!ul) return;
   try{
@@ -199,7 +198,7 @@ async function paintPlacesList(){
   }catch(e){ console.error('places error', e); }
 }
 
-/* Specials grid */
+/* Specials */
 async function paintSpecials(){
   const grid = $('#specialsGrid'); if(!grid) return;
   try{
@@ -222,7 +221,7 @@ async function paintSpecials(){
   }catch(e){ console.error('specials error', e); }
 }
 
-/* Upcoming + score state + calendar link */
+/* Upcoming + status dot + calendar */
 function toICSDate(d){ return new Date(d).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z$/,'Z'); }
 function buildICS({title, start, end, location='', description=''}) {
   const uid = 'tn-gameday-' + Date.now() + '@example';
@@ -322,11 +321,3 @@ async function paintUpcoming(){
 
   setInterval(setUpdated, 60*1000);
 })();
-
-/* Weather widget loader */
-!(function(d,s,id){
-  if(d.getElementById(id)) return;
-  var js=d.createElement(s); js.id=id;
-  js.src='https://weatherwidget.io/js/widget.min.js';
-  d.getElementsByTagName('head')[0].appendChild(js);
-}(document,'script','weatherwidget-io-js'));
