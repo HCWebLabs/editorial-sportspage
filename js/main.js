@@ -1,24 +1,30 @@
-// remove no-js flag
+// main.js — site boot + cards
 document.documentElement.classList.remove('no-js');
 
 const $  = (sel, root=document) => root.querySelector(sel);
 const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
-// Data files (relative to the page URL)
+// Use relative paths so it works on GitHub Pages project URLs
 const PATH_NEXT     = 'data/next.json';
 const PATH_SCHEDULE = 'data/schedule.json';
 const PATH_PLACES   = 'data/places.json';
 const PATH_SPECIALS = 'data/specials.json';
 
-function fmtDate(d){ return new Date(d).toLocaleString([], { weekday:'short', month:'short', day:'numeric', hour:'numeric', minute:'2-digit' }); }
+function fmtDate(d){
+  return new Date(d).toLocaleString([], {
+    weekday:'short', month:'short', day:'numeric', hour:'numeric', minute:'2-digit'
+  });
+}
 function setUpdated(){
   const t = new Date().toLocaleString([], { dateStyle:'medium', timeStyle:'short' });
   $('#updatedAt')?.replaceChildren(t);
   $('#updatedAt2')?.replaceChildren(t);
 }
-function escapeHtml(s=''){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function escapeHtml(s=''){
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
 
-/* Countdown */
+/* Countdown in header */
 function startHeaderCountdown(){
   const wrap = $('#countdown'); if(!wrap) return;
   const iso  = wrap.dataset.kickoff; if(!iso) return;
@@ -36,7 +42,7 @@ function startHeaderCountdown(){
   tick(); setInterval(tick,1000);
 }
 
-/* Mobile nav */
+/* Mobile nav toggle */
 function wireNavToggle(){
   const header = document.querySelector('.site-header');
   const btn = header?.querySelector('.nav-toggle');
@@ -61,7 +67,6 @@ function wireGuideMore(){
   const LABEL_LESS = '<i class="fa-solid fa-angles-up"></i> See less';
 
   if (extra.hasAttribute('hidden')) extra.removeAttribute('hidden');
-
   extra.classList.add('is-collapsible');
   extra.style.maxHeight = '0px';
   extra.setAttribute('aria-hidden','true');
@@ -69,6 +74,8 @@ function wireGuideMore(){
   btn.setAttribute('aria-controls','guideExtra');
   btn.setAttribute('aria-expanded','false');
   btn.innerHTML = LABEL_MORE;
+
+  let animating = false;
 
   const finish = (cb) => {
     const t = setTimeout(cb, 350);
@@ -78,6 +85,9 @@ function wireGuideMore(){
 
   btn.addEventListener('click', (e) => {
     e.preventDefault();
+    if (animating) return;
+    animating = true;
+
     const isOpen = btn.getAttribute('aria-expanded') === 'true';
 
     if (isOpen){
@@ -89,6 +99,7 @@ function wireGuideMore(){
         extra.setAttribute('aria-hidden','true');
         btn.setAttribute('aria-expanded','false');
         btn.innerHTML = LABEL_MORE;
+        animating = false;
       });
     } else {
       extra.removeAttribute('aria-hidden');
@@ -100,6 +111,7 @@ function wireGuideMore(){
         finish(() => {
           extra.classList.add('is-open');
           extra.style.maxHeight = '';
+          animating = false;
         });
       });
     }
@@ -113,7 +125,7 @@ function wireGuideMore(){
   });
 }
 
-/* Schedule painter (+ collapsible) */
+/* SCHEDULE accordion + paint */
 async function paintSchedule(){
   const tbody = document.getElementById('schedRows');
   const btn   = document.getElementById('schedMore');
@@ -139,7 +151,9 @@ async function paintSchedule(){
     }).join('');
 
     const COLLAPSE_COUNT = 3;
-    [...tbody.querySelectorAll('tr')].forEach((tr, i) => { if(i >= COLLAPSE_COUNT) tr.setAttribute('data-extra','true'); });
+    [...tbody.querySelectorAll('tr')].forEach((tr, i) => {
+      if(i >= COLLAPSE_COUNT) tr.setAttribute('data-extra','true');
+    });
 
     const setCollapsed = (collapsed) => {
       table.classList.toggle('table-collapsed', collapsed);
@@ -152,6 +166,7 @@ async function paintSchedule(){
     };
 
     setCollapsed(true);
+
     btn.addEventListener('click', () => {
       const collapsed = table.classList.contains('table-collapsed');
       setCollapsed(!collapsed);
@@ -161,7 +176,7 @@ async function paintSchedule(){
   }
 }
 
-/* Places list */
+/* Places list (right rail) */
 async function paintPlacesList(){
   const ul = $('#placesList'); const empty = $('#placesEmpty'); if(!ul) return;
   try{
@@ -171,7 +186,8 @@ async function paintPlacesList(){
     ul.innerHTML = places.slice(0,8).map(p => {
       const n = escapeHtml(p.name||'Place');
       const a = escapeHtml(p.formatted_address || p.address || '');
-      const lat = p.lat ?? null; const lng = p.lng ?? null;
+      const lat = p.lat ?? null;
+      const lng = p.lng ?? null;
       const mapsUrl = (lat && lng)
         ? `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
         : (p.maps_url || '#');
@@ -183,7 +199,7 @@ async function paintPlacesList(){
   }catch(e){ console.error('places error', e); }
 }
 
-/* Specials */
+/* Specials grid */
 async function paintSpecials(){
   const grid = $('#specialsGrid'); if(!grid) return;
   try{
@@ -206,7 +222,7 @@ async function paintSpecials(){
   }catch(e){ console.error('specials error', e); }
 }
 
-/* Upcoming + score state + ICS */
+/* Upcoming + score state + calendar link */
 function toICSDate(d){ return new Date(d).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z$/,'Z'); }
 function buildICS({title, start, end, location='', description=''}) {
   const uid = 'tn-gameday-' + Date.now() + '@example';
@@ -276,7 +292,9 @@ async function paintUpcoming(){
     const filename = `${title.toLowerCase().replace(/[^a-z0-9]+/g,'-')}.ics`;
 
     linksCal.forEach(a => {
-      a.href = gcal; a.dataset.ics = blobUrl; a.download = filename;
+      a.href = gcal;
+      a.dataset.ics = blobUrl;
+      a.download = filename;
       a.addEventListener('contextmenu', () => { a.href = blobUrl; }, {once:true});
       a.addEventListener('mousedown', (e) => {
         if(e.button === 1 || e.ctrlKey || e.metaKey || e.shiftKey){ a.href = blobUrl; }
@@ -305,7 +323,7 @@ async function paintUpcoming(){
   setInterval(setUpdated, 60*1000);
 })();
 
-/* Weather widget */
+/* Weather widget loader */
 !(function(d,s,id){
   if(d.getElementById(id)) return;
   var js=d.createElement(s); js.id=id;
