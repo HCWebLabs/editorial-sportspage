@@ -4,11 +4,11 @@ document.documentElement.classList.remove('no-js');
 const $  = (sel, root=document) => root.querySelector(sel);
 const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
-// Data paths (written by GitHub Actions)
-const PATH_NEXT     = '/data/next.json';
-const PATH_SCHEDULE = '/data/schedule.json';
-const PATH_PLACES   = '/data/places.json';
-const PATH_SPECIALS = '/data/specials.json';
+// Data files (relative to the page URL)
+const PATH_NEXT     = 'data/next.json';
+const PATH_SCHEDULE = 'data/schedule.json';
+const PATH_PLACES   = 'data/places.json';
+const PATH_SPECIALS = 'data/specials.json';
 
 function fmtDate(d){ return new Date(d).toLocaleString([], { weekday:'short', month:'short', day:'numeric', hour:'numeric', minute:'2-digit' }); }
 function setUpdated(){
