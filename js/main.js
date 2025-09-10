@@ -1,8 +1,10 @@
+// remove no-js flag
 document.documentElement.classList.remove('no-js');
 
 const $  = (sel, root=document) => root.querySelector(sel);
 const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
+// Data paths (written by GitHub Actions)
 const PATH_NEXT     = '/data/next.json';
 const PATH_SCHEDULE = '/data/schedule.json';
 const PATH_PLACES   = '/data/places.json';
@@ -46,24 +48,7 @@ function wireNavToggle(){
   });
 }
 
-// helper: run a change and call `after()` whether or not a transition actually fires
-function runTransition(el, change, after){
-  const s = getComputedStyle(el);
-  const first = (txt) => (txt.split(',')[0] || '0s').trim();
-  const toMs  = (v) => v.endsWith('ms') ? parseFloat(v) : parseFloat(v||0)*1000;
-  const dur   = toMs(first(s.transitionDuration));
-  const delay = toMs(first(s.transitionDelay));
-  const hasMaxHeight = (s.transitionProperty || '').includes('max-height');
-  change();
-  if (hasMaxHeight && (dur + delay) > 0){
-    el.addEventListener('transitionend', () => after(), { once:true });
-  } else {
-    // no transition: just finish on the next frame
-    requestAnimationFrame(after);
-  }
-}
-
-/* GUIDE accordion — robust version (safe with reduced-motion, double inits, etc.) */
+/* GUIDE accordion */
 function wireGuideMore(){
   if (window.__TN_WIRED_GUIDE__) return;
   window.__TN_WIRED_GUIDE__ = true;
@@ -75,7 +60,6 @@ function wireGuideMore(){
   const LABEL_MORE = '<i class="fa-solid fa-angles-down"></i> See more';
   const LABEL_LESS = '<i class="fa-solid fa-angles-up"></i> See less';
 
-  // ensure measurable
   if (extra.hasAttribute('hidden')) extra.removeAttribute('hidden');
 
   extra.classList.add('is-collapsible');
@@ -86,10 +70,7 @@ function wireGuideMore(){
   btn.setAttribute('aria-expanded','false');
   btn.innerHTML = LABEL_MORE;
 
-  let animating = false;
-
   const finish = (cb) => {
-    // fire cb even if transitionend never fires (reduced-motion, etc.)
     const t = setTimeout(cb, 350);
     const once = () => { clearTimeout(t); cb(); };
     extra.addEventListener('transitionend', once, { once:true });
@@ -97,42 +78,33 @@ function wireGuideMore(){
 
   btn.addEventListener('click', (e) => {
     e.preventDefault();
-    if (animating) return;
-    animating = true;
-
     const isOpen = btn.getAttribute('aria-expanded') === 'true';
 
     if (isOpen){
-      // collapse
-      extra.classList.remove('is-open');                // let CSS max-height:0 apply
-      extra.style.maxHeight = extra.scrollHeight + 'px';// set current height
-      void extra.offsetHeight;                          // reflow
+      extra.classList.remove('is-open');
+      extra.style.maxHeight = extra.scrollHeight + 'px';
+      void extra.offsetHeight;
       extra.style.maxHeight = '0px';
       finish(() => {
         extra.setAttribute('aria-hidden','true');
         btn.setAttribute('aria-expanded','false');
         btn.innerHTML = LABEL_MORE;
-        animating = false;
       });
     } else {
-      // expand
       extra.removeAttribute('aria-hidden');
-      // start from 0, then grow to content height
       extra.style.maxHeight = '0px';
       requestAnimationFrame(() => {
         extra.style.maxHeight = extra.scrollHeight + 'px';
         btn.setAttribute('aria-expanded','true');
         btn.innerHTML = LABEL_LESS;
         finish(() => {
-          extra.classList.add('is-open');   // overrides the default 0px rule
-          extra.style.maxHeight = '';       // not needed while open
-          animating = false;
+          extra.classList.add('is-open');
+          extra.style.maxHeight = '';
         });
       });
     }
   });
 
-  // keep height sane during resize if open
   window.addEventListener('resize', () => {
     if (btn.getAttribute('aria-expanded') === 'true'){
       extra.classList.add('is-open');
@@ -141,9 +113,7 @@ function wireGuideMore(){
   });
 }
 
-
-
-/* SCHEDULE accordion */
+/* Schedule painter (+ collapsible) */
 async function paintSchedule(){
   const tbody = document.getElementById('schedRows');
   const btn   = document.getElementById('schedMore');
@@ -169,9 +139,7 @@ async function paintSchedule(){
     }).join('');
 
     const COLLAPSE_COUNT = 3;
-    [...tbody.querySelectorAll('tr')].forEach((tr, i) => {
-      if(i >= COLLAPSE_COUNT) tr.setAttribute('data-extra','true');
-    });
+    [...tbody.querySelectorAll('tr')].forEach((tr, i) => { if(i >= COLLAPSE_COUNT) tr.setAttribute('data-extra','true'); });
 
     const setCollapsed = (collapsed) => {
       table.classList.toggle('table-collapsed', collapsed);
@@ -184,7 +152,6 @@ async function paintSchedule(){
     };
 
     setCollapsed(true);
-
     btn.addEventListener('click', () => {
       const collapsed = table.classList.contains('table-collapsed');
       setCollapsed(!collapsed);
@@ -198,14 +165,13 @@ async function paintSchedule(){
 async function paintPlacesList(){
   const ul = $('#placesList'); const empty = $('#placesEmpty'); if(!ul) return;
   try{
-    const places = await fetch('/data/places.json', {cache:'no-store'}).then(r => r.json()).catch(() => []);
+    const places = await fetch(PATH_PLACES, {cache:'no-store'}).then(r => r.json()).catch(() => []);
     if(!places || !places.length){ empty.style.display = 'block'; return; }
     empty.style.display = 'none';
     ul.innerHTML = places.slice(0,8).map(p => {
       const n = escapeHtml(p.name||'Place');
       const a = escapeHtml(p.formatted_address || p.address || '');
-      const lat = p.lat ?? null;
-      const lng = p.lng ?? null;
+      const lat = p.lat ?? null; const lng = p.lng ?? null;
       const mapsUrl = (lat && lng)
         ? `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
         : (p.maps_url || '#');
@@ -221,7 +187,7 @@ async function paintPlacesList(){
 async function paintSpecials(){
   const grid = $('#specialsGrid'); if(!grid) return;
   try{
-    const list = await fetch('/data/specials.json', {cache:'no-store'}).then(r => r.json()).catch(() => []);
+    const list = await fetch(PATH_SPECIALS, {cache:'no-store'}).then(r => r.json()).catch(() => []);
     if(!list || !list.length){ grid.innerHTML = `<div class="muted">No specials yet.</div>`; return; }
     grid.innerHTML = list.map(s => {
       const title = escapeHtml(s.title || `${s.biz||''} Special`);
@@ -240,7 +206,7 @@ async function paintSpecials(){
   }catch(e){ console.error('specials error', e); }
 }
 
-/* Upcoming + status dot */
+/* Upcoming + score state + ICS */
 function toICSDate(d){ return new Date(d).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z$/,'Z'); }
 function buildICS({title, start, end, location='', description=''}) {
   const uid = 'tn-gameday-' + Date.now() + '@example';
@@ -310,9 +276,7 @@ async function paintUpcoming(){
     const filename = `${title.toLowerCase().replace(/[^a-z0-9]+/g,'-')}.ics`;
 
     linksCal.forEach(a => {
-      a.href = gcal;
-      a.dataset.ics = blobUrl;
-      a.download = filename;
+      a.href = gcal; a.dataset.ics = blobUrl; a.download = filename;
       a.addEventListener('contextmenu', () => { a.href = blobUrl; }, {once:true});
       a.addEventListener('mousedown', (e) => {
         if(e.button === 1 || e.ctrlKey || e.metaKey || e.shiftKey){ a.href = blobUrl; }
