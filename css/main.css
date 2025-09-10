@@ -65,7 +65,7 @@ body{ margin:0; color:var(--ink); background:var(--bg-0); font:500 16px/1.45 var
 /* BACKGROUND IMAGE — local in repo root (css → ../) */
 body::before{
   content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
-  background:url("editorial-sportspage/tn-metallic-1.jpg") center/cover no-repeat;
+  background:url("../tn-metallic-1.jpg") center/cover no-repeat;
   opacity:1; mix-blend-mode:normal;
 }
 
