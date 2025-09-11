@@ -1,59 +1,49 @@
-/* editorial-sportspage/js/main.js
-   Site boot + widgets
+/* main.js — editorial-sportspage
+   - Auto-detects project base (/editorial-sportspage) for fetch paths
+   - Keeps your widgets + calendar + accordion behavior
 */
 document.documentElement.classList.remove('no-js');
 
 const $  = (sel, root=document) => root.querySelector(sel);
 const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
-/* ==== PATHS (repo lives at /editorial-sportspage) ==== */
-const BASE            = '/editorial-sportspage';
-const PATH_NEXT       = `${BASE}data/next.json`;
-const PATH_SCHEDULE   = `${BASE}data/schedule.json`;
-const PATH_PLACES     = `${BASE}data/places.json`;
-const PATH_SPECIALS   = `${BASE}data/specials.json`;
+/* ----- PATHS ----- */
+const PROJECT_SLUG = '/editorial-sportspage';
+const BASE = location.pathname.startsWith(PROJECT_SLUG) ? PROJECT_SLUG : '';
 
-/* ==== helpers ==== */
-function fmtDate(d){
-  return new Date(d).toLocaleString([], {
-    weekday:'short', month:'short', day:'numeric', hour:'numeric', minute:'2-digit'
-  });
-}
+const PATH_NEXT     = `${BASE}/data/next.json`;
+const PATH_SCHEDULE = `${BASE}/data/schedule.json`;
+const PATH_PLACES   = `${BASE}/data/places.json`;
+const PATH_SPECIALS = `${BASE}/data/specials.json`;
+
+/* ----- helpers ----- */
+function fmtDate(d){ return new Date(d).toLocaleString([], { weekday:'short', month:'short', day:'numeric', hour:'numeric', minute:'2-digit' }); }
 function setUpdated(){
   const t = new Date().toLocaleString([], { dateStyle:'medium', timeStyle:'short' });
   $('#updatedAt')?.replaceChildren(t);
   $('#updatedAt2')?.replaceChildren(t);
 }
-function escapeHtml(s=''){
-  return String(s).replace(/[&<>"']/g, c => (
-    {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]
-  ));
-}
+function escapeHtml(s=''){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-/* ==== countdown in header ==== */
+/* ----- header countdown ----- */
 function startHeaderCountdown(){
   const wrap = $('#countdown'); if(!wrap) return;
   const iso  = wrap.dataset.kickoff; if(!iso) return;
   const dEl=$('#cd-days'),hEl=$('#cd-hrs'),mEl=$('#cd-min'),sEl=$('#cd-sec');
   const pad2=n=>String(n).padStart(2,'0');
-
   function tick(){
-    const now = new Date();
-    const diff = new Date(iso) - now;
+    const now = new Date(); const diff = new Date(iso) - now;
     if(diff<=0){ dEl.textContent=hEl.textContent=mEl.textContent=sEl.textContent='00'; return; }
     let secs = Math.floor(diff/1000);
     const days=Math.floor(secs/86400); secs%=86400;
-    const hrs=Math.floor(secs/3600);  secs%=3600;
-    const mins=Math.floor(secs/60);   secs%=60;
-    dEl.textContent=pad2(days);
-    hEl.textContent=pad2(hrs);
-    mEl.textContent=pad2(mins);
-    sEl.textContent=pad2(secs);
+    const hrs=Math.floor(secs/3600); secs%=3600;
+    const mins=Math.floor(secs/60); secs%=60;
+    dEl.textContent=pad2(days); hEl.textContent=pad2(hrs); mEl.textContent=pad2(mins); sEl.textContent=pad2(secs);
   }
   tick(); setInterval(tick,1000);
 }
 
-/* ==== mobile nav toggle ==== */
+/* ----- mobile nav ----- */
 function wireNavToggle(){
   const header = document.querySelector('.site-header');
   const btn = header?.querySelector('.nav-toggle');
@@ -65,7 +55,7 @@ function wireNavToggle(){
   });
 }
 
-/* ==== GUIDE accordion (robust & idempotent) ==== */
+/* ----- GUIDE accordion (bug-proof, no peeking) ----- */
 function wireGuideMore(){
   if (window.__TN_WIRED_GUIDE__) return;
   window.__TN_WIRED_GUIDE__ = true;
@@ -77,16 +67,17 @@ function wireGuideMore(){
   const LABEL_MORE = '<i class="fa-solid fa-angles-down"></i> See more';
   const LABEL_LESS = '<i class="fa-solid fa-angles-up"></i> See less';
 
-  if (extra.hasAttribute('hidden')) extra.removeAttribute('hidden'); // measurable
+  // Ensure measurable + collapsed
   extra.classList.add('is-collapsible');
   extra.style.maxHeight = '0px';
-  extra.setAttribute('aria-hidden','true');
+  extra.setAttribute('aria-hidden','true'); // CSS hides while collapsed
 
   btn.setAttribute('aria-controls','guideExtra');
   btn.setAttribute('aria-expanded','false');
   btn.innerHTML = LABEL_MORE;
 
   let animating = false;
+
   const finish = (cb) => {
     const t = setTimeout(cb, 350);
     const once = () => { clearTimeout(t); cb(); };
@@ -101,17 +92,19 @@ function wireGuideMore(){
     const isOpen = btn.getAttribute('aria-expanded') === 'true';
 
     if (isOpen){
+      // collapse
       extra.classList.remove('is-open');
       extra.style.maxHeight = extra.scrollHeight + 'px';
       void extra.offsetHeight;
       extra.style.maxHeight = '0px';
       finish(() => {
-        extra.setAttribute('aria-hidden','true');
+        extra.setAttribute('aria-hidden','true'); // keeps hidden; stops "peek"
         btn.setAttribute('aria-expanded','false');
         btn.innerHTML = LABEL_MORE;
         animating = false;
       });
     } else {
+      // expand
       extra.removeAttribute('aria-hidden');
       extra.style.maxHeight = '0px';
       requestAnimationFrame(() => {
@@ -120,13 +113,14 @@ function wireGuideMore(){
         btn.innerHTML = LABEL_LESS;
         finish(() => {
           extra.classList.add('is-open');
-          extra.style.maxHeight = '';
+          extra.style.maxHeight = ''; // natural height
           animating = false;
         });
       });
     }
   });
 
+  // keep height sane during resize if open
   window.addEventListener('resize', () => {
     if (btn.getAttribute('aria-expanded') === 'true'){
       extra.classList.add('is-open');
@@ -135,7 +129,7 @@ function wireGuideMore(){
   });
 }
 
-/* ==== schedule table w/ collapsible rows ==== */
+/* ----- Schedule table (collapsible) ----- */
 async function paintSchedule(){
   const tbody = document.getElementById('schedRows');
   const btn   = document.getElementById('schedMore');
@@ -176,16 +170,13 @@ async function paintSchedule(){
     };
 
     setCollapsed(true);
-    btn.addEventListener('click', () => {
-      const collapsed = table.classList.contains('table-collapsed');
-      setCollapsed(!collapsed);
-    });
+    btn.addEventListener('click', () => setCollapsed(!table.classList.contains('table-collapsed')));
   }catch(e){
     console.error('schedule error', e);
   }
 }
 
-/* ==== places list (optional JSON) ==== */
+/* ----- Places list ----- */
 async function paintPlacesList(){
   const ul = $('#placesList'); const empty = $('#placesEmpty'); if(!ul) return;
   try{
@@ -208,7 +199,7 @@ async function paintPlacesList(){
   }catch(e){ console.error('places error', e); }
 }
 
-/* ==== specials grid (optional JSON) ==== */
+/* ----- Specials ----- */
 async function paintSpecials(){
   const grid = $('#specialsGrid'); if(!grid) return;
   try{
@@ -231,10 +222,8 @@ async function paintSpecials(){
   }catch(e){ console.error('specials error', e); }
 }
 
-/* ==== upcoming game + score state + calendar link ==== */
-function toICSDate(d){
-  return new Date(d).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z$/,'Z');
-}
+/* ----- Upcoming + live signal ----- */
+function toICSDate(d){ return new Date(d).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z$/,'Z'); }
 function buildICS({title, start, end, location='', description=''}) {
   const uid = 'tn-gameday-' + Date.now() + '@example';
   return [
@@ -248,14 +237,13 @@ function setScoreSignal(nextIso){
   const dots = $$('#scoreDot, .scoreDot');
   const msgs = $$('#scoreMsg, .scoreMsg');
   if(!dots.length && !msgs.length) return;
-
   let state='red', text='No game in progress.';
   if(nextIso){
-    const now   = new Date();
+    const now = new Date();
     const start = new Date(nextIso);
-    const end   = new Date(start.getTime() + 5*60*60*1000); // 5h window
+    const end = new Date(start.getTime() + 5*60*60*1000);
     const isSameDay = start.toDateString() === now.toDateString();
-    if(now >= start && now <= end){ state='green';  text='Game in progress.'; }
+    if(now >= start && now <= end){ state='green'; text='Game in progress.'; }
     else if(isSameDay && now < start){ state='yellow'; text='Gameday — awaiting kickoff.'; }
   }
   dots.forEach(d => d.dataset.state = state);
@@ -272,6 +260,7 @@ async function paintUpcoming(){
     if(!next || !next.date || !next.opponent){
       elsNext.forEach(n => n.textContent = 'No upcoming game found.');
       if(heroLine) heroLine.textContent = 'No upcoming game found.';
+      setScoreSignal(null);
       return null;
     }
 
@@ -285,23 +274,21 @@ async function paintUpcoming(){
 
     setScoreSignal(next.date);
 
-    const dt    = new Date(next.date);
+    const dt = new Date(next.date);
     const dtEnd = new Date(dt.getTime() + 3*60*60*1000);
     const title = `Tennessee vs ${next.opponent}`;
     const location = next.venue || '';
-    const details  = 'TN Gameday';
+    const details = 'TN Gameday';
 
-    // Google Calendar
     const dates = toICSDate(dt) + '/' + toICSDate(dtEnd);
     const gcal = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
-      + '&text='     + encodeURIComponent(title)
-      + '&dates='    + encodeURIComponent(dates)
+      + '&text=' + encodeURIComponent(title)
+      + '&dates=' + encodeURIComponent(dates)
       + '&location=' + encodeURIComponent(location)
-      + '&details='  + encodeURIComponent(details);
+      + '&details=' + encodeURIComponent(details);
 
-    // Backup ICS file (right-click/aux click will grab ICS instead of GCal)
     const icsText = buildICS({title, start: dt, end: dtEnd, location, description: details});
-    const blob    = new Blob([icsText], {type: 'text/calendar'});
+    const blob = new Blob([icsText], {type: 'text/calendar'});
     const blobUrl = URL.createObjectURL(blob);
     const filename = `${title.toLowerCase().replace(/[^a-z0-9]+/g,'-')}.ics`;
 
@@ -324,7 +311,7 @@ async function paintUpcoming(){
   }
 }
 
-/* ==== boot ==== */
+/* ----- boot ----- */
 (async function boot(){
   setUpdated();
   wireNavToggle();
@@ -337,7 +324,7 @@ async function paintUpcoming(){
   setInterval(setUpdated, 60*1000);
 })();
 
-/* ==== weather widget loader ==== */
+/* Weather widget */
 !(function(d,s,id){
   if(d.getElementById(id)) return;
   var js=d.createElement(s); js.id=id;
