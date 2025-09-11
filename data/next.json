@@ -1,1 +1,14 @@
-null
+{
+  "id": 401752705,
+  "year": 2025,
+  "week": 3,
+  "date": "2025-09-13T19:30:00.000Z",
+  "is_home": false,
+  "tv": null,
+  "venue": "Neyland Stadium",
+  "notes": null,
+  "completed": false,
+  "home_points": null,
+  "away_points": null,
+  "result": null
+}
