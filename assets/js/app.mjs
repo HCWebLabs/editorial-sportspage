@@ -1,9 +1,10 @@
 // assets/js/app.mjs
-const BASE = "";                 // if your site is in a subfolder, e.g. "/myrepo", set it here
-const DATA = `${BASE}/data`;     // JSON lives here
+// Auto-detect base so it works on user-site root *and* project-sites (/repo-name/)
+const BASE = location.pathname.replace(/\/[^/]*$/, "");   // e.g. "/editorial-sportspage"
+const DATA = `${BASE}/data`;                               // JSON lives here
 
-const $ = sel => document.querySelector(sel);
-const $$ = sel => Array.from(document.querySelectorAll(sel));
+const $ = (sel) => document.querySelector(sel);
+const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 
 async function j(rel) {
   const r = await fetch(`${DATA}/${rel}?t=${Date.now()}`);
