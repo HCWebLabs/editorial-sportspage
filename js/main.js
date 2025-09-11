@@ -4,20 +4,19 @@
   /* =========================================
      Path helpers (works locally + GH Pages)
   ========================================== */
-  const BASE =
-    window.location.pathname.includes("/editorial-sportspage/")
-      ? "/editorial-sportspage/"
-      : "./";
+  const BASE = window.location.pathname.includes("/editorial-sportspage/")
+    ? "/editorial-sportspage/"
+    : "./";
 
-  const PATH_NEXT = BASE + "data/next.json";
+  const PATH_NEXT     = BASE + "data/next.json";
   const PATH_SCHEDULE = BASE + "data/schedule.json";
   const PATH_SPECIALS = BASE + "data/specials.json";
-  const PATH_PLACES = BASE + "data/places.json";
+  const PATH_PLACES   = BASE + "data/places.json";
 
   /* =========================================
      Tiny DOM + misc utils
   ========================================== */
-  const $ = (sel, root = document) => root.querySelector(sel);
+  const $  = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
   const setText = (sel, txt) => {
@@ -34,6 +33,7 @@
     el.hidden = !yes;
     el.style.display = yes ? "" : "none";
   };
+
   const escapeHtml = (s) =>
     String(s ?? "")
       .replace(/&/g, "&amp;")
@@ -63,8 +63,10 @@
 
   const pad2 = (n) => String(n).padStart(2, "0");
 
-  const setAllText = (selector, txt) => $$(selector).forEach((n) => (n.textContent = txt ?? ""));
-  const setAllHref = (selector, href) => $$(selector).forEach((n) => n.setAttribute("href", href || "#"));
+  const setAllText = (selector, txt) =>
+    $$(selector).forEach((n) => (n.textContent = txt ?? ""));
+  const setAllHref = (selector, href) =>
+    $$(selector).forEach((n) => n.setAttribute("href", href || "#"));
 
   /* =========================================
      Mobile nav
@@ -105,7 +107,7 @@
       if (diff <= 0) diff = 0;
 
       const days = Math.floor(diff / 86_400_000);
-      const hrs = Math.floor((diff % 86_400_000) / 3_600_000);
+      const hrs  = Math.floor((diff % 86_400_000) / 3_600_000);
       const mins = Math.floor((diff % 3_600_000) / 60_000);
       const secs = Math.floor((diff % 60_000) / 1_000);
 
@@ -126,7 +128,7 @@
     const box = $("#countdown");
     if (!box) return;
 
-    // Date from argument (JSON-driven)
+    // Drive from argument (JSON) if provided
     if (dateMaybe instanceof Date && !isNaN(dateMaybe)) {
       show(box, true);
       box.setAttribute("data-kickoff", dateMaybe.toISOString());
@@ -134,7 +136,7 @@
       return;
     }
 
-    // Fallback: use data-kickoff from HTML
+    // Fallback: drive from HTML attribute
     const attr = box.getAttribute("data-kickoff");
     if (attr) {
       const d = new Date(attr);
@@ -145,7 +147,7 @@
       }
     }
 
-    // Hide if no target
+    // No target
     show(box, false);
     stopCountdown();
   }
@@ -158,26 +160,22 @@
     const area = $("#guideExtra");
     if (!btn || !area) return;
 
-    // mark collapsible for CSS
     area.classList.add("is-collapsible");
 
     const setOpen = (open) => {
       btn.setAttribute("aria-expanded", open ? "true" : "false");
       if (open) {
         area.hidden = false;
-        // allow transition: measure content height -> set max-height
         const h = area.scrollHeight;
         area.style.maxHeight = h + "px";
         area.classList.add("is-open");
       } else {
         area.style.maxHeight = "0px";
         area.classList.remove("is-open");
-        // hide after transition for a11y
         setTimeout(() => (area.hidden = true), 300);
       }
     };
 
-    // start closed
     setOpen(false);
 
     btn.addEventListener("click", () => {
@@ -192,32 +190,33 @@
   /* =========================================
      Schedule "See more" (table)
   ========================================== */
+  const COLLAPSE_COUNT = 6;
+
+  function markScheduleExtra() {
+    $$("#schedRows > tr").forEach((tr, i) => {
+      tr.setAttribute("data-extra", i >= COLLAPSE_COUNT ? "true" : "false");
+    });
+  }
+
   function initScheduleCollapse() {
     const btn = $("#schedMore");
-    const tbody = $("#schedRows");
-    const tableWrap = $("#schedTable")?.closest(".table-wrap");
-    if (!btn || !tbody || !tableWrap) return;
+    const table = $("#schedTable");
+    const tableWrap = table?.closest(".table-wrap");
+    if (!btn || !table || !tableWrap) return;
 
-    const COLLAPSE_COUNT = 6;
     const setCollapsed = (collapsed) => {
-      $("#schedTable")?.classList.toggle("table-collapsed", collapsed);
+      table.classList.toggle("table-collapsed", collapsed);
       btn.setAttribute("aria-expanded", collapsed ? "false" : "true");
       btn.innerHTML = collapsed
         ? '<i class="fa-solid fa-angles-down"></i> See more'
         : '<i class="fa-solid fa-angles-up"></i> See less';
-
-      // Mark rows as extra after first N
-      $$("#schedRows > tr").forEach((tr, i) => {
-        tr.setAttribute("data-extra", i >= COLLAPSE_COUNT ? "true" : "false");
-      });
-
-      // Fade at the bottom when collapsed
       tableWrap.setAttribute("data-collapsed", collapsed ? "true" : "false");
+      markScheduleExtra();
     };
 
     setCollapsed(true);
     btn.addEventListener("click", () => {
-      const collapsed = $("#schedTable")?.classList.contains("table-collapsed");
+      const collapsed = table.classList.contains("table-collapsed");
       setCollapsed(!collapsed);
     });
   }
@@ -238,10 +237,12 @@
     const html = list
       .map((s) => {
         const title = escapeHtml(s.title || "Special");
-        const biz = escapeHtml(s.biz || "");
-        const area = escapeHtml(s.area || "");
-        const when = escapeHtml(s.time || "");
-        const link = s.link ? `<a href="${escapeHtml(s.link)}" target="_blank" rel="noopener">Details</a>` : "";
+        const biz   = escapeHtml(s.biz || "");
+        const area  = escapeHtml(s.area || "");
+        const when  = escapeHtml(s.time || "");
+        const link  = s.link
+          ? `<a href="${escapeHtml(s.link)}" target="_blank" rel="noopener">Details</a>`
+          : "";
         return `
           <article class="card">
             <header><h3 class="tiny">${title}</h3></header>
@@ -277,8 +278,8 @@
       .map((p) => {
         const name = escapeHtml(p.name || "Place");
         const addr = escapeHtml(p.formatted_address || p.address || "");
-        const lat = p.lat ?? null;
-        const lng = p.lng ?? null;
+        const lat  = p.lat ?? null;
+        const lng  = p.lng ?? null;
         const mapsUrl =
           lat != null && lng != null
             ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(lat + "," + lng)}`
@@ -297,18 +298,16 @@
      Schedule table
   ========================================== */
   function resultText(row) {
-    // Prefer explicit result field
     if (row?.result) return row.result;
 
-    // Compute from points if present
     const hp = Number(row?.home_points);
     const ap = Number(row?.away_points);
     if (!Number.isFinite(hp) || !Number.isFinite(ap)) return "—";
 
-    const usHome = row?.home === true;
-    const us = usHome ? hp : ap;
+    const usHome = row?.home === true || row?.is_home === true;
+    const us   = usHome ? hp : ap;
     const them = usHome ? ap : hp;
-    const wl = us > them ? "W" : us < them ? "L" : "T";
+    const wl   = us > them ? "W" : us < them ? "L" : "T";
     return `${wl} ${us}-${them}`;
   }
 
@@ -328,16 +327,14 @@
 
     const html = rows
       .map((r) => {
-        const d = new Date(r.date);
-        const opponent = escapeHtml(r.opponent || "");
-        const ha = r.home === true ? "H" : "A";
-        const tv = escapeHtml(r.tv || "TBD");
+        const d   = new Date(r.date);
+        const opp = escapeHtml(r.opponent || "");
+        const ha  = (r.home === true || r.is_home === true) ? "H" : "A";   // <— robust
+        const tv  = escapeHtml(r.tv || "TBD");
         const res = escapeHtml(resultText(r));
         return `<tr>
-          <td>${escapeHtml(
-            d.toLocaleDateString(undefined, { month: "short", day: "2-digit", year: "numeric" })
-          )}</td>
-          <td>${opponent}</td>
+          <td>${escapeHtml(d.toLocaleDateString(undefined, { month: "short", day: "2-digit", year: "numeric" }))}</td>
+          <td>${opp}</td>
           <td>${ha}</td>
           <td>${tv}</td>
           <td>${res}</td>
@@ -346,6 +343,7 @@
       .join("");
 
     setHTML(tbody, html);
+    markScheduleExtra(); // ensure collapse markers set after render
     if (updatedAt) updatedAt.textContent = new Date().toLocaleString();
   }
 
@@ -373,54 +371,59 @@
   function calendarLink({ opponent, date, home }) {
     if (!date) return "#";
     const start = new Date(date);
-    const end = new Date(start.getTime() + 3 * 60 * 60 * 1000); // 3h default
-    const toICS = (d) =>
-      d
-        .toISOString()
-        .replace(/[-:]/g, "")
-        .replace(".000Z", "Z");
-    const text = encodeURIComponent(`Tennessee ${home ? "vs" : "at"} ${opponent}`);
-    return `https://www.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${toICS(start)}/${toICS(
-      end
-    )}`;
+    const end   = new Date(start.getTime() + 3 * 60 * 60 * 1000); // +3h
+    const toICS = (d) => d.toISOString().replace(/[-:]/g, "").replace(".000Z", "Z");
+    const text  = encodeURIComponent(`Tennessee ${home ? "vs" : "at"} ${opponent}`);
+    return `https://www.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${toICS(start)}/${toICS(end)}`;
+  }
+
+  function deriveStatus(next, when) {
+    // Accept provided status; otherwise infer from time/completed flag
+    const raw = (next?.status || "").toLowerCase();
+    if (raw) return raw;
+    if (next?.completed) return "final";
+    if (when instanceof Date && !isNaN(when)) {
+      const now = Date.now();
+      if (now < +when) return "scheduled";
+      return "in_progress";
+    }
+    return "scheduled";
   }
 
   async function paintNext() {
     const next = await fetchJSON(PATH_NEXT);
 
-    // default UI states
+    // defaults
     setScoreDot("red");
     setScoreMessage("No game in progress.");
     setNextLineAndVenue("No upcoming game found.", "");
     setAllHref("#addToCalendar, .addToCalendar", "#");
+    setCountdownTarget(null); // will re-drive if we get a valid date below
 
-    // JSON missing/null: keep countdown fallback from data-kickoff
-    if (!next) {
-      setCountdownTarget(null);
-      return;
-    }
+    if (!next) return; // keep the fallback countdown-from-HTML (if any)
 
-    // Extract fields (defensive)
-    const opponent = next.opponent || "";
-    const home = next.home === true;
-    const dateStr = next.date || null;
-    const when = dateStr ? new Date(dateStr) : null;
-    const tv = next.tv || "";
-    const venue =
-      (next.venue_name ? next.venue_name : "") +
-      (next.venue_city || next.venue_state
-        ? ` — ${[next.venue_city, next.venue_state].filter(Boolean).join(", ")}`
-        : "");
+    // Defensive field extraction
+    const home    = next.home === true || next.is_home === true;         // <— robust
+    const dateStr = next.date || next.start_date || next.startDate || next.kickoff || null;
+    const when    = dateStr ? new Date(dateStr) : null;
+    const tv      = next.tv || next.broadcast || "";
+    const opponent = next.opponent || next.opp || "";
 
-    // Hero/next lines
+    const venue = [
+      (next.venue_name || next.venue || ""),
+      [next.venue_city, next.venue_state].filter(Boolean).join(", "),
+    ]
+      .filter(Boolean)
+      .join(" — ");
+
+    // Top/bottom "next" line + countdown
     if (when && !isNaN(when)) {
       const vsat = home ? "vs" : "at";
       const line = `${fmtDate(when)} • ${vsat} ${opponent}${tv ? ` • ${tv}` : ""}`;
       setNextLineAndVenue(line, venue);
-      setCountdownTarget(when); // drive countdown from CFBD data
+      setCountdownTarget(when);
     } else {
       setNextLineAndVenue("No upcoming game found.", "");
-      setCountdownTarget(null); // fallback to HTML data-kickoff if present
     }
 
     // Calendar link (both instances)
@@ -428,25 +431,24 @@
     setAllHref("#addToCalendar, .addToCalendar", calHref);
 
     // Live score box
-    const status = (next.status || "").toLowerCase(); // e.g., 'in_progress', 'final', 'scheduled'
+    const status = deriveStatus(next, when); // "in_progress" | "final" | "scheduled" | ...
     if (status === "in_progress") {
-      // Try to compute from scoreboard if present
       const hp = Number(next.home_points ?? NaN);
       const ap = Number(next.away_points ?? NaN);
       const us = home ? hp : ap;
       const them = home ? ap : hp;
-
-      let line = "Game in progress.";
-      if (Number.isFinite(us) && Number.isFinite(them)) {
-        line = `${us} – ${them} ${home ? "vs" : "at"} ${opponent}`;
-      }
+      const scoreLine =
+        Number.isFinite(us) && Number.isFinite(them)
+          ? `${us} – ${them} ${home ? "vs" : "at"} ${opponent}`
+          : `Game in progress.`;
       setScoreDot("green");
-      setScoreMessage(line);
+      setScoreMessage(scoreLine);
     } else if (status === "final") {
       setScoreDot("red");
-      setScoreMessage("Final");
-    } else if (status) {
-      // scheduled / pre / etc.
+      const res = resultText(next);
+      setScoreMessage(res && res !== "—" ? `Final: ${res}` : "Final");
+    } else {
+      // scheduled / pre
       setScoreDot("yellow");
       setScoreMessage("Not started.");
     }
@@ -460,10 +462,15 @@
     initGuideAccordion();
     initScheduleCollapse();
 
-    // Show a countdown from HTML attribute until next.json arrives
+    // Start with any HTML-provided countdown target.
     setCountdownTarget(null);
 
-    // Paint all dynamic sections
-    await Promise.all([paintNext(), paintSchedule(), paintSpecials(), paintPlacesList()]);
+    // Paint dynamic sections
+    await Promise.all([
+      paintNext(),
+      paintSchedule(),
+      paintSpecials(),
+      paintPlacesList(),
+    ]);
   });
 })();
