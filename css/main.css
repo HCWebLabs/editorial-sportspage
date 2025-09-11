@@ -46,7 +46,7 @@ html[data-font="B"]{
   --head-w:400;
 }
 
-/* Gradient icon accent on select cards */
+/* Gradient icons in selected cards */
 #fanNews, #tailgateTips, #visitingFans, #transport, #merchDeals, #socialFeed{
   --fa-icon-grad: linear-gradient(180deg, #ffb347, #ff8a00);
 }
@@ -73,10 +73,10 @@ html[data-font="B"]{
 *{ box-sizing:border-box } html,body{ height:100% }
 body{ margin:0; color:var(--ink); background:var(--bg-0); font:500 16px/1.45 var(--font-body) }
 
-/* BACKGROUND IMAGE — lives in repo root; CSS is in /css/ */
+/* BACKGROUND IMAGE — external source (feel free to swap to ../tn-metallic-1.jpg if you want local) */
 body::before{
   content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
-  background:url("../tn-metallic-1.jpg") center/cover no-repeat; /* ✔ correct relative path */
+  background:url("https://heather-cooper.com/staging/7584/wp-content/uploads/2025/09/tn-metallic-1.jpg") center/cover no-repeat;
   opacity:1; mix-blend-mode:normal;
 }
 
@@ -89,10 +89,7 @@ h3{ font-size:clamp(1.05rem,.8vw + .8rem,1.3rem) }
 .wrap{ width:min(1200px, 100% - 32px); margin-inline:auto; }
 .container{ max-width:1200px; margin-inline:auto; padding-inline:16px; }
 
-.sr-only{
-  position:absolute!important; width:1px!important; height:1px!important; padding:0!important;
-  margin:-1px!important; overflow:hidden!important; clip:rect(0,0,0,0)!important; white-space:nowrap!important; border:0!important
-}
+.sr-only{ position:absolute!important; width:1px!important; height:1px!important; padding:0!important; margin:-1px!important; overflow:hidden!important; clip:rect(0,0,0,0)!important; white-space:nowrap!important; border:0!important }
 [hidden]{ display:none!important }
 .mt-1{ margin-top:.5rem }
 .bullets{ margin:0; padding-left:1.1rem } .bullets li{ margin:.25rem 0 }
@@ -262,7 +259,6 @@ a:focus-visible, button:focus-visible, .btn:focus-visible, input:focus-visible{
 }
 
 @media (prefers-reduced-motion:reduce){
-  #guideExtra.is-collapsible{ transition:none }
   .strip .card{ transition:none }
   .dot[data-state="green"]{ animation:none; box-shadow:none }
 }
