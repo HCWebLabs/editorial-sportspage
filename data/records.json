@@ -1,0 +1,53 @@
+[
+  {
+    "year": 2025,
+    "teamId": 2633,
+    "team": "Tennessee",
+    "classification": "fbs",
+    "conference": "SEC",
+    "division": "",
+    "expectedWins": 1.9340354800224304,
+    "total": {
+      "games": 2,
+      "wins": 2,
+      "losses": 0,
+      "ties": 0
+    },
+    "conferenceGames": {
+      "games": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0
+    },
+    "homeGames": {
+      "games": 1,
+      "wins": 1,
+      "losses": 0,
+      "ties": 0
+    },
+    "awayGames": {
+      "games": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0
+    },
+    "neutralSiteGames": {
+      "games": 1,
+      "wins": 1,
+      "losses": 0,
+      "ties": 0
+    },
+    "regularSeason": {
+      "games": 2,
+      "wins": 2,
+      "losses": 0,
+      "ties": 0
+    },
+    "postseason": {
+      "games": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0
+    }
+  }
+]
