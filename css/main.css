@@ -212,7 +212,7 @@ h3{ font-size:clamp(1.05rem,.8vw + .8rem,1.3rem) }
 .hero-mini{ display:grid; grid-template-columns:1fr auto; gap:12px; align-items:center }
 .hero-mini .hero-cta{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center }
 .hero-mini p{ margin:0; color:var(--card-ink-mute) }
-@media (max-width:700px){ .hero-mini{ grid-template-columns:1fr } }
+@media (max-width:1200px){ .hero-mini{ grid-template-columns:1fr } }
 
 /* Collapsible helpers */
 #guideExtra.is-collapsible{ overflow:hidden; max-height:0; transition:max-height .28s ease }
