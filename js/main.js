@@ -1,30 +1,29 @@
-/* Enable JS styles */
+// Enable JS styles
 document.documentElement.classList.remove('no-js');
 
-/* Shorthand */
+// Shorthands
 const $  = (sel, root=document) => root.querySelector(sel);
 const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
-/* ---- Data paths (relative so GH Pages project sites work) ---- */
-const PATH_NEXT     = 'data/next.json';
-const PATH_SCHEDULE = 'data/schedule.json';
-const PATH_PLACES   = 'data/places.json';
-const PATH_SPECIALS = 'data/specials.json';
+/* ------------------------------------------------------------------
+   Data paths: robust for root OR GH Pages project sites.
+   new URL('data/next.json', location.href).href yields the right path.
+------------------------------------------------------------------- */
+const PATH_NEXT     = new URL('data/next.json',     location.href).href;
+const PATH_SCHEDULE = new URL('data/schedule.json', location.href).href;
+const PATH_PLACES   = new URL('data/places.json',   location.href).href;
+const PATH_SPECIALS = new URL('data/specials.json', location.href).href;
 
 /* Utils */
-function fmtDate(d){
-  return new Date(d).toLocaleString([], { weekday:'short', month:'short', day:'numeric', hour:'numeric', minute:'2-digit' });
-}
+const escapeHtml = (s='') => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtDate = d => new Date(d).toLocaleString([], { weekday:'short', month:'short', day:'numeric', hour:'numeric', minute:'2-digit' });
 function setUpdated(){
   const t = new Date().toLocaleString([], { dateStyle:'medium', timeStyle:'short' });
   $('#updatedAt')?.replaceChildren(t);
   $('#updatedAt2')?.replaceChildren(t);
 }
-function escapeHtml(s=''){
-  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
 
-/* Countdown (header) */
+/* Countdown */
 function startHeaderCountdown(){
   const wrap = $('#countdown'); if(!wrap) return;
   const iso  = wrap.dataset.kickoff; if(!iso) return;
@@ -54,7 +53,7 @@ function wireNavToggle(){
   });
 }
 
-/* GUIDE accordion */
+/* GUIDE accordion — robust + accessible */
 function wireGuideMore(){
   if (window.__TN_WIRED_GUIDE__) return;
   window.__TN_WIRED_GUIDE__ = true;
@@ -221,8 +220,8 @@ async function paintSpecials(){
   }catch(e){ console.error('specials error', e); }
 }
 
-/* Upcoming + status dot + calendar */
-function toICSDate(d){ return new Date(d).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z$/,'Z'); }
+/* Upcoming + status + calendar helpers */
+const toICSDate = d => new Date(d).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z$/,'Z');
 function buildICS({title, start, end, location='', description=''}) {
   const uid = 'tn-gameday-' + Date.now() + '@example';
   return [
@@ -318,6 +317,13 @@ async function paintUpcoming(){
 
   await paintUpcoming();
   await Promise.all([ paintSchedule(), paintSpecials(), paintPlacesList() ]);
+
+  // Weather widget (safe even if included once)
+  (function(d,s,id){
+    if(d.getElementById(id)) return;
+    var js=d.createElement(s); js.id=id; js.src='https://weatherwidget.io/js/widget.min.js';
+    d.getElementsByTagName('head')[0].appendChild(js);
+  }(document,'script','weatherwidget-io-js'));
 
   setInterval(setUpdated, 60*1000);
 })();
