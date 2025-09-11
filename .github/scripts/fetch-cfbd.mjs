@@ -1,94 +1,133 @@
-// Minimal, dependency-free CFBD puller for Node 20+
-import { mkdir, writeFile } from "node:fs/promises";
+// Node 20+
+// Fetch Tennessee Volunteers 2025 REGULAR season schedule and write /data.
+// Writes: data/schedule.json, data/next.json
 
-const CFBD_KEY = process.env.CFBD_API_KEY || process.env.CFBD_KEY;
-if (!CFBD_KEY) {
-  console.error("Missing CFBD_API_KEY secret.");
+import fs from "node:fs/promises";
+import path from "node:path";
+
+const CFBD = process.env.CFBD_API_KEY;
+const TEAM = process.env.TEAM || "Tennessee";        // CFBD uses school name: "Tennessee"
+const YEAR = parseInt(process.env.YEAR || "2025", 10);
+if (!CFBD) {
+  console.error("Missing CFBD_API_KEY");
   process.exit(1);
 }
 
-const TEAM = process.env.TEAM || "Tennessee";
-const YEAR = Number(process.env.YEAR) || new Date().getUTCFullYear();
+const BASE = "https://api.collegefootballdata.com";
+const headers = { Authorization: `Bearer ${CFBD}` };
 
-const headers = { Authorization: `Bearer ${CFBD_KEY}` };
-const base = "https://api.collegefootballdata.com";
-const url  = `${base}/games?year=${YEAR}&seasonType=both&team=${encodeURIComponent(TEAM)}`;
-
-async function getJson(u) {
-  const r = await fetch(u, { headers });
+async function get(endpoint, params = {}) {
+  const url = new URL(BASE + endpoint);
+  for (const [k, v] of Object.entries(params)) {
+    if (v !== undefined && v !== null && v !== "") url.searchParams.set(k, String(v));
+  }
+  const r = await fetch(url, { headers });
   if (!r.ok) {
-    const text = await r.text().catch(() => "");
-    throw new Error(`CFBD ${r.status} — ${text || r.statusText}`);
+    const txt = await r.text().catch(() => "");
+    throw new Error(`CFBD ${endpoint} ${r.status}: ${txt.slice(0, 200)}`);
   }
   return r.json();
 }
 
-const toIso = (v) => {
-  if (!v) return null;
-  const t = new Date(v);
-  return Number.isNaN(+t) ? null : t.toISOString();
-};
-
+// Normalize a CFBD game row to the fields our site expects
 function mapGame(g) {
   const isHome = g.home_team === TEAM;
-  const opp = isHome ? g.away_team : g.home_team;
+  const opponent = isHome ? g.away_team : g.home_team;
+  const dateISO = g.start_date || g.startDate || g.game_date || g.startTime || g.date;
 
-  // CFBD can return start_datetime or start_date; prefer full datetime
-  const iso = toIso(g.start_datetime) || toIso(g.start_date);
-
-  let result = "—";
-  if (g.completed &&
-      Number.isFinite(g.home_points) &&
-      Number.isFinite(g.away_points)) {
-    const ours = isHome ? g.home_points : g.away_points;
-    const them = isHome ? g.away_points : g.home_points;
-    result = `${ours}-${them}${g.conference_game ? " (conf)" : ""}`;
-  }
-
-  const tv = g.tv || g.broadcast || g.media || "TBD";
-  const venue = g.venue?.name || g.venue || g.venue_name || "";
+  // venue fields vary a bit across CFBD payloads
+  const venueName = g.venue?.name || g.venue || "";
+  const venueCity = g.venue?.city || g.venue_city || "";
+  const venueState = g.venue?.state || g.venue_state || "";
 
   return {
-    date: iso || g.start_date || null,
-    opponent: opp || "TBD",
+    date: dateISO,                       // ISO string
+    opponent,
     home: isHome,
-    tv,
-    result,
-    _venue: venue, // internal; next.json will use a cleaner field
+    tv: g.tv || g.broadcast || "",
+    home_points: g.home_points ?? null,
+    away_points: g.away_points ?? null,
+    completed: !!g.completed,
+    conference_game: !!g.conference_game,
+    neutral_site: !!g.neutral_site,
+    venue_name: venueName,
+    venue_city: venueCity,
+    venue_state: venueState,
   };
 }
 
-function pickNext(games) {
+function computeStatus(row) {
+  if (row.completed) return "final";
   const now = Date.now();
-  const future = games
-    .map(g => ({ g, t: g.date ? Date.parse(g.date) : NaN }))
-    .filter(x => Number.isFinite(x.t) && x.t >= now)
-    .sort((a,b) => a.t - b.t);
-  if (!future.length) return null;
-
-  const n = future[0].g;
-  return {
-    date: n.date,
-    opponent: n.opponent,
-    home: n.home,
-    venue: n._venue || "",
-  };
+  const t = Date.parse(row.date);
+  if (Number.isFinite(t)) {
+    // treat within ~5h window as "in_progress" if any points present
+    if (now >= t - 30 * 60 * 1000 && now <= t + 5 * 60 * 60 * 1000) {
+      if (row.home_points != null || row.away_points != null) return "in_progress";
+    }
+    if (now < t) return "scheduled";
+  }
+  return "scheduled";
 }
 
-(async () => {
-  const raw = await getJson(url);
-  const mapped = raw.map(mapGame)
-                    .filter(r => r.opponent && r.date);
+function byDateAsc(a, b) {
+  return new Date(a.date) - new Date(b.date);
+}
+function byDateDesc(a, b) {
+  return new Date(b.date) - new Date(a.date);
+}
 
-  const next = pickNext(mapped);
+async function main() {
+  // 1) REGULAR season only
+  const games = await get("/games", {
+    year: YEAR,
+    seasonType: "regular",
+    team: TEAM,
+  });
 
-  await mkdir("data", { recursive: true });
-  await writeFile("data/schedule.json", JSON.stringify(mapped, null, 2) + "\n");
-  await writeFile("data/next.json", JSON.stringify(next, null, 2) + "\n");
+  // Some CFBD mirrors can include bowl/post-season if you don't filter; we did.
+  // Extra safety: only keep rows where our team actually appears.
+  const rows = games
+    .filter((g) => g.home_team === TEAM || g.away_team === TEAM)
+    .map(mapGame)
+    .sort(byDateAsc);
 
-  console.log(`Wrote ${mapped.length} games -> data/schedule.json`);
-  console.log(`Wrote next game -> data/next.json`, next);
-})().catch(err => {
-  console.error(err);
+  // Write /data/schedule.json
+  const dataDir = path.resolve("data");
+  await fs.mkdir(dataDir, { recursive: true });
+  const schedPath = path.join(dataDir, "schedule.json");
+  const schedJSON = JSON.stringify(rows, null, 2) + "\n";
+  await fs.writeFile(schedPath, schedJSON, "utf8");
+
+  // 2) Determine "next" object (in_progress > upcoming > last_final)
+  const now = Date.now();
+  const inProgress = rows.find(
+    (r) => computeStatus(r) === "in_progress"
+  );
+  const upcoming = rows
+    .filter((r) => !r.completed && Date.parse(r.date) > now)
+    .sort(byDateAsc)[0];
+  const lastFinal = rows
+    .filter((r) => r.completed)
+    .sort(byDateDesc)[0];
+
+  let next = null;
+  if (inProgress) next = { ...inProgress, status: "in_progress" };
+  else if (upcoming) next = { ...upcoming, status: "scheduled" };
+  else if (lastFinal) next = { ...lastFinal, status: "final" };
+
+  const nextPath = path.join(dataDir, "next.json");
+  const nextJSON = JSON.stringify(next ?? null, null, 2) + "\n";
+  await fs.writeFile(nextPath, nextJSON, "utf8");
+
+  console.log(
+    `Wrote ${rows.length} games to /data/schedule.json and ${
+      next ? "1" : "null"
+    } to /data/next.json`
+  );
+}
+
+main().catch((e) => {
+  console.error(e);
   process.exit(1);
 });
