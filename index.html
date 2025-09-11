@@ -8,18 +8,15 @@
   <meta name="theme-color" content="#ff8a00" />
   <meta name="color-scheme" content="light" />
 
-  <!-- Preconnects -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
-
-  <!-- Fonts + Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=League+Spartan:wght@600;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-  <!-- Site CSS -->
-  <link rel="stylesheet" href="css/main.css">
+  <!-- Our CSS (version param to break caches) -->
+  <link rel="stylesheet" href="css/main.css?v=2025-09-10a">
 </head>
 
 <body>
@@ -140,6 +137,7 @@
                 <tbody id="schedRows"></tbody>
               </table>
               <p id="schedHelp" class="small muted">Times/TV subject to change. Check official sources day-of.</p>
+
               <button id="schedMore" class="btn btn-sm" type="button" aria-expanded="false" aria-controls="schedRows">
                 <i class="fa-solid fa-angles-down"></i> See more
               </button>
@@ -387,7 +385,17 @@
     </div>
   </footer>
 
-  <!-- Site JS -->
-  <script defer src="js/main.js"></script>
+  <!-- Our JS (version param to break caches) -->
+  <script defer src="js/main.js?v=2025-09-10a"></script>
+
+  <!-- Weather widget bootstrap -->
+  <script>
+    !(function(d,s,id){
+      if(d.getElementById(id)) return;
+      var js=d.createElement(s); js.id=id;
+      js.src='https://weatherwidget.io/js/widget.min.js';
+      d.getElementsByTagName('head')[0].appendChild(js);
+    }(document,'script','weatherwidget-io-js'));
+  </script>
 </body>
 </html>
