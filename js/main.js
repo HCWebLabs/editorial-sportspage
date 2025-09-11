@@ -8,10 +8,10 @@ const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
 /* ==== PATHS (repo lives at /editorial-sportspage) ==== */
 const BASE            = '/editorial-sportspage';
-const PATH_NEXT       = `${BASE}/data/next.json`;
-const PATH_SCHEDULE   = `${BASE}/data/schedule.json`;
-const PATH_PLACES     = `${BASE}/data/places.json`;
-const PATH_SPECIALS   = `${BASE}/data/specials.json`;
+const PATH_NEXT       = `${BASE}data/next.json`;
+const PATH_SCHEDULE   = `${BASE}data/schedule.json`;
+const PATH_PLACES     = `${BASE}data/places.json`;
+const PATH_SPECIALS   = `${BASE}data/specials.json`;
 
 /* ==== helpers ==== */
 function fmtDate(d){
