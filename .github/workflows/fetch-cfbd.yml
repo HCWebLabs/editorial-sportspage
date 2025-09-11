@@ -3,7 +3,7 @@ name: Fetch CFBD
 on:
   workflow_dispatch: {}
   schedule:
-    - cron: "0 */6 * * *"  # every 6 hours; adjust as you like
+    - cron: "0 */6 * * *"  # every 6 hours
 
 permissions:
   contents: write
@@ -15,7 +15,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          persist-credentials: true
           fetch-depth: 0
 
       - name: Setup Node
@@ -23,10 +22,10 @@ jobs:
         with:
           node-version: 20
 
-      - name: Fetch CFBD + write data
+      - name: Fetch CFBD & write /data
         run: node .github/scripts/fetch-cfbd.mjs
         env:
-          CFBD_KEY: ${{ secrets.CFBD_KEY }}
+          CFBD_API_KEY: ${{ secrets.CFBD_API_KEY }}
           TEAM: Tennessee
           YEAR: 2025
 
@@ -35,7 +34,11 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          # Only commit when data actually changed
+          # Show changes for debugging
+          git status --porcelain
+          ls -la data || true
+
+          # Only commit if something in /data changed
           if git status --porcelain data | grep .; then
             git add -A data
             git commit -m "chore(data): update via CFBD [skip ci]"
@@ -43,3 +46,4 @@ jobs:
           else
             echo "No changes"
           fi
+
