@@ -8,12 +8,12 @@ const BASE = window.location.pathname.includes("/editorial-sportspage/")
   : "./";
 
 const PATH = {
-  NEXT:       BASE + "/data/next.json",
-  SCHEDULE:   BASE + "/data/schedule.json",
-  SPECIALS:   BASE + "/data/specials.json",
-  PLACES:     BASE + "/data/places.json",
-  META:       BASE + "/data/meta.json",
-  SCOREBOARD: BASE + "/data/scoreboard.json"
+  NEXT:       BASE + "../data/next.json",
+  SCHEDULE:   BASE + "../data/schedule.json",
+  SPECIALS:   BASE + "../data/specials.json",
+  PLACES:     BASE + "../data/places.json",
+  META:       BASE + "../data/meta.json",
+  SCOREBOARD: BASE + "../data/scoreboard.json"
 };
 
 /* ============== tiny utils ============== */
