@@ -1,0 +1,14 @@
+[
+  {
+    "id": 401621234,
+    "week": 1,
+    "start_time": "2025-08-30T23:00:00Z",
+    "home_team": "Tennessee",
+    "away_team": "Opponent",
+    "home_points": 38,
+    "away_points": 13,
+    "tv": "ESPN",
+    "venue": "Neyland Stadium",
+    "neutral_site": false
+  }
+]
