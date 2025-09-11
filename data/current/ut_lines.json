@@ -1,0 +1,8 @@
+[
+  {
+    "provider": "consensus",
+    "homeTeam": "Tennessee",
+    "awayTeam": "Opponent",
+    "lines": [ { "provider": "consensus", "spread": -6.5, "overUnder": 55.5 } ]
+  }
+]
