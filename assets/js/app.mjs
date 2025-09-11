@@ -1,29 +1,31 @@
 // assets/js/app.mjs
+// Gameday Hub front-end (ES Modules)
 
-/* =========================
-   BASE PATHS (project-sites safe)
-   ========================= */
-const BASE = new URL("../..", import.meta.url).pathname.replace(/\/$/, ""); // e.g. "/editorial-sportspage"
+// --- Prove JS is running & remove .no-js class ---
+console.debug("[APP] boot");
+document.documentElement.classList.remove("no-js");
+
+// ---------- PATHS (project-pages safe) ----------
+const BASE = new URL("../..", import.meta.url).pathname.replace(/\/$/, "");
+// e.g. "/editorial-sportspage" on project pages, "" at domain root.
 const DATA = `${BASE}/data`;
 console.debug("[APP] DATA base =", DATA);
 
-/* =========================
-   Tiny DOM helpers + fetch
-   ========================= */
+// ---------- DOM helpers ----------
 const $  = (sel) => document.querySelector(sel);
 const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 
+// Fetch JSON with cache-busting & friendly errors
 async function j(rel) {
   const url = `${DATA}/${rel}?t=${Date.now()}`;
-  console.debug("[APP] fetch", url);
   const r = await fetch(url);
   if (!r.ok) throw new Error(`${r.status} ${rel}`);
   return r.json();
 }
 
-/* =========================
+/* ===============================================
    NAV
-   ========================= */
+================================================= */
 function initNav() {
   const header = $(".site-header");
   const btn = $(".nav-toggle");
@@ -44,9 +46,9 @@ function initNav() {
   });
 }
 
-/* =========================
+/* ===============================================
    COUNTDOWN (driven by next kickoff)
-   ========================= */
+================================================= */
 let setCountdownKickoff = () => {};
 function initCountdown() {
   const el = $("#countdown");
@@ -56,7 +58,7 @@ function initCountdown() {
         minEl  = $("#cd-min"),  secEl = $("#cd-sec");
   if (!daysEl || !hrsEl || !minEl || !secEl) return;
 
-  let t0 = null; // ms
+  let t0 = null; // timestamp ms
 
   const tick = () => {
     if (!t0) return;
@@ -79,14 +81,13 @@ function initCountdown() {
     tick();
   };
 
-  // initial tick and interval
   tick();
   setInterval(tick, 1000);
 }
 
-/* =========================
-   GUIDE accordion (2nd row only)
-   ========================= */
+/* ===============================================
+   GUIDE accordion (simple 2nd row)
+================================================= */
 function initGuideAccordion() {
   const extra = $("#guideExtra");
   const btn = $("#guideMore");
@@ -109,13 +110,13 @@ function initGuideAccordion() {
   btn.innerHTML = `<i class="fa-solid fa-angles-down"></i> See more`;
 }
 
-/* =========================
+/* ===============================================
    Data helpers (tolerant to CFBD)
-   ========================= */
-// Choose a kickoff-ish field
+================================================= */
+// kickoff field: may be full ISO or date-only
 function pickIso(g) { return g?.start_time ?? g?.start_date ?? g?.date ?? g?.kickoff ?? null; }
 
-// Friendly formatting; supports date-only; returns "TBA" when unknown
+// format date/time; show date-only nicely; "TBA" when unknown
 function formatTimeLike(iso) {
   if (!iso || /^(TBA|TBD|N\/A)$/i.test(String(iso))) return "TBA";
   const hasTime = /T\d{2}:\d{2}/.test(iso);
@@ -126,6 +127,15 @@ function formatTimeLike(iso) {
     ? { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }
     : { month: "short", day: "numeric" };
   return dt.toLocaleString([], opts);
+}
+
+// normalize to a real ISO for countdown (use ~noon ET if date-only)
+function normalizeKickoffForCountdown(iso) {
+  if (!iso || /^(TBA|TBD|N\/A)$/i.test(String(iso))) return null;
+  const hasTime = /T\d{2}:\d{2}/.test(iso);
+  const s = hasTime ? iso : `${iso}T16:00:00Z`; // ~noon Eastern ≈ 16:00Z
+  const t = new Date(s).getTime();
+  return Number.isNaN(t) ? null : s;
 }
 
 function teamName(x) { return x?.school ?? x?.team ?? x?.name ?? x ?? ""; }
@@ -154,27 +164,26 @@ function resultForRow(g) {
 }
 function isFuture(iso) { return iso && new Date(iso).getTime() > Date.now(); }
 
-/* Quick fun stats from schedule results */
 function computeTeamStats(sched) {
-  let w = 0, l = 0, t = 0, pf = 0, pa = 0, games = 0;
-  sched.forEach(g => {
+  let w=0,l=0,t=0,pf=0,pa=0,games=0;
+  for (const g of sched) {
     const hp = g?.home_points ?? g?.homePoints;
     const ap = g?.away_points ?? g?.awayPoints;
-    if (hp == null && ap == null) return;
+    if (hp == null && ap == null) continue;
     const usAway = /tennessee/i.test(awayTeam(g) || "");
     const ut = usAway ? ap : hp;
     const opp = usAway ? hp : ap;
-    games++; pf += (ut ?? 0); pa += (opp ?? 0);
+    games++; pf += ut ?? 0; pa += opp ?? 0;
     if (ut > opp) w++; else if (ut < opp) l++; else t++;
-  });
-  const ppg  = games ? (pf / games) : 0;
-  const papg = games ? (pa / games) : 0;
-  return { w, l, t, ppg: +ppg.toFixed(1), papg: +papg.toFixed(1) };
+  }
+  const ppg = games ? +(pf/games).toFixed(1) : 0;
+  const papg = games ? +(pa/games).toFixed(1) : 0;
+  return { w, l, t, ppg, papg };
 }
 
-/* =========================
-   Dots + mirrors for Score Box
-   ========================= */
+/* ===============================================
+   SCOREBOX helpers
+================================================= */
 function setDotState(el, state) { if (el) el.setAttribute("data-state", state); } // red|yellow|green
 function setBothScoreboxes(text, state = "red") {
   $("#scoreMsg") && ($("#scoreMsg").textContent = text);
@@ -182,8 +191,6 @@ function setBothScoreboxes(text, state = "red") {
   $$(".scoreMsg").forEach(n => n.textContent = text);
   $$(".scoreDot").forEach(n => setDotState(n, state));
 }
-
-/* Decide dot state by status/time */
 function dotForTiming(status, iso) {
   const s = (status || "").toLowerCase();
   if (s.includes("in progress") || s.includes("1st") || s.includes("2nd") || s.includes("3rd") || s.includes("4th")) return "green";
@@ -191,15 +198,15 @@ function dotForTiming(status, iso) {
   if (iso) {
     const start = new Date(iso).getTime();
     const now = Date.now();
-    if (now >= start && now <= start + 5 * 3600 * 1000) return "green";   // game window
-    if (start - now <= 72 * 3600 * 1000) return "yellow";                 // within ~3 days
+    if (now >= start && now <= start + 5*3600*1000) return "green"; // game window
+    if (start - now <= 72*3600*1000) return "yellow";               // within ~3 days
   }
-  return "red"; // idle
+  return "red";
 }
 
-/* =========================
+/* ===============================================
    SCHEDULE (3-row collapsible)
-   ========================= */
+================================================= */
 async function buildSchedule() {
   const table = $("#schedTable");
   if (!table) return;
@@ -208,10 +215,9 @@ async function buildSchedule() {
   const sched = await j("ut_2025_schedule.json").catch(() => []);
 
   $("#updatedAt2") && ($("#updatedAt2").textContent =
-    (meta.lastUpdated ? meta.lastUpdated.replace("T", " ").replace("Z", "") : "—"));
+    (meta.lastUpdated ? meta.lastUpdated.replace("T"," ").replace("Z","") : "—"));
 
-  // Sort by kickoff if present, else by week
-  sched.sort((a, b) => {
+  sched.sort((a,b) => {
     const da = pickIso(a), db = pickIso(b);
     if (da && db) return new Date(da) - new Date(db);
     return (a.week || 0) - (b.week || 0);
@@ -230,7 +236,6 @@ async function buildSchedule() {
     </tr>`;
   }).join("");
 
-  // collapsed by default (show 3)
   table.classList.add("table-collapsed");
   const wrap = table.closest(".table-wrap");
   if (wrap) wrap.setAttribute("data-collapsed", "true");
@@ -254,39 +259,25 @@ async function buildSchedule() {
   }
 }
 
-/* =========================
-   TOP STRIP (scorebox, next, rank, odds, fun stats)
-   – uses ut_game.json when present
-   – falls back to next future game from schedule
-   – drives the countdown + dot color
-   ========================= */
+/* ===============================================
+   TOP STRIP (scorebox, next game, ranks, odds, stats)
+   – picks next game from schedule (no ut_game.json needed)
+   – drives countdown & colored dot
+================================================= */
 async function buildTopStrip() {
   const meta  = await j("meta_current.json").catch(() => ({ week: "—" }));
   const ranks = await j("current/rankings.json").catch(() => []);
   const lines = await j("current/ut_lines.json").catch(() => []);
-  const sched  = await j("ut_2025_schedule.json").catch(() => []);
+  const sched = await j("ut_2025_schedule.json").catch(() => []);
 
-  // choose next future game (prefer one with known opponent)
-  const future = sched.map(g => ({ g, iso: (g.start_time || (g.start_date && `${g.start_date}T00:00:00Z`)) }))
-                      .filter(x => x.iso && new Date(x.iso).getTime() > Date.now())
-                      .sort((a,b) => new Date(a.iso) - new Date(b.iso));
+  // choose next future game (prefer rows with a named opponent)
+  const future = sched
+    .map(g => ({ g, iso: pickIso(g) && (pickIso(g).includes("T") ? pickIso(g) : `${pickIso(g)}T00:00:00Z`) }))
+    .filter(x => x.iso && new Date(x.iso).getTime() > Date.now())
+    .sort((a,b) => new Date(a.iso) - new Date(b.iso));
   const game = (future.find(x => !!(x.g.home_team && x.g.away_team)) || future[0] || {}).g;
-  // ... (rest of your function unchanged)
-}
 
-  // Fallback: choose next future game, prefer ones with a named opponent
-  if (!game || !game.id) {
-    const future = sched
-      .map(g => ({ g, iso: pickIso(g) }))
-      .filter(x => isFuture(x.iso));
-    let next = future
-      .filter(x => !!oppForUT(x.g))
-      .sort((a, b) => new Date(a.iso) - new Date(b.iso))[0];
-    if (!next) next = future.sort((a, b) => new Date(a.iso) - new Date(b.iso))[0];
-    if (next) game = next.g;
-  }
-
-  // Fun stats (record + PPG/PAPG)
+  // fun stats from played games
   const stats = computeTeamStats(sched);
 
   if (!game) {
@@ -306,10 +297,10 @@ async function buildTopStrip() {
   const state = dotForTiming(status, iso);
   setBothScoreboxes(msg, state);
 
-  // Drive the countdown from this kickoff
-  if (iso) setCountdownKickoff(iso);
+  // drive countdown from schedule
+  setCountdownKickoff(normalizeKickoffForCountdown(iso));
 
-  // Next/current game panel
+  // next/current game panel
   const who   = oppForUT(game);
   const venue = game?.venue || game?.venue_name || "";
   const title = `Week ${meta.week ?? ""}: Tennessee vs ${who}`.replace(/Week undefined:\s?/, "");
@@ -319,14 +310,18 @@ async function buildTopStrip() {
   $("#nextVenue") && ($("#nextVenue").textContent = venue);
   $(".nextVenue") && ($(".nextVenue").textContent = venue);
 
-  const calUrl = iso
-    ? `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(`Tennessee vs ${who}`)}&dates=${(() => {
-        const start = new Date(iso);
-        const end   = new Date(start.getTime() + 3 * 3600 * 1000);
-        const fmt = d => d.toISOString().replace(/[-:]|\.\d{3}/g, "");
-        return `${fmt(start)}/${fmt(end)}`;
-      })()}&location=${encodeURIComponent(venue)}&details=${encodeURIComponent("Unofficial Gameday Hub")}`
-    : "#";
+  const calUrl = (() => {
+    const startIso = normalizeKickoffForCountdown(iso);
+    if (!startIso) return "#";
+    const start = new Date(startIso);
+    const end   = new Date(start.getTime() + 3 * 3600 * 1000);
+    const fmt   = d => d.toISOString().replace(/[-:]|\.\d{3}/g, "");
+    return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${
+      encodeURIComponent(`Tennessee vs ${who}`)
+    }&dates=${fmt(start)}/${fmt(end)}&location=${
+      encodeURIComponent(venue)
+    }&details=${encodeURIComponent("Unofficial Gameday Hub")}`;
+  })();
   $("#addToCalendar") && ($("#addToCalendar").href = calUrl);
   $$(".addToCalendar").forEach(a => (a.href = calUrl));
 
@@ -337,7 +332,7 @@ async function buildTopStrip() {
     const arr = obj?.ranks || obj?.teams || [];
     const hit = arr.find(x => /tennessee/i.test(teamName(x?.school ?? x?.team ?? x)));
     return hit?.rank ?? "NR";
-  };
+    };
   const rankLine = `AP: ${findRank(ap)}  •  Coaches: ${findRank(coaches)}`;
   $("#rankLine") && ($("#rankLine").textContent = rankLine);
   $$(".rankLine").forEach(n => n.textContent = rankLine);
@@ -356,9 +351,9 @@ async function buildTopStrip() {
   $("#oddsLine") && ($("#oddsLine").textContent = `${oddsText}  —  ${statsText}`);
 }
 
-/* =========================
+/* ===============================================
    PLACES (optional)
-   ========================= */
+================================================= */
 async function buildPlaces() {
   const list = $("#placesList");
   const empty = $("#placesEmpty");
@@ -373,9 +368,9 @@ async function buildPlaces() {
   ).join("");
 }
 
-/* =========================
+/* ===============================================
    INIT
-   ========================= */
+================================================= */
 async function init() {
   initNav();
   initCountdown();
