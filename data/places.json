@@ -3,7 +3,8 @@
     "name": "Neyland Stadium",
     "formatted_address": "1600 Phillip Fulmer Way, Knoxville, TN",
     "lat": 35.955,
-    "lng": -83.925
+    "lng": -83.925,
+    "maps_url": "https://maps.google.com/?q=35.955,-83.925"
   },
   {
     "name": "Market Square",
