@@ -1,46 +1,59 @@
+/* editorial-sportspage/js/main.js
+   Site boot + widgets
+*/
 document.documentElement.classList.remove('no-js');
 
 const $  = (sel, root=document) => root.querySelector(sel);
 const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
-/* --- Paths: use relative so Pages subpaths work --- */
-const PATH_NEXT     = 'data/next.json';
-const PATH_SCHEDULE = 'data/schedule.json';
-const PATH_PLACES   = 'data/places.json';
-const PATH_SPECIALS = 'data/specials.json';
+/* ==== PATHS (repo lives at /editorial-sportspage) ==== */
+const BASE            = '/editorial-sportspage';
+const PATH_NEXT       = `${BASE}/data/next.json`;
+const PATH_SCHEDULE   = `${BASE}/data/schedule.json`;
+const PATH_PLACES     = `${BASE}/data/places.json`;
+const PATH_SPECIALS   = `${BASE}/data/specials.json`;
 
-/* Cache-buster to beat GH Pages/CDN caching */
-const bust = () => `?v=${Date.now()}`;
-
+/* ==== helpers ==== */
 function fmtDate(d){
-  return new Date(d).toLocaleString([], { weekday:'short', month:'short', day:'numeric', hour:'numeric', minute:'2-digit' });
+  return new Date(d).toLocaleString([], {
+    weekday:'short', month:'short', day:'numeric', hour:'numeric', minute:'2-digit'
+  });
 }
 function setUpdated(){
   const t = new Date().toLocaleString([], { dateStyle:'medium', timeStyle:'short' });
   $('#updatedAt')?.replaceChildren(t);
   $('#updatedAt2')?.replaceChildren(t);
 }
-function escapeHtml(s=''){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function escapeHtml(s=''){
+  return String(s).replace(/[&<>"']/g, c => (
+    {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]
+  ));
+}
 
-/* Countdown */
+/* ==== countdown in header ==== */
 function startHeaderCountdown(){
   const wrap = $('#countdown'); if(!wrap) return;
   const iso  = wrap.dataset.kickoff; if(!iso) return;
   const dEl=$('#cd-days'),hEl=$('#cd-hrs'),mEl=$('#cd-min'),sEl=$('#cd-sec');
   const pad2=n=>String(n).padStart(2,'0');
+
   function tick(){
-    const now = new Date(); const diff = new Date(iso) - now;
+    const now = new Date();
+    const diff = new Date(iso) - now;
     if(diff<=0){ dEl.textContent=hEl.textContent=mEl.textContent=sEl.textContent='00'; return; }
     let secs = Math.floor(diff/1000);
     const days=Math.floor(secs/86400); secs%=86400;
-    const hrs=Math.floor(secs/3600); secs%=3600;
-    const mins=Math.floor(secs/60); secs%=60;
-    dEl.textContent=pad2(days); hEl.textContent=pad2(hrs); mEl.textContent=pad2(mins); sEl.textContent=pad2(secs);
+    const hrs=Math.floor(secs/3600);  secs%=3600;
+    const mins=Math.floor(secs/60);   secs%=60;
+    dEl.textContent=pad2(days);
+    hEl.textContent=pad2(hrs);
+    mEl.textContent=pad2(mins);
+    sEl.textContent=pad2(secs);
   }
   tick(); setInterval(tick,1000);
 }
 
-/* Mobile nav */
+/* ==== mobile nav toggle ==== */
 function wireNavToggle(){
   const header = document.querySelector('.site-header');
   const btn = header?.querySelector('.nav-toggle');
@@ -52,7 +65,7 @@ function wireNavToggle(){
   });
 }
 
-/* GUIDE accordion */
+/* ==== GUIDE accordion (robust & idempotent) ==== */
 function wireGuideMore(){
   if (window.__TN_WIRED_GUIDE__) return;
   window.__TN_WIRED_GUIDE__ = true;
@@ -64,7 +77,7 @@ function wireGuideMore(){
   const LABEL_MORE = '<i class="fa-solid fa-angles-down"></i> See more';
   const LABEL_LESS = '<i class="fa-solid fa-angles-up"></i> See less';
 
-  if (extra.hasAttribute('hidden')) extra.removeAttribute('hidden');
+  if (extra.hasAttribute('hidden')) extra.removeAttribute('hidden'); // measurable
   extra.classList.add('is-collapsible');
   extra.style.maxHeight = '0px';
   extra.setAttribute('aria-hidden','true');
@@ -74,7 +87,6 @@ function wireGuideMore(){
   btn.innerHTML = LABEL_MORE;
 
   let animating = false;
-
   const finish = (cb) => {
     const t = setTimeout(cb, 350);
     const once = () => { clearTimeout(t); cb(); };
@@ -123,7 +135,7 @@ function wireGuideMore(){
   });
 }
 
-/* SCHEDULE accordion */
+/* ==== schedule table w/ collapsible rows ==== */
 async function paintSchedule(){
   const tbody = document.getElementById('schedRows');
   const btn   = document.getElementById('schedMore');
@@ -132,8 +144,7 @@ async function paintSchedule(){
   if(!tbody || !btn || !table || !wrap) return;
 
   try{
-    let rows = await fetch(`${PATH_SCHEDULE}${bust()}`, {cache:'no-store'}).then(r=>r.json()).catch(()=>[]);
-    console.log('[sched] rows:', rows?.length);
+    let rows = await fetch(PATH_SCHEDULE, {cache:'no-store'}).then(r=>r.json()).catch(()=>[]);
     rows = (rows||[]).slice().sort((a,b)=> new Date(a.date) - new Date(b.date));
 
     tbody.innerHTML = rows.map(g => {
@@ -165,7 +176,6 @@ async function paintSchedule(){
     };
 
     setCollapsed(true);
-
     btn.addEventListener('click', () => {
       const collapsed = table.classList.contains('table-collapsed');
       setCollapsed(!collapsed);
@@ -175,12 +185,11 @@ async function paintSchedule(){
   }
 }
 
-/* Places list */
+/* ==== places list (optional JSON) ==== */
 async function paintPlacesList(){
   const ul = $('#placesList'); const empty = $('#placesEmpty'); if(!ul) return;
   try{
-    const places = await fetch(`${PATH_PLACES}${bust()}`, {cache:'no-store'}).then(r => r.json()).catch(() => []);
-    console.log('[places] count:', places?.length || 0);
+    const places = await fetch(PATH_PLACES, {cache:'no-store'}).then(r => r.json()).catch(() => []);
     if(!places || !places.length){ empty.style.display = 'block'; return; }
     empty.style.display = 'none';
     ul.innerHTML = places.slice(0,8).map(p => {
@@ -199,12 +208,11 @@ async function paintPlacesList(){
   }catch(e){ console.error('places error', e); }
 }
 
-/* Specials */
+/* ==== specials grid (optional JSON) ==== */
 async function paintSpecials(){
   const grid = $('#specialsGrid'); if(!grid) return;
   try{
-    const list = await fetch(`${PATH_SPECIALS}${bust()}`, {cache:'no-store'}).then(r => r.json()).catch(() => []);
-    console.log('[specials] count:', list?.length || 0);
+    const list = await fetch(PATH_SPECIALS, {cache:'no-store'}).then(r => r.json()).catch(() => []);
     if(!list || !list.length){ grid.innerHTML = `<div class="muted">No specials yet.</div>`; return; }
     grid.innerHTML = list.map(s => {
       const title = escapeHtml(s.title || `${s.biz||''} Special`);
@@ -223,8 +231,10 @@ async function paintSpecials(){
   }catch(e){ console.error('specials error', e); }
 }
 
-/* Upcoming + status dot */
-function toICSDate(d){ return new Date(d).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z$/,'Z'); }
+/* ==== upcoming game + score state + calendar link ==== */
+function toICSDate(d){
+  return new Date(d).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z$/,'Z');
+}
 function buildICS({title, start, end, location='', description=''}) {
   const uid = 'tn-gameday-' + Date.now() + '@example';
   return [
@@ -238,13 +248,14 @@ function setScoreSignal(nextIso){
   const dots = $$('#scoreDot, .scoreDot');
   const msgs = $$('#scoreMsg, .scoreMsg');
   if(!dots.length && !msgs.length) return;
+
   let state='red', text='No game in progress.';
   if(nextIso){
-    const now = new Date();
+    const now   = new Date();
     const start = new Date(nextIso);
-    const end = new Date(start.getTime() + 5*60*60*1000);
+    const end   = new Date(start.getTime() + 5*60*60*1000); // 5h window
     const isSameDay = start.toDateString() === now.toDateString();
-    if(now >= start && now <= end){ state='green'; text='Game in progress.'; }
+    if(now >= start && now <= end){ state='green';  text='Game in progress.'; }
     else if(isSameDay && now < start){ state='yellow'; text='Gameday — awaiting kickoff.'; }
   }
   dots.forEach(d => d.dataset.state = state);
@@ -252,8 +263,7 @@ function setScoreSignal(nextIso){
 }
 async function paintUpcoming(){
   try{
-    const next = await fetch(`${PATH_NEXT}${bust()}`, {cache:'no-store'}).then(r => r.json()).catch(() => null);
-    console.log('[next] payload:', next);
+    const next = await fetch(PATH_NEXT, {cache:'no-store'}).then(r => r.json()).catch(() => null);
     const elsNext  = $$('#nextLine, .nextLine');
     const elsVenue = $$('#nextVenue, .nextVenue');
     const linksCal = $$('#addToCalendar, .addToCalendar');
@@ -262,7 +272,6 @@ async function paintUpcoming(){
     if(!next || !next.date || !next.opponent){
       elsNext.forEach(n => n.textContent = 'No upcoming game found.');
       if(heroLine) heroLine.textContent = 'No upcoming game found.';
-      setScoreSignal(null);
       return null;
     }
 
@@ -276,21 +285,23 @@ async function paintUpcoming(){
 
     setScoreSignal(next.date);
 
-    const dt = new Date(next.date);
+    const dt    = new Date(next.date);
     const dtEnd = new Date(dt.getTime() + 3*60*60*1000);
     const title = `Tennessee vs ${next.opponent}`;
     const location = next.venue || '';
-    const details = 'TN Gameday';
+    const details  = 'TN Gameday';
 
+    // Google Calendar
     const dates = toICSDate(dt) + '/' + toICSDate(dtEnd);
     const gcal = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
-      + '&text=' + encodeURIComponent(title)
-      + '&dates=' + encodeURIComponent(dates)
+      + '&text='     + encodeURIComponent(title)
+      + '&dates='    + encodeURIComponent(dates)
       + '&location=' + encodeURIComponent(location)
-      + '&details=' + encodeURIComponent(details);
+      + '&details='  + encodeURIComponent(details);
 
+    // Backup ICS file (right-click/aux click will grab ICS instead of GCal)
     const icsText = buildICS({title, start: dt, end: dtEnd, location, description: details});
-    const blob = new Blob([icsText], {type: 'text/calendar'});
+    const blob    = new Blob([icsText], {type: 'text/calendar'});
     const blobUrl = URL.createObjectURL(blob);
     const filename = `${title.toLowerCase().replace(/[^a-z0-9]+/g,'-')}.ics`;
 
@@ -313,7 +324,7 @@ async function paintUpcoming(){
   }
 }
 
-/* Boot */
+/* ==== boot ==== */
 (async function boot(){
   setUpdated();
   wireNavToggle();
@@ -325,3 +336,11 @@ async function paintUpcoming(){
 
   setInterval(setUpdated, 60*1000);
 })();
+
+/* ==== weather widget loader ==== */
+!(function(d,s,id){
+  if(d.getElementById(id)) return;
+  var js=d.createElement(s); js.id=id;
+  js.src='https://weatherwidget.io/js/widget.min.js';
+  d.getElementsByTagName('head')[0].appendChild(js);
+}(document,'script','weatherwidget-io-js'));
