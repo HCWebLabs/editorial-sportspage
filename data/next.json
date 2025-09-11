@@ -1,10 +1,1 @@
-{
-  "date": "2025-09-27T15:30:00-04:00",
-  "opponent": "Florida",
-  "home": true,
-  "venue": "Neyland Stadium",
-  "tv": "CBS"
-  "conference_game": true,
-  "notes": "Checker Neyland",
-  "game_id": 401639450    // CFBD / ESPN id if you want one
-}
+null

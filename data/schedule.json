@@ -1,13 +1,1 @@
-[
-  {
-    "date": "2025-09-06T19:30:00-04:00",
-    "opponent": "NC State",
-    "home": false,
-    "tv": "ABC",
-    "venue": "Bank of America Stadium, Charlotte, NC",
-    "result": "W 31–20"
-    "status": "final",                 // scheduled | in_progress | final | canceled
-  "score": { "us": 31, "them": 20 }, // int scores
-  "overtime": false
-  }
-]
+[]
