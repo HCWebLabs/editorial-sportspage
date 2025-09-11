@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en" data-font="A" class="no-js">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TENNESSEE — Gameday Hub</title>
+  <meta name="description" content="Unofficial Tennessee gameday hub: schedule, weather, map, specials, and quick tips for fans." />
+  <meta name="theme-color" content="#ff8a00" />
+  <meta name="color-scheme" content="light" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="main.css" />
+
+  <!-- Perf: preconnects -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+
+  <!-- Fonts + Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=League+Spartan:wght@600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Preload app module -->
+  <link rel="modulepreload" href="./assets/js/app.mjs" />
+</head>
+
+<body>
+  <header class="site-header" data-skin="glass" data-open="false">
+    <div class="bar container">
+      <a class="brand" href="#top" data-logo="football">
+        <span class="logo" aria-hidden="true">
+          <span class="mark-text">TN</span>
+          <i class="fa-solid fa-football" data-icon="football"></i>
+          <i class="fa-solid fa-flag-checkered" data-icon="flag"></i>
+        </span>
+        <span>Gameday Sportspage</span>
+      </a>
+
+      <!-- Centered countdown -->
+      <div id="countdown" aria-label="Countdown" data-kickoff="2025-09-27T15:30:00-04:00">
+        <div class="cd-badge"><span id="cd-days">00</span><span class="cd-label">days</span></div>
+        <div class="cd-badge"><span id="cd-hrs">00</span><span class="cd-label">hrs</span></div>
+        <div class="cd-badge"><span id="cd-min">00</span><span class="cd-label">mins</span></div>
+        <div class="cd-badge"><span id="cd-sec">00</span><span class="cd-label">secs</span></div>
+      </div>
+
+      <nav class="site-nav" id="primaryNav" aria-label="Primary">
+        <a href="#schedule">Schedule</a>
+        <a href="#specials">Specials</a>
+        <a href="#mapCard">Map</a>
+        <a href="#guide">Guide</a>
+        <a class="btn" href="#submit"><i class="fa-solid fa-paper-plane"></i> Submit</a>
+      </nav>
+
+      <button class="nav-toggle" aria-controls="primaryNav" aria-expanded="false">
+        <span class="sr-only">Toggle menu</span>
+        <span class="bars" aria-hidden="true"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mini-hero -->
+  <section class="wrap hero-wrap" aria-label="Overview">
+    <article class="card hero-mini" id="miniHero">
+      <div class="card-body">
+        <h1>Fans Gameday Hub</h1>
+        <p class="heroLine">Loading kickoff…</p>
+      </div>
+      <div class="card-body">
+        <div class="hero-cta">
+          <a class="btn btn-sm" href="#mapCard"><i class="fa-solid fa-location-dot"></i> Map</a>
+          <a class="btn btn-sm" href="#wxCard"><i class="fa-solid fa-cloud-sun"></i> Weather</a>
+          <a class="btn btn-sm" href="#specials"><i class="fa-solid fa-tags"></i> Specials</a>
+          <a class="btn btn-sm" href="#schedule"><i class="fa-regular fa-calendar"></i> Schedule</a>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <main class="wrap page">
+    <!-- Top strip -->
+    <section class="strip" aria-label="Quick status">
+      <article class="card" id="scoreCard">
+        <header>
+          <h3>Live Score Box</h3>
+          <span id="scoreDot" class="dot" data-state="red" aria-label="Game status indicator"></span>
+        </header>
+        <div class="card-body">
+          <div class="muted">Tennessee</div>
+          <div id="scoreMsg" aria-live="polite">No game in progress.</div>
+        </div>
+      </article>
+
+      <article class="card" id="nextCard">
+        <header><h3>Upcoming / Current Game</h3></header>
+        <div class="card-body">
+          <div id="nextLine" class="strong" aria-live="polite">Loading…</div>
+          <div class="meta small"><span id="nextVenue"></span></div>
+          <a id="addToCalendar" class="btn btn-sm" href="#" target="_blank" rel="noopener">
+            <i class="fa-regular fa-calendar-plus"></i> Add to Google Calendar
+          </a>
+        </div>
+      </article>
+
+      <article class="card" id="rankCard">
+        <header><h3>Team Rank</h3></header>
+        <div class="card-body">
+          <div id="rankLine" class="muted" aria-live="polite">Rank data coming soon.</div>
+        </div>
+      </article>
+
+      <article class="card" id="oddsCard" aria-describedby="oddsNote">
+        <header><h3>Game Odds</h3></header>
+        <div class="card-body">
+          <div id="oddsLine" class="muted" aria-live="polite">Odds data coming soon.</div>
+          <p id="oddsNote" class="small muted">For entertainment only. Check a licensed sportsbook for current numbers.</p>
+        </div>
+      </article>
+    </section>
+
+    <!-- Main grid -->
+    <section class="main-grid">
+      <div class="main-col">
+        <!-- Schedule -->
+        <article class="card" id="schedule" aria-labelledby="schedTitle">
+          <header>
+            <h3 id="schedTitle">Schedule &amp; Results</h3>
+            <div class="small muted">Data updated <span id="updatedAt2">—</span></div>
+          </header>
+          <div class="card-body">
+            <div class="table-wrap" data-collapsed="true">
+              <table class="table table-collapsed" id="schedTable" aria-describedby="schedHelp">
+                <thead>
+                  <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Opponent</th>
+                    <th scope="col">H/A</th>
+                    <th scope="col">TV</th>
+                    <th scope="col">Result</th>
+                  </tr>
+                </thead>
+                <tbody id="schedRows"></tbody>
+              </table>
+
+              <p id="schedHelp" class="small muted">Times/TV subject to change. Check official sources day-of.</p>
+
+              <button id="schedMore" class="btn btn-sm" type="button" aria-expanded="false" aria-controls="schedRows">
+                <i class="fa-solid fa-angles-down"></i> See more
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Specials -->
+        <article class="card" id="specials" aria-labelledby="specialsTitle">
+          <header><h3 id="specialsTitle">Featured Specials</h3></header>
+          <div class="card-body">
+            <div id="specialsGrid" class="specials-grid"></div>
+            <p class="small muted">Listings are community-submitted. Call ahead to confirm.</p>
+          </div>
+        </article>
+
+        <!-- Guide -->
+        <article class="card" id="guide" aria-labelledby="guideTitle">
+          <header><h3 id="guideTitle">Gameday Guide (Unofficial)</h3></header>
+          <div class="card-body">
+            <div id="guideBasics" class="cols-2">
+              <section>
+                <h4>Getting There</h4>
+                <ul class="bullets">
+                  <li>Rideshare or public lots; expect road closures near campus.</li>
+                  <li>Plan 60–90 minutes for traffic and entry queues.</li>
+                  <li>Pick a meetup spot in case phones die.</li>
+                </ul>
+              </section>
+              <section>
+                <h4>Food &amp; Water</h4>
+                <ul class="bullets">
+                  <li>Many venues are cashless—bring a card or mobile pay.</li>
+                  <li>Hydrate early; find refill spots on concourses.</li>
+                  <li>Family sections are great with kids; consider ear protection.</li>
+                </ul>
+              </section>
+            </div>
+
+            <div id="guideExtra" class="cols-2 is-collapsible" hidden>
+              <section>
+                <h4>Entry &amp; Bags</h4>
+                <ul class="bullets">
+                  <li>Many venues have clear bag rules and metal detectors.</li>
+                  <li>Leave large items, outside alcohol, and prohibited items at home.</li>
+                  <li>Always verify with the official event page before you go.</li>
+                </ul>
+              </section>
+              <section>
+                <h4>Accessibility</h4>
+                <ul class="bullets">
+                  <li>Check ADA parking, shuttle drop-offs, elevators, and seating.</li>
+                  <li>Service animals typically permitted—follow venue guidance.</li>
+                  <li>Contact accessibility office ahead for assistance.</li>
+                </ul>
+              </section>
+            </div>
+
+            <div class="mt-1">
+              <button id="guideMore" class="btn btn-sm" type="button" aria-expanded="false" aria-controls="guideExtra">
+                <i class="fa-solid fa-angles-down"></i> See more
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Fan News -->
+        <article class="card" id="fanNews" aria-labelledby="fanNewsTitle">
+          <header><h3 id="fanNewsTitle"><i class="fa-regular fa-newspaper"></i> Fan News &amp; Notes</h3></header>
+          <div class="card-body">
+            <ul class="icon-list">
+              <li><i class="fa-solid fa-bullhorn"></i><span>Vol Walk starts 2 hours before kickoff — meet near Gate 21.</span></li>
+              <li><i class="fa-solid fa-mug-hot"></i><span>Campus concessions testing a new refill station in Section 128.</span></li>
+              <li><i class="fa-solid fa-music"></i><span>Pep band pops-up on the south concourse at halftime (unofficial).</span></li>
+            </ul>
+          </div>
+        </article>
+
+        <div class="pair">
+          <article class="card" id="tailgateTips" aria-labelledby="tailgateTipsTitle">
+            <header><h3 id="tailgateTipsTitle"><i class="fa-solid fa-fire"></i> Tailgate Tips</h3></header>
+            <div class="card-body">
+              <ul class="icon-list">
+                <li><i class="fa-solid fa-clock"></i><span>Arrive early; prime lots fill 3–4 hours pre-game.</span></li>
+                <li><i class="fa-solid fa-bottle-water"></i><span>Bring water + shade; campus heat reflects off concrete.</span></li>
+                <li><i class="fa-solid fa-recycle"></i><span>Pack out trash — orange bags available at lot attendants.</span></li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="card" id="visitingFans" aria-labelledby="visitingFansTitle">
+            <header><h3 id="visitingFansTitle"><i class="fa-solid fa-compass"></i> Visiting Fans</h3></header>
+            <div class="card-body">
+              <ul class="icon-list">
+                <li><i class="fa-solid fa-ticket"></i><span>Away sections typically in the upper northeast — check your row for nearest ramp.</span></li>
+                <li><i class="fa-solid fa-bus"></i><span>City trolleys run pre/post game — look for green route signs.</span></li>
+                <li><i class="fa-solid fa-utensils"></i><span>Family-friendly eats: Market Square has quick options post-game.</span></li>
+              </ul>
+            </div>
+          </article>
+        </div>
+
+        <article class="card" id="transport" aria-labelledby="transportTitle">
+          <header><h3 id="transportTitle"><i class="fa-solid fa-car-side"></i> Transportation &amp; Parking</h3></header>
+          <div class="card-body">
+            <ul class="icon-list">
+              <li><i class="fa-solid fa-circle-info"></i><span>Most campus lots are permit-only on gameday. Public cash lots open along Cumberland Ave.</span></li>
+              <li><i class="fa-solid fa-triangle-exclamation"></i><span>Expect closures around Phillip Fulmer Way 2.5h pre-game.</span></li>
+              <li><i class="fa-solid fa-person-walking"></i><span>Rideshare pickup zone moves to Clinch Ave after the 4th quarter.</span></li>
+            </ul>
+          </div>
+        </article>
+
+        <div class="pair">
+          <article class="card" id="merchDeals" aria-labelledby="merchDealsTitle">
+            <header><h3 id="merchDealsTitle"><i class="fa-solid fa-tags"></i> Merch &amp; Deals</h3></header>
+            <div class="card-body">
+              <ul class="icon-list">
+                <li><i class="fa-solid fa-shirt"></i><span>Pop-up shop by Gate 10 — clearance caps $10 while supplies last.</span></li>
+                <li><i class="fa-solid fa-percentage"></i><span>10% off orange gear at local shops with ticket stub.</span></li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="card" id="socialFeed" aria-labelledby="socialFeedTitle">
+            <header><h3 id="socialFeedTitle"><i class="fa-brands fa-hashtag"></i> Social Feed</h3></header>
+            <div class="card-body">
+              <ul class="icon-list">
+                <li><i class="fa-brands fa-x-twitter"></i><span>#GBO — share your tailgate setup and check live vibes.</span></li>
+                <li><i class="fa-solid fa-camera"></i><span>Photo opp: Torchbearer statue pre-game — best light ~90 mins before kickoff.</span></li>
+              </ul>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- Right Rail -->
+      <aside class="rail" aria-label="Live info">
+        <article class="card" id="mapCard">
+          <header><h3>Map</h3></header>
+          <div class="card-body no-pad">
+            <div class="map-embed">
+              <iframe id="gmapsFrame" title="Map: Neyland Stadium area" loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade" allowfullscreen
+                src="https://www.google.com/maps?q=35.955,-83.925&z=15&output=embed"></iframe>
+            </div>
+            <div class="map-controls" style="padding:10px">
+              <a class="btn btn-sm" target="_blank" rel="noopener" href="https://www.google.com/maps/@35.955,-83.925,15z">
+                <i class="fa-solid fa-up-right-from-square"></i> Open full map
+              </a>
+              <a class="btn btn-sm" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=35.955%2C-83.925">
+                <i class="fa-solid fa-diamond-turn-right"></i> Directions
+              </a>
+            </div>
+            <div class="card-body">
+              <h4 class="tiny" style="margin:0 0 6px">Nearby Spots</h4>
+              <ul id="placesList" class="icon-list"></ul>
+              <div id="placesEmpty" class="tiny muted">No places yet.</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="card" id="wxCard">
+          <header><h3>Live Local Weather</h3></header>
+          <div class="card-body">
+            <div class="wx-embed">
+              <a class="weatherwidget-io"
+                 href="https://forecast7.com/en/35d96n83d93/knoxville/?unit=us"
+                 data-label_1="KNOXVILLE" data-label_2="WEATHER"
+                 data-days="5" data-theme="pure" data-font="Inter">KNOXVILLE WEATHER</a>
+            </div>
+            <p class="small muted">Forecast courtesy of weatherwidget.io. Check again closer to kickoff.</p>
+          </div>
+        </article>
+
+        <article class="card" id="submit">
+          <header><h3>Submit a Listing</h3></header>
+          <div class="card-body">
+            <p class="small">Restaurant, bar, shop, or event with a gameday special? Share it with fans.</p>
+            <a class="btn btn-sm" href="https://forms.gle/" target="_blank" rel="noopener"><i class="fa-regular fa-square-plus"></i> Open form</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <header><h3>Newsletter</h3></header>
+          <div class="card-body">
+            <p class="small">Get a quick gameday morning email: kickoff time, weather, and new specials.</p>
+            <form class="newsletter" action="#" method="post" novalidate>
+              <label class="sr-only" for="newsEmail">Email</label>
+              <input id="newsEmail" type="email" placeholder="you@email.com" required />
+              <button class="btn btn-sm" type="submit"><i class="fa-regular fa-envelope"></i> Subscribe</button>
+            </form>
+            <div class="sr-only" aria-live="polite" id="newsStatus"></div>
+            <p class="small muted">We don’t sell your data. Unsubscribe anytime.</p>
+          </div>
+        </article>
+      </aside>
+    </section>
+
+    <!-- Bottom strip -->
+    <section class="strip strip-bottom" aria-label="Quick status (bottom)">
+      <article class="card">
+        <header>
+          <h3>Live Score Box</h3>
+          <span class="dot scoreDot" data-state="red" aria-label="Game status indicator"></span>
+        </header>
+        <div class="card-body">
+          <div class="muted">Tennessee</div>
+          <div class="scoreMsg" aria-live="polite">No game in progress.</div>
+        </div>
+      </article>
+
+      <article class="card">
+        <header><h3>Upcoming / Current Game</h3></header>
+        <div class="card-body">
+          <div class="nextLine strong" aria-live="polite">Loading…</div>
+          <div class="meta small"><span class="nextVenue"></span></div>
+          <a class="btn btn-sm addToCalendar" href="#" target="_blank" rel="noopener">
+            <i class="fa-regular fa-calendar-plus"></i> Add to Google Calendar
+          </a>
+        </div>
+      </article>
+
+      <article class="card">
+        <header><h3>Team Rank</h3></header>
+        <div class="card-body">
+          <div class="rankLine muted" aria-live="polite">Rank data coming soon.</div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p class="tiny muted">
+        Independent, fan-operated site. Not affiliated with, or endorsed by, any university, athletics program,
+        conference, or governing body. Schedule via CollegeFootballData • Map © Google • Places data (optional) from your JSON • Weather by weatherwidget.io.
+      </p>
+      <nav class="footer-nav tiny" aria-label="Footer">
+        <a href="#guide">Guide</a> • <a href="#specials">Specials</a> • <a href="#mapCard">Map</a> •
+        <a href="#schedule">Schedule</a> • <a href="/terms.html">Terms &amp; Policies</a> •
+        <a href="mailto:contact@example.com">Contact</a> • <a href="https://github.com/" target="_blank" rel="noopener">Source</a>
+      </nav>
+      <p class="tiny muted">© 2025 HC Web Labs. Content licensed under CC BY-NC-ND 4.0.</p>
+    </div>
+  </footer>
+
+  <!-- Weather widget loader (required for the <a class="weatherwidget-io"> to render) -->
+  <script async src="https://weatherwidget.io/js/widget.min.js"></script>
+
+  <!-- App -->
+  <script type="module" src="./assets/js/app.mjs"></script>
+
+  <noscript>
+    <div class="wrap" style="margin:1rem auto">
+      <p class="tiny muted">This site uses JavaScript to update live data. Please enable JavaScript.</p>
+    </div>
+  </noscript>
+</body>
+</html>
