@@ -1,8 +1,49 @@
 [
   {
-    "provider": "consensus",
+    "id": 401752705,
+    "season": 2025,
+    "seasonType": "regular",
+    "week": 3,
+    "startDate": "2025-09-13T19:30:00.000Z",
     "homeTeam": "Tennessee",
-    "awayTeam": "Opponent",
-    "lines": [ { "provider": "consensus", "spread": -6.5, "overUnder": 55.5 } ]
+    "homeConference": "SEC",
+    "homeClassification": "fbs",
+    "homeScore": null,
+    "awayTeam": "Georgia",
+    "awayConference": "SEC",
+    "awayClassification": "fbs",
+    "awayScore": null,
+    "lines": [
+      {
+        "provider": "ESPN Bet",
+        "spread": 4.5,
+        "formattedSpread": "Georgia -4.5",
+        "spreadOpen": 7,
+        "overUnder": 50.5,
+        "overUnderOpen": 50.5,
+        "homeMoneyline": 160,
+        "awayMoneyline": -190
+      },
+      {
+        "provider": "DraftKings",
+        "spread": 4,
+        "formattedSpread": "Georgia -4",
+        "spreadOpen": 7.5,
+        "overUnder": 50.5,
+        "overUnderOpen": 50.5,
+        "homeMoneyline": 160,
+        "awayMoneyline": -192
+      },
+      {
+        "provider": "Bovada",
+        "spread": 4,
+        "formattedSpread": "Georgia -4.0",
+        "spreadOpen": 6.5,
+        "overUnder": 50,
+        "overUnderOpen": 50.5,
+        "homeMoneyline": 150,
+        "awayMoneyline": -210
+      }
+    ]
   }
 ]
