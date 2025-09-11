@@ -216,3 +216,20 @@ a:focus-visible, button:focus-visible, .btn:focus-visible, input:focus-visible{ 
   .rail > .card { width: 100%; }
   .strip.strip-bottom { grid-template-columns: 3fr 4fr 3fr; }
 }
+/* === Lock mini-hero centering (wins over earlier rules) === */
+.wrap.hero-wrap {
+  /* same width system as other wrappers */
+  width: min(1200px, 100% - 32px);
+  margin: 20px auto 6px !important;  /* center the section */
+  display: block !important;         /* avoid stray flex/grid overrides */
+}
+
+.wrap.hero-wrap #miniHero {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;               /* center the card itself */
+}
+
+.wrap.hero-wrap #miniHero .hero-cta {
+  justify-content: center;           /* keep the buttons centered */
+}
