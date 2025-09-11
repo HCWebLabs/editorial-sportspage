@@ -1,22 +1,21 @@
 // assets/js/app.mjs
 
-// Auto-detect the repo base for project pages and root sites
-const BASE = (() => {
-  // strip trailing /index.html and trailing slash
-  let p = location.pathname.replace(/\/index\.html$/, "");
-  if (p.endsWith("/")) p = p.slice(0, -1);
-  return p || ""; // "" when published at domain root
-})();
+// Resolve the repo base from THIS module's URL (rock-solid for project sites)
+const BASE = new URL("../..", import.meta.url).pathname.replace(/\/$/, "");
+// -> e.g. "/editorial-sportspage"
 const DATA = `${BASE}/data`;
 
 const $  = (sel) => document.querySelector(sel);
 const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 
 async function j(rel) {
-  const r = await fetch(`${DATA}/${rel}?t=${Date.now()}`);
+  const url = `${DATA}/${rel}?t=${Date.now()}`;
+  console.debug("[APP] fetch", url);          // <— keep while debugging
+  const r = await fetch(url);
   if (!r.ok) throw new Error(`${r.status} ${rel}`);
   return r.json();
 }
+
 
 /* ---------- NAV TOGGLE ---------- */
 function initNav() {
