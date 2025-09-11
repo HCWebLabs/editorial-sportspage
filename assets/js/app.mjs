@@ -261,11 +261,18 @@ async function buildSchedule() {
    – drives the countdown + dot color
    ========================= */
 async function buildTopStrip() {
-  const meta   = await j("meta_current.json").catch(() => ({ week: "—" }));
-  let game     = await j("current/ut_game.json").catch(() => null);
-  const ranks  = await j("current/rankings.json").catch(() => []);
-  const lines  = await j("current/ut_lines.json").catch(() => []);
+  const meta  = await j("meta_current.json").catch(() => ({ week: "—" }));
+  const ranks = await j("current/rankings.json").catch(() => []);
+  const lines = await j("current/ut_lines.json").catch(() => []);
   const sched  = await j("ut_2025_schedule.json").catch(() => []);
+
+  // choose next future game (prefer one with known opponent)
+  const future = sched.map(g => ({ g, iso: (g.start_time || (g.start_date && `${g.start_date}T00:00:00Z`)) }))
+                      .filter(x => x.iso && new Date(x.iso).getTime() > Date.now())
+                      .sort((a,b) => new Date(a.iso) - new Date(b.iso));
+  const game = (future.find(x => !!(x.g.home_team && x.g.away_team)) || future[0] || {}).g;
+  // ... (rest of your function unchanged)
+}
 
   // Fallback: choose next future game, prefer ones with a named opponent
   if (!game || !game.id) {
