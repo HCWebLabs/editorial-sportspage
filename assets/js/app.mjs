@@ -1,9 +1,15 @@
 // assets/js/app.mjs
-// Auto-detect base so it works on user-site root *and* project-sites (/repo-name/)
-const BASE = location.pathname.replace(/\/[^/]*$/, "");   // e.g. "/editorial-sportspage"
-const DATA = `${BASE}/data`;                               // JSON lives here
 
-const $ = (sel) => document.querySelector(sel);
+// Auto-detect the repo base for project pages and root sites
+const BASE = (() => {
+  // strip trailing /index.html and trailing slash
+  let p = location.pathname.replace(/\/index\.html$/, "");
+  if (p.endsWith("/")) p = p.slice(0, -1);
+  return p || ""; // "" when published at domain root
+})();
+const DATA = `${BASE}/data`;
+
+const $  = (sel) => document.querySelector(sel);
 const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 
 async function j(rel) {
