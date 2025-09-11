@@ -386,22 +386,7 @@
   </footer>
 
   <!-- Our JS (version param to break caches) -->
-  <script>
-  (async () => {
-    const meta = await fetch('data/meta.json?t=' + Date.now())
-      .then(r => r.ok ? r.json() : null)
-      .catch(() => null);
-    const v = meta?.updated_at ? encodeURIComponent(meta.updated_at) : Date.now();
-    const s1 = document.createElement('script');
-    s1.defer = true;
-    s1.src = 'js/vendor.js?v=' + v;   // optional but recommended
-    document.head.appendChild(s1);
-    const s2 = document.createElement('script');
-    s2.defer = true;
-    s2.src = 'js/main.js?v=' + v;     // <-- guarantees the latest main.js runs
-    document.head.appendChild(s2);
-  })();
-</script>
+  <script defer src="js/main.debug.js?v=dbg1"></script>
 
 
   <!-- Weather widget bootstrap -->
