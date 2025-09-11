@@ -1,34 +1,45 @@
-+on:
-+  schedule:
-+    - cron: "0 */6 * * *"   # every 6 hours (UTC)
-+  workflow_dispatch:        # allow manual runs
-+  push:
-+    paths:
-+      - .github/scripts/fetch-cfbd.mjs
-+      - .github/workflows/fetch-cfbd.yml
+name: Fetch CFBD
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: "0 */6 * * *"  # every 6 hours; adjust as you like
+
+permissions:
+  contents: write
 
 jobs:
   fetch:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 20 }
-      - run: node .github/scripts/fetch-cfbd.mjs
-        env:
-          CFBD_KEY: ${{ secrets.CFBD_API_KEY }}
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0
 
-      - name: Commit & push data
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Fetch CFBD + write data
+        run: node .github/scripts/fetch-cfbd.mjs
+        env:
+          CFBD_KEY: ${{ secrets.CFBD_KEY }}
+          TEAM: Tennessee
+          YEAR: 2025
+
+      - name: Commit & push if changed
         run: |
           git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-+         git pull --rebase
-          git add data/*.json
--         git commit -m "chore(data): update via CFBD" || echo "No changes"
--         git push
-+         if ! git diff --cached --quiet; then
-+           git commit -m "chore(data): update via CFBD"
-+           git push
-+         else
-+           echo "No changes"
-+         fi
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # Only commit when data actually changed
+          if git status --porcelain data | grep .; then
+            git add -A data
+            git commit -m "chore(data): update via CFBD [skip ci]"
+            git push
+          else
+            echo "No changes"
+          fi
