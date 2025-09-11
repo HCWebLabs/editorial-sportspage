@@ -1,27 +1,26 @@
-// Enable JS styles
 document.documentElement.classList.remove('no-js');
 
-// Shorthands
 const $  = (sel, root=document) => root.querySelector(sel);
 const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
-/* ------------------------------------------------------------------
-   Data paths: robust for root OR GH Pages project sites.
-   new URL('data/next.json', location.href).href yields the right path.
-------------------------------------------------------------------- */
-const PATH_NEXT     = new URL('data/next.json',     location.href).href;
-const PATH_SCHEDULE = new URL('data/schedule.json', location.href).href;
-const PATH_PLACES   = new URL('data/places.json',   location.href).href;
-const PATH_SPECIALS = new URL('data/specials.json', location.href).href;
+/* --- Paths: use relative so Pages subpaths work --- */
+const PATH_NEXT     = 'data/next.json';
+const PATH_SCHEDULE = 'data/schedule.json';
+const PATH_PLACES   = 'data/places.json';
+const PATH_SPECIALS = 'data/specials.json';
 
-/* Utils */
-const escapeHtml = (s='') => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const fmtDate = d => new Date(d).toLocaleString([], { weekday:'short', month:'short', day:'numeric', hour:'numeric', minute:'2-digit' });
+/* Cache-buster to beat GH Pages/CDN caching */
+const bust = () => `?v=${Date.now()}`;
+
+function fmtDate(d){
+  return new Date(d).toLocaleString([], { weekday:'short', month:'short', day:'numeric', hour:'numeric', minute:'2-digit' });
+}
 function setUpdated(){
   const t = new Date().toLocaleString([], { dateStyle:'medium', timeStyle:'short' });
   $('#updatedAt')?.replaceChildren(t);
   $('#updatedAt2')?.replaceChildren(t);
 }
+function escapeHtml(s=''){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 /* Countdown */
 function startHeaderCountdown(){
@@ -53,7 +52,7 @@ function wireNavToggle(){
   });
 }
 
-/* GUIDE accordion — robust + accessible */
+/* GUIDE accordion */
 function wireGuideMore(){
   if (window.__TN_WIRED_GUIDE__) return;
   window.__TN_WIRED_GUIDE__ = true;
@@ -75,6 +74,7 @@ function wireGuideMore(){
   btn.innerHTML = LABEL_MORE;
 
   let animating = false;
+
   const finish = (cb) => {
     const t = setTimeout(cb, 350);
     const once = () => { clearTimeout(t); cb(); };
@@ -123,7 +123,7 @@ function wireGuideMore(){
   });
 }
 
-/* SCHEDULE */
+/* SCHEDULE accordion */
 async function paintSchedule(){
   const tbody = document.getElementById('schedRows');
   const btn   = document.getElementById('schedMore');
@@ -132,7 +132,8 @@ async function paintSchedule(){
   if(!tbody || !btn || !table || !wrap) return;
 
   try{
-    let rows = await fetch(PATH_SCHEDULE, {cache:'no-store'}).then(r=>r.json()).catch(()=>[]);
+    let rows = await fetch(`${PATH_SCHEDULE}${bust()}`, {cache:'no-store'}).then(r=>r.json()).catch(()=>[]);
+    console.log('[sched] rows:', rows?.length);
     rows = (rows||[]).slice().sort((a,b)=> new Date(a.date) - new Date(b.date));
 
     tbody.innerHTML = rows.map(g => {
@@ -178,7 +179,8 @@ async function paintSchedule(){
 async function paintPlacesList(){
   const ul = $('#placesList'); const empty = $('#placesEmpty'); if(!ul) return;
   try{
-    const places = await fetch(PATH_PLACES, {cache:'no-store'}).then(r => r.json()).catch(() => []);
+    const places = await fetch(`${PATH_PLACES}${bust()}`, {cache:'no-store'}).then(r => r.json()).catch(() => []);
+    console.log('[places] count:', places?.length || 0);
     if(!places || !places.length){ empty.style.display = 'block'; return; }
     empty.style.display = 'none';
     ul.innerHTML = places.slice(0,8).map(p => {
@@ -201,7 +203,8 @@ async function paintPlacesList(){
 async function paintSpecials(){
   const grid = $('#specialsGrid'); if(!grid) return;
   try{
-    const list = await fetch(PATH_SPECIALS, {cache:'no-store'}).then(r => r.json()).catch(() => []);
+    const list = await fetch(`${PATH_SPECIALS}${bust()}`, {cache:'no-store'}).then(r => r.json()).catch(() => []);
+    console.log('[specials] count:', list?.length || 0);
     if(!list || !list.length){ grid.innerHTML = `<div class="muted">No specials yet.</div>`; return; }
     grid.innerHTML = list.map(s => {
       const title = escapeHtml(s.title || `${s.biz||''} Special`);
@@ -220,8 +223,8 @@ async function paintSpecials(){
   }catch(e){ console.error('specials error', e); }
 }
 
-/* Upcoming + status + calendar helpers */
-const toICSDate = d => new Date(d).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z$/,'Z');
+/* Upcoming + status dot */
+function toICSDate(d){ return new Date(d).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z$/,'Z'); }
 function buildICS({title, start, end, location='', description=''}) {
   const uid = 'tn-gameday-' + Date.now() + '@example';
   return [
@@ -249,7 +252,8 @@ function setScoreSignal(nextIso){
 }
 async function paintUpcoming(){
   try{
-    const next = await fetch(PATH_NEXT, {cache:'no-store'}).then(r => r.json()).catch(() => null);
+    const next = await fetch(`${PATH_NEXT}${bust()}`, {cache:'no-store'}).then(r => r.json()).catch(() => null);
+    console.log('[next] payload:', next);
     const elsNext  = $$('#nextLine, .nextLine');
     const elsVenue = $$('#nextVenue, .nextVenue');
     const linksCal = $$('#addToCalendar, .addToCalendar');
@@ -258,6 +262,7 @@ async function paintUpcoming(){
     if(!next || !next.date || !next.opponent){
       elsNext.forEach(n => n.textContent = 'No upcoming game found.');
       if(heroLine) heroLine.textContent = 'No upcoming game found.';
+      setScoreSignal(null);
       return null;
     }
 
@@ -317,13 +322,6 @@ async function paintUpcoming(){
 
   await paintUpcoming();
   await Promise.all([ paintSchedule(), paintSpecials(), paintPlacesList() ]);
-
-  // Weather widget (safe even if included once)
-  (function(d,s,id){
-    if(d.getElementById(id)) return;
-    var js=d.createElement(s); js.id=id; js.src='https://weatherwidget.io/js/widget.min.js';
-    d.getElementsByTagName('head')[0].appendChild(js);
-  }(document,'script','weatherwidget-io-js'));
 
   setInterval(setUpdated, 60*1000);
 })();
