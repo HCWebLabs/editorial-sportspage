@@ -1,6 +1,6 @@
 // assets/js/app.mjs
 
-// --- Path helpers ---
+// Resolve /data no matter where index.html lives
 const BASE = (() => {
   let p = location.pathname.replace(/\/index\.html$/, "");
   if (p.endsWith("/")) p = p.slice(0, -1);
@@ -9,25 +9,21 @@ const BASE = (() => {
 const DATA = `${BASE}/data`;
 const ICS_HREF = `${DATA}/ut_next.ics`;
 
-// --- Tiny DOM helpers ---
-const $  = (s) => document.querySelector(s);
-const $$ = (s) => Array.from(document.querySelectorAll(s));
+const $  = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
 
-// Fetch a JSON file from /data
 async function j(rel) {
   const r = await fetch(`${DATA}/${rel}?t=${Date.now()}`);
   if (!r.ok) throw new Error(`${r.status} ${rel}`);
   return r.json();
 }
 
-/* ---------- NAV TOGGLE ---------- */
-function initNav() {
-  const header = $(".site-header");
-  const btn = $(".nav-toggle");
-  const nav = $("#primaryNav");
-  if (!btn || !header || !nav) return;
+/* ---------------- NAV ---------------- */
+function initNav(){
+  const header = $(".site-header"), btn = $(".nav-toggle"), nav = $("#primaryNav");
+  if (!header || !btn || !nav) return;
   btn.addEventListener("click", () => {
-    const open = header.getAttribute("data-open") === "true";
+    const open = header.getAttribute("data-open")==="true";
     header.setAttribute("data-open", String(!open));
     btn.setAttribute("aria-expanded", String(!open));
   });
@@ -39,42 +35,36 @@ function initNav() {
   });
 }
 
-/* ---------- COUNTDOWN ---------- */
-function initCountdown() {
-  const el = $("#countdown");
-  if (!el) return;
+/* -------------- COUNTDOWN ------------ */
+function initCountdown(){
+  const el = $("#countdown"); if (!el) return;
   const kickoffStr = el.getAttribute("data-kickoff");
   const daysEl = $("#cd-days"), hrsEl = $("#cd-hrs"), minEl = $("#cd-min"), secEl = $("#cd-sec");
   if (!kickoffStr || !daysEl) return;
   const t0 = new Date(kickoffStr).getTime();
   const tick = () => {
     const now = Date.now();
-    let diff = Math.max(0, Math.floor((t0 - now)/1000));
-    const d = Math.floor(diff/86400); diff%=86400;
-    const h = Math.floor(diff/3600);  diff%=3600;
-    const m = Math.floor(diff/60);
-    const s = diff%60;
-    daysEl.textContent = String(d).padStart(2,"0");
-    hrsEl.textContent  = String(h).padStart(2,"0");
-    minEl.textContent  = String(m).padStart(2,"0");
-    secEl.textContent  = String(s).padStart(2,"0");
+    let d = Math.max(0, Math.floor((t0 - now)/1000));
+    const days = Math.floor(d/86400); d%=86400;
+    const hrs  = Math.floor(d/3600);  d%=3600;
+    const mins = Math.floor(d/60);
+    const secs = d%60;
+    daysEl.textContent = String(days).padStart(2,"0");
+    hrsEl .textContent = String(hrs ).padStart(2,"0");
+    minEl .textContent = String(mins).padStart(2,"0");
+    secEl .textContent = String(secs).padStart(2,"0");
   };
-  tick();
-  setInterval(tick, 1000);
+  tick(); setInterval(tick, 1000);
 }
 
-/* ---------- GUIDE ACCORDION ---------- */
-function initGuideAccordion() {
-  const extra = $("#guideExtra");
-  const btn = $("#guideMore");
+/* -------------- GUIDE ACCORDION ------ */
+function initGuideAccordion(){
+  const extra = $("#guideExtra"), btn = $("#guideMore");
   if (!extra || !btn) return;
-  extra.hidden = true;
-  extra.classList.add("is-collapsible");
-  $(".table-wrap")?.setAttribute("data-collapsed", "true");
+  extra.hidden = true; extra.classList.add("is-collapsible");
   btn.addEventListener("click", () => {
     const open = !extra.hidden;
-    extra.hidden = open;
-    extra.classList.toggle("is-open", !open);
+    extra.hidden = open; extra.classList.toggle("is-open", !open);
     btn.setAttribute("aria-expanded", String(!open));
     btn.innerHTML = open
       ? `<i class="fa-solid fa-angles-down"></i> See more`
@@ -82,85 +72,74 @@ function initGuideAccordion() {
   });
 }
 
-/* ---------- UTIL FORMATTERS ---------- */
-function formatTimeET(iso) {
+/* -------------- FORMATTERS ----------- */
+function formatTimeET(iso){
   if (!iso) return "";
-  const d = new Date(iso);
-  return d.toLocaleString([], {
+  return new Date(iso).toLocaleString([], {
     month: "short", day: "numeric",
     hour: "numeric", minute: "2-digit",
-    timeZone: "America/New_York",
-    timeZoneName: "short" // shows ET
+    timeZone: "America/New_York", timeZoneName: "short"
   });
 }
-function resultForRow(g) {
-  const hasScore = (g.home_points != null || g.away_points != null);
-  if (!hasScore) return "";
-  const isUTAway = String(g.away_team||"").includes("Tennessee");
-  const ut = isUTAway ? g.away_points : g.home_points;
-  const opp = isUTAway ? g.home_points : g.away_points;
-  const wL = (ut > opp) ? "W" : (ut < opp) ? "L" : "T";
-  return `${wL} ${ut}–${opp}`;
+function resultForRow(g){
+  const has = (g.home_points != null || g.away_points != null);
+  if (!has) return "";
+  const isAway = String(g.away_team||"").includes("Tennessee");
+  const ut  = isAway ? g.away_points : g.home_points;
+  const opp = isAway ? g.home_points : g.away_points;
+  const wl = ut>opp ? "W" : ut<opp ? "L" : "T";
+  return `${wl} ${ut}–${opp}`;
 }
-function homeAway(g) {
-  return String(g.home_team||"").includes("Tennessee") ? "Home" : (g.neutral_site ? "Neutral" : "Away");
-}
+const homeAway = g =>
+  String(g.home_team||"").includes("Tennessee") ? "Home" : (g.neutral_site ? "Neutral" : "Away");
 
-/* ---------- CTA ROW HELPERS (GCAL + .ICS) ---------- */
-function ensureCtaRows() {
-  const makeRow = (a, b) => {
+/* -------------- CALENDAR CTAs -------- */
+function ensureCtaRows(){
+  const place = (a,b) => {
     if (!a || !b) return;
-    if (a.parentElement && a.parentElement.classList.contains("btn-row")) return;
+    if (a.parentElement?.classList?.contains("btn-row")) return;
     const row = document.createElement("div");
     row.className = "btn-row";
     a.parentElement.insertBefore(row, a);
-    row.appendChild(a);
-    row.appendChild(b);
+    row.append(a,b);
   };
   // top card
-  makeRow($("#addToCalendar"), $("#downloadIcs") || $("#nextCard a[href*='.ics']"));
+  place($("#addToCalendar"), $("#downloadIcs") || $("#nextCard a[href*='.ics']"));
   // bottom strip
-  makeRow($(".strip-bottom .addToCalendar"), $(".strip-bottom a[href*='.ics']"));
+  place($(".strip-bottom .addToCalendar"), $(".strip-bottom a[href*='.ics']"));
 }
 
-function setCalendarLinks(isoStart, title, venue) {
+function setCalendarLinks(isoStart, title, venue){
   // Google Calendar
   const start = new Date(isoStart);
-  const end = new Date(start.getTime() + 3 * 60 * 60 * 1000);
-  const fmt = d => d.toISOString().replace(/[-:]|\.\d{3}/g, "").replace("Z", "Z");
+  const end   = new Date(start.getTime()+3*60*60*1000);
+  const fmt = d => d.toISOString().replace(/[-:]|\.\d{3}/g,"");
   const gcal = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${fmt(start)}/${fmt(end)}&location=${encodeURIComponent(venue)}&details=${encodeURIComponent("Unofficial Gameday Hub")}`;
-
-  const topA = $("#addToCalendar");
-  const botA = $(".strip-bottom .addToCalendar");
+  const topA = $("#addToCalendar"), botA = $(".strip-bottom .addToCalendar");
   if (topA) topA.href = gcal;
   if (botA) botA.href = gcal;
-
-  // ICS from /data/ut_next.ics
-  const topI = $("#downloadIcs") || $("#nextCard a[href*='.ics']");
-  const botI = $(".strip-bottom a[href*='.ics']");
-  [topI, botI].forEach(a => { if (a) a.href = `${ICS_HREF}?t=${Date.now()}`; });
-
+  // ICS
+  [$("#downloadIcs") || $("#nextCard a[href*='.ics']"), $(".strip-bottom a[href*='.ics']")]
+    .forEach(a => { if (a) a.href = `${ICS_HREF}?t=${Date.now()}`; });
   ensureCtaRows();
 }
 
-/* ---------- SCHEDULE (3-row collapsible) ---------- */
-async function buildSchedule() {
-  const table = $("#schedTable");
-  if (!table) return;
+/* -------------- SCHEDULE ------------- */
+async function buildSchedule(){
+  const table = $("#schedTable"); if (!table) return;
 
-  const meta = await j("meta_current.json").catch(()=>({week:"—", lastUpdated:"—"}));
+  const meta  = await j("meta_current.json").catch(()=>({week:"—", lastUpdated:"—"}));
   const sched = await j("ut_2025_schedule.json").catch(()=>[]);
-  if ($("#updatedAt2")) $("#updatedAt2").textContent = meta.lastUpdated?.replace("T"," ").replace("Z","") || "—";
+  $("#updatedAt2") && ($("#updatedAt2").textContent =
+    meta.lastUpdated?.replace("T"," ").replace("Z","") || "—");
 
-  sched.sort((a,b) => (a.week||0) - (b.week||0));
-
-  const tbody = $("#schedRows");
-  tbody.innerHTML = sched.map((g, idx) => {
+  sched.sort((a,b) => (a.week||0)-(b.week||0));
+  $("#schedRows").innerHTML = sched.map((g,idx) => {
     const opp = String(g.home_team||"").includes("Tennessee") ? g.away_team : g.home_team;
-    const tv = g.tv || g.television || "—";
-    const extra = idx >= 3 ? ` data-extra="true"` : "";
+    const tv  = g.tv || "—";
+    const extra = idx>=3 ? ` data-extra="true"` : "";
     return `<tr${extra}>
-      <td>${formatTimeET(g.start_time)}</td>
+      <td>${formatTimeET(g.start_time) || "TBA"}</td>
       <td>${opp||""}</td>
       <td>${homeAway(g)}</td>
       <td>${tv}</td>
@@ -170,10 +149,10 @@ async function buildSchedule() {
 
   table.classList.add("table-collapsed");
   const wrap = table.closest(".table-wrap");
-  if (wrap) wrap.setAttribute("data-collapsed", "true");
+  if (wrap) wrap.setAttribute("data-collapsed","true");
 
   const btn = $("#schedMore");
-  if (btn) {
+  if (btn){
     btn.addEventListener("click", () => {
       const collapsed = table.classList.contains("table-collapsed");
       table.classList.toggle("table-collapsed", !collapsed ? true : false);
@@ -189,95 +168,95 @@ async function buildSchedule() {
   }
 }
 
-/* ---------- SCOREBOX / RANKINGS / ODDS ---------- */
-function setDotState(el, state) {
-  if (!el) return;
-  el.setAttribute("data-state", state); // red | yellow | green
-}
-function setBothScoreboxes(text, state="red") {
+/* -------------- STRIP / RANK / ODDS --- */
+function setDotState(el, state){ if (el) el.setAttribute("data-state", state); }
+function setBothScoreboxes(text, state="red"){
   $("#scoreMsg") && ($("#scoreMsg").textContent = text);
   setDotState($("#scoreDot"), state);
   $$(".scoreMsg").forEach(n => n.textContent = text);
   $$(".scoreDot").forEach(n => setDotState(n, state));
 }
 
-async function buildTopStrip() {
-  const meta = await j("meta_current.json").catch(()=>({week:"—"}));
-  const game = await j("current/ut_game.json").catch(()=>null);
+async function buildTopStrip(){
+  const meta  = await j("meta_current.json").catch(()=>({week:"—"}));
+  const game  = await j("current/ut_game.json").catch(()=>null);
   const ranks = await j("current/rankings.json").catch(()=>[]);
   const lines = await j("current/ut_lines.json").catch(()=>[]);
 
-  // Score box / upcoming
-  if (!game || !game.id) {
+  if (!game || !game.id || !game.start_time){
     setBothScoreboxes("No UT game found for this week.", "red");
+    // Also clear the upcoming block so it doesn’t sit on “Loading…”
+    $("#nextLine") && ($("#nextLine").textContent = "—");
+    $("#nextVenue") && ($("#nextVenue").textContent = "");
   } else {
     const away = `${game.away_team} ${game.away_points ?? ""}`.trim();
     const home = `${game.home_team} ${game.home_points ?? ""}`.trim();
-    const status = (game.status || "").toLowerCase();
     const when = formatTimeET(game.start_time);
+    const status = (game.status || "").toLowerCase();
     const msg = `${away} @ ${home} — ${status || when}`;
     const state = status.includes("final") ? "red" : status.includes("in progress") ? "green" : "yellow";
     setBothScoreboxes(msg, state);
 
-    const who = String(game.home_team||"").includes("Tennessee") ? game.away_team : game.home_team;
-    $("#nextLine") && ($("#nextLine").textContent = `Week ${meta.week}: Tennessee vs ${who} — ${when}`);
-    $(".nextLine") && ($(".nextLine").textContent = `Week ${meta.week}: Tennessee vs ${who} — ${when}`);
+    const opp = String(game.home_team||"").includes("Tennessee") ? game.away_team : game.home_team;
+    $("#nextLine")  && ($("#nextLine").textContent  = `Week ${meta.week}: Tennessee vs ${opp} — ${when}`);
+    $(".nextLine")  && ($(".nextLine").textContent  = `Week ${meta.week}: Tennessee vs ${opp} — ${when}`);
     const venue = game.venue || "Neyland Stadium";
     $("#nextVenue") && ($("#nextVenue").textContent = venue);
     $(".nextVenue") && ($(".nextVenue").textContent = venue);
 
-    // Wire calendar buttons (top + bottom) and ICS
-    setCalendarLinks(game.start_time, `Tennessee vs ${who}`, venue);
+    setCalendarLinks(game.start_time, `Tennessee vs ${opp}`, venue);
   }
 
-  // Rankings: AP + Coaches if present
-  const pick = name => Array.isArray(ranks?.polls) ? ranks.polls.find(p => (p.poll || "").toLowerCase().includes(name)) : null;
-  const ap = pick("ap"), coaches = pick("coach");
-  const findRank = (poll) => {
-    const arr = poll?.ranks || poll?.teams || [];
-    const hit = arr.find(x => (x.school || x.team || "").includes("Tennessee"));
-    return hit?.rank ?? "NR";
-  };
-  const rankLine = `AP: ${findRank(ap)}  •  Coaches: ${findRank(coaches)}`;
+  // Rankings (handle either structure)
+  let apR = "NR", coR = "NR";
+  if (ranks && ranks.polls) {
+    const ap = ranks.polls.find(p => (p.poll||"").toLowerCase().includes("ap"));
+    const co = ranks.polls.find(p => (p.poll||"").toLowerCase().includes("coach"));
+    const pick = p => {
+      const arr = p?.ranks || p?.teams || [];
+      const hit = arr.find(x => (x.school || x.team || "").includes("Tennessee"));
+      return hit?.rank ?? "NR";
+    };
+    apR = ap ? pick(ap) : apR;
+    coR = co ? pick(co) : coR;
+  }
+  const rankLine = `AP: ${apR}  •  Coaches: ${coR}`;
   $("#rankLine") && ($("#rankLine").textContent = rankLine);
   $$(".rankLine").forEach(n => n.textContent = rankLine);
 
-  // Odds (first provider)
+  // Odds
   let oddsText = "Odds data coming soon.";
-  if (Array.isArray(lines) && lines.length) {
+  if (Array.isArray(lines) && lines.length){
     const L = lines[0];
-    const provider = (L.provider || L.providerName || (L.lines?.[0]?.provider)) ?? "—";
     const first = (L.lines && L.lines[0]) || L;
-    const spread = (first.spread ?? first.formattedSpread ?? "—");
-    const ou = (first.overUnder ?? first.total ?? "—");
+    const provider = (L.provider || L.providerName || first?.provider) ?? "—";
+    const spread   = first?.spread ?? first?.formattedSpread ?? "—";
+    const ou       = first?.overUnder ?? first?.total ?? "—";
     oddsText = `${provider}: spread ${spread}, O/U ${ou}`;
   }
   $("#oddsLine") && ($("#oddsLine").textContent = oddsText);
 }
 
-/* ---------- PLACES (optional local file) ---------- */
-async function buildPlaces() {
-  const list = $("#placesList");
-  const empty = $("#placesEmpty");
+/* -------------- PLACES ---------------- */
+async function buildPlaces(){
+  const list = $("#placesList"), empty = $("#placesEmpty");
   if (!list) return;
   const places = await j("manual/places_knoxville.json").catch(()=>[]);
-  if (!places.length) { empty && (empty.hidden = false); return; }
-  empty && (empty.hidden = true);
-  list.innerHTML = places.map(p => `
-    <li><i class="fa-solid fa-location-dot"></i><span><strong>${p.name}</strong> — ${p.tip || p.kind || ""}</span></li>
-  `).join("");
+  if (!places.length){ empty && (empty.hidden=false); return; }
+  empty && (empty.hidden=true);
+  list.innerHTML = places.map(p =>
+    `<li><i class="fa-solid fa-location-dot"></i><span><strong>${p.name}</strong> — ${p.tip || p.kind || ""}</span></li>`
+  ).join("");
 }
 
-/* ---------- INIT ---------- */
-async function init() {
+/* -------------- INIT ------------------ */
+async function init(){
   initNav();
   initCountdown();
   initGuideAccordion();
-  await Promise.all([ buildSchedule(), buildTopStrip(), buildPlaces() ]);
+  await Promise.all([buildSchedule(), buildTopStrip(), buildPlaces()]);
 
-  // Light “semi-live” tick on Saturdays
-  if (new Date().getDay() === 6) {
-    setInterval(() => buildTopStrip(), 30000);
-  }
+  // Light tick on Saturdays
+  if (new Date().getDay() === 6) setInterval(buildTopStrip, 30000);
 }
 document.addEventListener("DOMContentLoaded", init);
