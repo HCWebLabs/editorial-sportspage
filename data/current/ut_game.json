@@ -1,1 +1,15 @@
-{}
+{
+  "id": 401752705,
+  "season": 2025,
+  "week": 3,
+  "start_time": "2025-09-13T19:30:00.000Z",
+  "start_time_tbd": false,
+  "neutral_site": false,
+  "conference_game": false,
+  "venue": "Neyland Stadium",
+  "home_points": null,
+  "away_points": null,
+  "tv": null,
+  "line": null,
+  "over_under": null
+}
