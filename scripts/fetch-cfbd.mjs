@@ -1,241 +1,195 @@
 /**
- * CFBD data pull → writes flat JSON your site reads.
- * Run with Node 18/20 (global fetch available).
- *
- * Env:
- *  - CFBD_API_KEY (required)
+ * CFBD data pull → writes flat JSON your site reads (+ ICS files).
+ * Node 18/20 (global fetch). Requires CFBD_API_KEY repo secret.
  */
 
 import fs from "node:fs/promises";
 import path from "node:path";
 
 const API_KEY = process.env.CFBD_API_KEY;
-if (!API_KEY) {
-  console.error("ERROR: CFBD_API_KEY is not set.");
-  process.exit(1);
-}
+if (!API_KEY) { console.error("ERROR: CFBD_API_KEY is not set."); process.exit(1); }
 
-// ---- Config ----
 const SEASON = 2025;
 const TEAM = "Tennessee";
 const SEASON_TYPE = "regular";
 
-// Paths relative to repo root (workflow runs at repo root)
 const DATA_DIR = "data";
 const CURRENT_DIR = path.join(DATA_DIR, "current");
 
 // ---------- utils ----------
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
-
-async function ensureDir(p) {
-  await fs.mkdir(p, { recursive: true });
+async function ensureDir(p){ await fs.mkdir(p,{recursive:true}); }
+async function readIfExists(p){ try{ return JSON.parse(await fs.readFile(p,"utf8")); } catch{ return null; } }
+async function writeJson(rel, obj){
+  const full = path.resolve(rel); await ensureDir(path.dirname(full));
+  const next = JSON.stringify(obj,null,2)+"\n";
+  const prev = await fs.readFile(full,"utf8").catch(()=>null);
+  if (prev === next) { console.log("unchanged:", rel); return false; }
+  await fs.writeFile(full,next,"utf8"); console.log("wrote", rel); return true;
 }
-
-async function readIfExists(p) {
-  try { return JSON.parse(await fs.readFile(p, "utf8")); }
-  catch { return null; }
+async function writeText(rel, text){
+  const full = path.resolve(rel); await ensureDir(path.dirname(full));
+  const next = text.endsWith("\r\n") ? text : text;
+  const prev = await fs.readFile(full,"utf8").catch(()=>null);
+  if (prev === next) { console.log("unchanged:", rel); return false; }
+  await fs.writeFile(full,next,"utf8"); console.log("wrote", rel); return true;
 }
-
-async function writeJson(relPath, obj) {
-  const full = path.resolve(relPath);
-  await ensureDir(path.dirname(full));
-  const next = JSON.stringify(obj, null, 2) + "\n";
-  const prev = await fs.readFile(full, "utf8").catch(() => null);
-  if (prev === next) {
-    console.log("unchanged:", relPath);
-    return false; // no diff
-  }
-  await fs.writeFile(full, next, "utf8");
-  console.log("wrote", relPath);
-  return true;
-}
-
-async function getWithRetry(url, { tries = 6, init = {} } = {}) {
-  let attempt = 0;
-  while (true) {
-    attempt++;
-    const r = await fetch(url, {
-      ...init,
-      headers: {
-        ...(init.headers || {}),
-        Authorization: `Bearer ${API_KEY}`,
-      },
-    });
-
-    if (r.status === 429) {
+async function getWithRetry(url, {tries=6, init={}}={}){
+  for (let a=1;;a++){
+    const r = await fetch(url, { ...init, headers:{...(init.headers||{}), Authorization:`Bearer ${API_KEY}`}});
+    if (r.status===429 || r.status>=500){
+      if (a>=tries) throw new Error(`${r.status} after ${tries} tries: ${url}`);
       const ra = r.headers.get("retry-after");
-      const wait = ra ? (Number(ra) * 1000) : Math.min(30000, attempt * 2000);
-      console.warn(`[429] ${url} — retrying in ${wait}ms (attempt ${attempt}/${tries})`);
-      if (attempt >= tries) throw new Error(`429 after ${tries} tries: ${url}`);
-      await sleep(wait);
-      continue;
+      const wait = ra ? Number(ra)*1000 : Math.min(30000, a*2000);
+      console.warn(`[${r.status}] ${url} → retry in ${wait}ms (attempt ${a}/${tries})`);
+      await sleep(wait); continue;
     }
-
-    if (r.status >= 500) {
-      const wait = Math.min(30000, attempt * 2000);
-      console.warn(`[${r.status}] ${url} — retrying in ${wait}ms (attempt ${attempt}/${tries})`);
-      if (attempt >= tries) throw new Error(`${r.status} after ${tries} tries: ${url}`);
-      await sleep(wait);
-      continue;
-    }
-
-    if (!r.ok) {
-      const text = await r.text().catch(() => "");
-      throw new Error(`HTTP ${r.status} for ${url} => ${text}`);
-    }
-
+    if (!r.ok) throw new Error(`HTTP ${r.status} ${url}: ${await r.text().catch(()=> "")}`);
     return r.json();
   }
 }
 
-// ---------- Normalizers ----------
-const pick = (o, ...ks) => ks.find(k => o?.[k] != null) ? o[ks.find(k => o?.[k] != null)] : null;
-const onlyDate = (iso) => (iso ? String(iso).slice(0,10) : null);
+// ---------- normalizers ----------
+const pick = (o,...ks)=> ks.find(k=>o?.[k]!=null) ? o[ks.find(k=>o?.[k]!=null)] : null;
+const onlyDate = iso => iso ? String(iso).slice(0,10) : null;
 
-function normalizeGame(g) {
-  // Accept many possible kickoff fields and produce {start_time | start_date}
-  const raw = pick(g, "start_time","startTime","start_date","startDate","date","game_date","gameDate");
+function normalizeGame(g){
+  const raw = pick(g,"start_time","startTime","start_date","startDate","date","game_date","gameDate");
   const hasTime = raw && /T\d{2}:\d{2}/.test(raw);
-
   return {
     id: g.id ?? null,
     week: g.week ?? null,
     start_time: hasTime ? raw : null,
     start_date: hasTime ? onlyDate(raw) : (raw ? String(raw) : null),
-
-    home_team: pick(g, "home_team","homeTeam","home") ?? "",
-    away_team: pick(g, "away_team","awayTeam","away") ?? "",
-
-    home_points: pick(g, "home_points","homePoints") ?? null,
-    away_points: pick(g, "away_points","awayPoints") ?? null,
-
+    home_team: pick(g,"home_team","homeTeam","home") ?? "",
+    away_team: pick(g,"away_team","awayTeam","away") ?? "",
+    home_points: pick(g,"home_points","homePoints") ?? null,
+    away_points: pick(g,"away_points","awayPoints") ?? null,
     status: g.status ?? null,
-    tv: pick(g, "tv","television") ?? null,
+    tv: pick(g,"tv","television") ?? null,
     venue: g.venue ?? null,
-    neutral_site: !!pick(g, "neutral_site","neutral"),
+    neutral_site: !!pick(g,"neutral_site","neutral"),
   };
 }
+const kickoffIsoFromGame = (g)=> g.start_time ? g.start_time : g.start_date ? `${g.start_date}T16:00:00Z` : null;
 
-function kickoffIsoFromGame(g) {
-  if (g.start_time) return g.start_time;
-  if (g.start_date) return `${g.start_date}T16:00:00Z`; // assume noon ET if date only
-  return null;
-}
-
-// Choose “current/next” game: first future by kickoff timestamp; fallback to nearest by week
-function pickNextGame(sched, metaWeek) {
+function pickNextGame(sched){
   const now = Date.now();
-  const withTs = sched
-    .map(g => ({ g, t: kickoffIsoFromGame(g) ? new Date(kickoffIsoFromGame(g)).getTime() : null }))
-    .filter(x => x.t != null)
-    .sort((a,b) => a.t - b.t);
-
-  const future = withTs.find(x => x.t > now)?.g;
-  if (future) return future;
-
-  // No future with timestamp: fallback by week using metaWeek
-  if (metaWeek != null) {
-    const nxt = sched.find(g => (g.week ?? 0) >= metaWeek);
-    if (nxt) return nxt;
-  }
-  // Otherwise first entry
-  return sched[0] ?? null;
+  const withTs = sched.map(g=>({g,t: kickoffIsoFromGame(g)? new Date(kickoffIsoFromGame(g)).getTime():null}))
+                      .filter(x=>x.t!=null)
+                      .sort((a,b)=>a.t-b.t);
+  return withTs.find(x=>x.t>now)?.g || null;
+}
+function pickLastGame(sched){
+  const now = Date.now();
+  const withTs = sched.map(g=>({g,t: kickoffIsoFromGame(g)? new Date(kickoffIsoFromGame(g)).getTime():null}))
+                      .filter(x=>x.t!=null)
+                      .sort((a,b)=>a.t-b.t);
+  return [...withTs].reverse().find(x=>x.t<=now)?.g || null;
 }
 
-// ---------- Main ----------
-async function main() {
-  let wroteAnything = false;
+// ---------- ICS helpers ----------
+const icsEsc = s => String(s||"").replace(/([,;])/g,"\\$1").replace(/\n/g,"\\n");
+const icsStamp = iso => String(iso).replace(/[-:]|\.\d{3}/g,"");
+function icsForGame(g){
+  const iso = kickoffIsoFromGame(g);
+  if (!iso) return null;
+  const start = new Date(iso);
+  const end = new Date(start.getTime() + 3*3600*1000);
+  const opp = (/tennessee/i.test((g.home_team||"")) ? g.away_team : g.home_team) || "Opponent";
+  return [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Gameday Hub//CFBD//EN",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
+    "BEGIN:VEVENT",
+    `UID:ut-${g.id ?? `${g.week}-${icsStamp(iso)}`}@gameday-hub`,
+    `DTSTAMP:${icsStamp(new Date().toISOString())}`,
+    `DTSTART:${icsStamp(start.toISOString())}`,
+    `DTEND:${icsStamp(end.toISOString())}`,
+    `SUMMARY:${icsEsc(`Tennessee vs ${opp}`)}`,
+    g.venue ? `LOCATION:${icsEsc(g.venue)}` : null,
+    `DESCRIPTION:${icsEsc("Unofficial Gameday Hub")}`,
+    "END:VEVENT",
+    "END:VCALENDAR",
+    ""
+  ].filter(Boolean).join("\r\n");
+}
+function icsForSeason(sched){
+  const blocks = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Gameday Hub//CFBD//EN",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH"
+  ];
+  for (const g of sched){
+    const body = icsForGame(g);
+    if (!body) continue;
+    const vevent = body.split("\r\n").filter(l => !/^BEGIN:VCALENDAR|END:VCALENDAR|VERSION:|PRODID:|CALSCALE:|METHOD:/.test(l));
+    blocks.push(...vevent);
+  }
+  blocks.push("END:VCALENDAR",""); 
+  return blocks.join("\r\n");
+}
 
-  // meta (always write)
-  const meta = {
-    season: SEASON,
-    week: null,          // we’ll set after we see schedule dates
-    lastUpdated: new Date().toISOString(),
-  };
+// ---------- main ----------
+async function main(){
+  let wrote = false;
 
-  // ---- schedule ----
-  const gamesUrl = `https://api.collegefootballdata.com/games?year=${SEASON}&team=${encodeURIComponent(TEAM)}&seasonType=${SEASON_TYPE}`;
+  // schedule
   let rawSched = [];
   try {
-    rawSched = await getWithRetry(gamesUrl);
-  } catch (e) {
-    console.error("Failed to fetch games:", e.message);
-  }
+    rawSched = await getWithRetry(`https://api.collegefootballdata.com/games?year=${SEASON}&team=${encodeURIComponent(TEAM)}&seasonType=${SEASON_TYPE}`);
+  } catch(e){ console.error("games fetch failed:", e.message); }
 
   let sched = [];
-  if (Array.isArray(rawSched) && rawSched.length) {
-    sched = rawSched.map(normalizeGame).sort((a,b) => {
+  if (Array.isArray(rawSched) && rawSched.length){
+    sched = rawSched.map(normalizeGame).sort((a,b)=>{
       const ai = kickoffIsoFromGame(a) || "2100-01-01T00:00:00Z";
       const bi = kickoffIsoFromGame(b) || "2100-01-01T00:00:00Z";
-      return new Date(ai) - new Date(bi);
+      return new Date(ai)-new Date(bi);
     });
-
-    // Derive week if not provided by CFBD
-    const minW = Math.min(...sched.map(g => g.week ?? 999).filter(n => n !== 999));
-    meta.week = Number.isFinite(minW) ? minW : null;
-
-    wroteAnything |= await writeJson(path.join(DATA_DIR, "ut_2025_schedule.json"), sched);
-  } else {
-    console.warn("CFBD returned empty schedule; preserving existing data.");
+    wrote |= await writeJson(path.join(DATA_DIR,"ut_2025_schedule.json"), sched);
   }
 
-  // ---- rankings ----
-  const rankingsUrl = `https://api.collegefootballdata.com/rankings?year=${SEASON}`;
+  // rankings
   try {
-    const ranks = await getWithRetry(rankingsUrl);
-    if (Array.isArray(ranks)) {
-      wroteAnything |= await writeJson(path.join(CURRENT_DIR, "rankings.json"), ranks);
-    } else {
-      console.warn("Rankings shape not array; skipping write.");
-    }
-  } catch (e) {
-    console.error("Failed to fetch rankings:", e.message);
-  }
+    const ranks = await getWithRetry(`https://api.collegefootballdata.com/rankings?year=${SEASON}`);
+    if (Array.isArray(ranks)) wrote |= await writeJson(path.join(CURRENT_DIR,"rankings.json"), ranks);
+  } catch(e){ console.error("rankings fetch failed:", e.message); }
 
-  // ---- lines ----
-  const linesUrl = `https://api.collegefootballdata.com/lines?year=${SEASON}&team=${encodeURIComponent(TEAM)}&seasonType=${SEASON_TYPE}`;
+  // lines
   try {
-    const lines = await getWithRetry(linesUrl);
-    if (Array.isArray(lines) && lines.length) {
-      wroteAnything |= await writeJson(path.join(CURRENT_DIR, "ut_lines.json"), lines);
-    } else {
-      console.warn("Lines empty; preserving existing ut_lines.json");
-    }
-  } catch (e) {
-    console.error("Failed to fetch lines:", e.message);
+    const lines = await getWithRetry(`https://api.collegefootballdata.com/lines?year=${SEASON}&team=${encodeURIComponent(TEAM)}&seasonType=${SEASON_TYPE}`);
+    if (Array.isArray(lines)) wrote |= await writeJson(path.join(CURRENT_DIR,"ut_lines.json"), lines);
+  } catch(e){ console.error("lines fetch failed:", e.message); }
+
+  // meta + current/next game + ICS
+  const next = pickNextGame(sched);
+  const last = pickLastGame(sched);
+  const meta = {
+    season: SEASON,
+    week: next?.week ?? null,           // keep for backward compat (means "next")
+    weekNext: next?.week ?? null,
+    weekCurrent: last?.week ?? null,
+    lastUpdated: new Date().toISOString(),
+  };
+  wrote |= await writeJson(path.join(DATA_DIR,"meta_current.json"), meta);
+
+  if (next){
+    wrote |= await writeJson(path.join(CURRENT_DIR,"ut_game.json"), next);
+    const icsNext = icsForGame(next);
+    if (icsNext) wrote |= await writeText(path.join(CURRENT_DIR,"ut_next.ics"), icsNext);
   }
 
-  // ---- current / next game (derived from schedule) ----
-  try {
-    const existingSched = sched.length
-      ? sched
-      : (await readIfExists(path.join(DATA_DIR, "ut_2025_schedule.json"))) || [];
-    const weekForPick = meta.week ??
-      (await readIfExists(path.join(DATA_DIR, "meta_current.json")))?.week ?? null;
-
-    if (Array.isArray(existingSched) && existingSched.length) {
-      const currentGame = pickNextGame(existingSched, weekForPick);
-      if (currentGame) {
-        wroteAnything |= await writeJson(path.join(CURRENT_DIR, "ut_game.json"), currentGame);
-      }
-    }
-  } catch (e) {
-    console.error("Failed to write current game:", e.message);
+  if (sched.length){
+    const icsAll = icsForSeason(sched);
+    if (icsAll) wrote |= await writeText(path.join(DATA_DIR,"ut_2025_schedule.ics"), icsAll);
   }
 
-  // ---- meta (last) ----
-  try {
-    wroteAnything |= await writeJson(path.join(DATA_DIR, "meta_current.json"), meta);
-  } catch (e) {
-    console.error("Failed to write meta_current.json:", e.message);
-  }
-
-  if (!wroteAnything) {
-    console.log("No data changes to commit.");
-  }
+  if (!wrote) console.log("No data changes to commit.");
 }
 
-main().catch(err => {
-  console.error(err);
-  process.exit(1);
-});
+main().catch(e=>{ console.error(e); process.exit(1); });
