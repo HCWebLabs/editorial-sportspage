@@ -1,14 +1,9 @@
 // scripts/fetch-cfbd.mjs
-// Pulls UT data from CFBD and writes flat JSON + an ICS file your page reads.
-
 import { writeFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 
 const API_KEY = process.env.CFBD_API_KEY;
-if (!API_KEY) {
-  console.error("Missing CFBD_API_KEY");
-  process.exit(1);
-}
+if (!API_KEY) { console.error("Missing CFBD_API_KEY"); process.exit(1); }
 
 const YEAR = 2025;
 const TEAM = "Tennessee";
@@ -16,57 +11,32 @@ const SEASON_TYPE = "regular";
 
 const OUT_DIR = "data";
 const CURRENT_DIR = path.join(OUT_DIR, "current");
-
-async function ensureDirs() {
-  await mkdir(OUT_DIR, { recursive: true });
-  await mkdir(CURRENT_DIR, { recursive: true });
-}
-
 const BASE = "https://api.collegefootballdata.com";
 
-async function get(rel) {
-  const url = `${BASE}${rel}`;
-  const r = await fetch(url, { headers: { Authorization: `Bearer ${API_KEY}` } });
-  if (!r.ok) throw new Error(`HTTP ${r.status} ${url}\n${await r.text().catch(()=>"")}`);
+async function ensureDirs(){ await mkdir(OUT_DIR,{recursive:true}); await mkdir(CURRENT_DIR,{recursive:true}); }
+async function get(rel){
+  const r = await fetch(`${BASE}${rel}`, { headers:{ Authorization:`Bearer ${API_KEY}` } });
+  if (!r.ok) throw new Error(`HTTP ${r.status} ${rel}\n${await r.text().catch(()=>"")}`);
   return r.json();
 }
+const wjson = (f,d)=>writeFile(f,JSON.stringify(d,null,2)).then(()=>console.log("wrote",f));
+const wtext = (f,t)=>writeFile(f,t,"utf8").then(()=>console.log("wrote",f));
 
-async function wjson(file, data) {
-  await writeFile(file, JSON.stringify(data, null, 2));
-  console.log("wrote", file);
-}
-async function wtext(file, text) {
-  await writeFile(file, text, "utf8");
-  console.log("wrote", file);
-}
+const isoFrom = g => g.start_date || g.startDate || g.start_time || g.startTime || null;
 
-function safeISO(g) {
-  // CFBD uses start_date; be liberal in what we accept.
-  return (
-    g.start_date ||
-    g.startDate ||
-    g.start_time ||
-    g.startTime ||
-    null
-  );
-}
-
-function normalizeSchedule(raw) {
-  return raw.map(g => {
-    const iso = safeISO(g);
-    // venue can be empty from API; default sensibly for home games
-    const isHome = String(g.home_team || "").includes("Tennessee");
-    const venue = g.venue || (isHome ? "Neyland Stadium" : "");
+function normalizeSchedule(arr){
+  return arr.map(g=>{
+    const isHome = String(g.home_team||"").includes("Tennessee");
     return {
       id: g.id,
       season: g.season,
       week: g.week,
       season_type: g.season_type,
-      start_time: iso,                 // <— what the site expects
+      start_time: isoFrom(g),
       start_time_tbd: g.start_time_tbd ?? false,
       neutral_site: g.neutral_site ?? false,
       conference_game: g.conference_game ?? false,
-      venue,
+      venue: g.venue || (isHome ? "Neyland Stadium" : ""),
       home_team: g.home_team,
       away_team: g.away_team,
       home_points: g.home_points ?? null,
@@ -77,84 +47,71 @@ function normalizeSchedule(raw) {
     };
   });
 }
-
-function nextGame(schedule) {
-  const withTimes = schedule.filter(g => g.start_time);
+const nextGame = sched=>{
+  const f = sched.filter(g=>g.start_time).sort((a,b)=>new Date(a.start_time)-new Date(b.start_time));
   const now = Date.now();
-  withTimes.sort((a,b) => new Date(a.start_time) - new Date(b.start_time));
-  return withTimes.find(g => new Date(g.start_time).getTime() > now) || null;
-}
-
-function currentThisWeek(schedule) {
+  return f.find(g=>new Date(g.start_time).getTime()>now) || null;
+};
+const currentThisWeek = sched=>{
   const now = Date.now();
-  // in-progress (has points and already started)
-  const ip = schedule.find(g =>
-    (g.home_points != null || g.away_points != null) &&
+  const ip = sched.find(g =>
+    (g.home_points!=null || g.away_points!=null) &&
     g.start_time && new Date(g.start_time).getTime() <= now
   );
   if (ip) return ip;
-  // otherwise something inside ±4 days
-  const start = now - 4 * 86400e3;
-  const end   = now + 4 * 86400e3;
-  return schedule.find(g => {
+  const start = now - 4*86400e3, end = now + 4*86400e3;
+  return sched.find(g=>{
     if (!g.start_time) return false;
     const t = new Date(g.start_time).getTime();
-    return t >= start && t <= end;
+    return t>=start && t<=end;
   }) || null;
-}
-
-function icsForGame(g) {
+};
+function icsForGame(g){
   if (!g || !g.start_time) return "";
-  const isHome = String(g.home_team || "").includes("Tennessee");
+  const isHome = String(g.home_team||"").includes("Tennessee");
   const opp = isHome ? g.away_team : g.home_team;
-  const title = `Tennessee vs ${opp}`;
-  const dtStart = new Date(g.start_time);
-  const dtEnd = new Date(dtStart.getTime() + 3 * 60 * 60 * 1000);
-  const toUTC = d => d.toISOString().replace(/[-:]|\.\d{3}/g, "");
+  const start = new Date(g.start_time);
+  const end   = new Date(start.getTime()+3*60*60*1000);
+  const fmt = d=>d.toISOString().replace(/[-:]|\.\d{3}/g,"");
   const uid = `ut-${g.id || Math.random().toString(36).slice(2)}@hcweb-labs`;
   return [
-    "BEGIN:VCALENDAR",
-    "VERSION:2.0",
-    "PRODID:-//HC Web Labs//UT Volunteers Gameday//EN",
-    "CALSCALE:GREGORIAN",
-    "METHOD:PUBLISH",
+    "BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//HC Web Labs//UT Volunteers Gameday//EN","CALSCALE:GREGORIAN","METHOD:PUBLISH",
     "BEGIN:VEVENT",
     `UID:${uid}`,
-    `DTSTAMP:${toUTC(new Date())}Z`,
-    `DTSTART:${toUTC(dtStart)}Z`,
-    `DTEND:${toUTC(dtEnd)}Z`,
-    `SUMMARY:${title}`,
-    `LOCATION:${(g.venue || "Neyland Stadium").replace(/\r?\n/g, " ")}`,
+    `DTSTAMP:${fmt(new Date())}Z`,
+    `DTSTART:${fmt(start)}Z`,
+    `DTEND:${fmt(end)}Z`,
+    `SUMMARY:Tennessee vs ${opp}`,
+    `LOCATION:${(g.venue||"Neyland Stadium").replace(/\r?\n/g," ")}`,
     "DESCRIPTION:Unofficial Gameday Hub",
-    "END:VEVENT",
-    "END:VCALENDAR",
-    ""
+    "END:VEVENT","END:VCALENDAR",""
   ].join("\r\n");
 }
 
-async function main() {
+async function main(){
   await ensureDirs();
 
-  const rawGames = await get(`/games?year=${YEAR}&team=${encodeURIComponent(TEAM)}&seasonType=${SEASON_TYPE}`);
-  const schedule = normalizeSchedule(rawGames).sort((a,b) => (a.week||0)-(b.week||0));
-  await wjson(path.join(OUT_DIR, "ut_2025_schedule.json"), schedule);
+  // Full schedule
+  const raw = await get(`/games?year=${YEAR}&team=${encodeURIComponent(TEAM)}&seasonType=${SEASON_TYPE}`);
+  const schedule = normalizeSchedule(raw).sort((a,b)=>(a.week||0)-(b.week||0));
+  await wjson(path.join(OUT_DIR,"ut_2025_schedule.json"), schedule);
 
-  const curr = currentThisWeek(schedule);
-  await wjson(path.join(CURRENT_DIR, "ut_game.json"), curr || {});
+  // Current OR next (guarantee a full object with teams)
+  const curr = currentThisWeek(schedule) || nextGame(schedule) || {};
+  await wjson(path.join(CURRENT_DIR,"ut_game.json"), curr);
 
-  const rankAll = await get(`/rankings?year=${YEAR}`).catch(() => []);
-  const latest = Array.isArray(rankAll) ? rankAll[rankAll.length - 1] : null;
-  await wjson(path.join(CURRENT_DIR, "rankings.json"), latest || []);
+  // Rankings + lines
+  const rankingsAll = await get(`/rankings?year=${YEAR}`).catch(()=>[]);
+  await wjson(path.join(CURRENT_DIR,"rankings.json"), Array.isArray(rankingsAll)? rankingsAll[rankingsAll.length-1]: rankingsAll);
 
-  const lines = await get(`/lines?year=${YEAR}&team=${encodeURIComponent(TEAM)}`).catch(() => []);
-  await wjson(path.join(CURRENT_DIR, "ut_lines.json"), lines || []);
+  const lines = await get(`/lines?year=${YEAR}&team=${encodeURIComponent(TEAM)}`).catch(()=>[]);
+  await wjson(path.join(CURRENT_DIR,"ut_lines.json"), lines);
 
-  const next = nextGame(schedule);
-  const meta = { lastUpdated: new Date().toISOString(), nextStart: next?.start_time || null, week: next?.week ?? (curr?.week ?? "—") };
-  await wjson(path.join(OUT_DIR, "meta_current.json"), meta);
+  // Meta + ICS
+  const nxt = nextGame(schedule);
+  const meta = { lastUpdated:new Date().toISOString(), week: nxt?.week ?? curr?.week ?? "—", nextStart: nxt?.start_time || null };
+  await wjson(path.join(OUT_DIR,"meta_current.json"), meta);
 
-  // ICS for next game
-  await wtext(path.join(OUT_DIR, "ut_next.ics"), icsForGame(next));
+  await wtext(path.join(OUT_DIR,"ut_next.ics"), icsForGame(nxt || curr));
 }
-
-main().catch(e => { console.error(e); process.exit(1); });
+main().catch(e=>{ console.error(e); process.exit(1); });
