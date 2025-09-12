@@ -1,17 +1,17 @@
-// assets/js/app.mjs
-// Gameday Hub front-end (robust to CFBD shapes) — ES Module
-
+// assets/js/app.mjs — robust CFBD reader for schedule/rankings/lines
 console.debug("[APP] boot");
+
 document.documentElement.classList.remove("no-js");
 
-// ---------- PATHS (project-pages safe) ----------
+// ---------- PATHS (works at repo subpath or root) ----------
 const BASE = new URL("../..", import.meta.url).pathname.replace(/\/$/, "");
 const DATA = `${BASE}/data`;
-console.debug("[APP] DATA base =", DATA);
+console.debug("[APP] DATA =", DATA);
 
-// ---------- DOM helpers ----------
-const $  = (sel) => document.querySelector(sel);
-const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+// ---------- small helpers ----------
+const $  = (s) => document.querySelector(s);
+const $$ = (s) => Array.from(document.querySelectorAll(s));
+const nowMs = () => Date.now();
 
 async function j(rel) {
   const url = `${DATA}/${rel}?t=${Date.now()}`;
@@ -20,9 +20,9 @@ async function j(rel) {
   return r.json();
 }
 
-/* ===============================================
+/* ============================================================
    COUNTDOWN
-================================================= */
+============================================================ */
 let setCountdownKickoff = () => {};
 function initCountdown() {
   const el = $("#countdown");
@@ -32,10 +32,10 @@ function initCountdown() {
         minEl  = $("#cd-min"),  secEl = $("#cd-sec");
   if (!daysEl || !hrsEl || !minEl || !secEl) return;
 
-  let t0 = null;
+  let target = null;
   const tick = () => {
-    if (!t0) return;
-    let diff = Math.max(0, Math.floor((t0 - Date.now())/1000));
+    if (!target) return;
+    let diff = Math.max(0, Math.floor((target - Date.now())/1000));
     const d = Math.floor(diff/86400); diff%=86400;
     const h = Math.floor(diff/3600);  diff%=3600;
     const m = Math.floor(diff/60);
@@ -46,16 +46,15 @@ function initCountdown() {
     secEl.textContent  = String(s).padStart(2,"0");
   };
   setCountdownKickoff = (iso) => {
-    t0 = iso ? new Date(iso).getTime() : null;
+    target = iso ? new Date(iso).getTime() : null;
     tick();
   };
-  tick();
   setInterval(tick, 1000);
 }
 
-/* ===============================================
+/* ============================================================
    NAV + GUIDE accordion
-================================================= */
+============================================================ */
 function initNav() {
   const header = $(".site-header");
   const btn = $(".nav-toggle");
@@ -89,41 +88,47 @@ function initGuideAccordion() {
       ? `<i class="fa-solid fa-angles-down"></i> See more`
       : `<i class="fa-solid fa-angles-up"></i> See less`;
   });
-  btn.setAttribute("aria-expanded", "false");
+  btn.setAttribute("aria-expanded","false");
   btn.innerHTML = `<i class="fa-solid fa-angles-down"></i> See more`;
 }
 
-/* ===============================================
-   Helpers to read schedule / rankings / lines
-================================================= */
+/* ============================================================
+   CFBD shape helpers
+============================================================ */
+const get = (o, ...keys) => keys.find(k => o?.[k] != null) ? o[keys.find(k => o?.[k] != null)] : null;
+
 function teamName(x){ return x?.school ?? x?.team ?? x?.name ?? x ?? ""; }
-function homeTeam(g){ return teamName(g?.home_team ?? g?.homeTeam ?? g?.home); }
-function awayTeam(g){ return teamName(g?.away_team ?? g?.awayTeam ?? g?.away); }
-function isNeutral(g){ return !!(g?.neutral_site ?? g?.neutral ?? false); }
+function homeTeam(g){ return teamName(get(g,"home_team","homeTeam","home")); }
+function awayTeam(g){ return teamName(get(g,"away_team","awayTeam","away")); }
+function isNeutral(g){ return !!get(g,"neutral_site","neutral"); }
 function oppForUT(g){ return /tennessee/i.test(homeTeam(g)||"") ? awayTeam(g) : homeTeam(g); }
 function homeAway(g){
-  const h = homeTeam(g);
-  return /tennessee/i.test(h || "") ? "Home" : (isNeutral(g) ? "Neutral" : "Away");
+  return /tennessee/i.test((homeTeam(g)||"")) ? "Home" : (isNeutral(g) ? "Neutral" : "Away");
 }
-function pickIso(g){ return g?.start_time ?? g?.startDate ?? g?.start_date ?? g?.date ?? null; }
-function normalizeKickoffForCountdown(iso){
-  if (!iso) return null;
-  const hasTime = /T\d{2}:\d{2}/.test(iso);
-  return hasTime ? iso : `${iso}T16:00:00Z`; // noon ET ≈ 16:00Z
+
+// accept lots of kickoff fields; return ISO or null
+function rawKick(g) {
+  return get(g, "start_time","startTime","start_date","startDate","date","game_date","gameDate");
 }
-function formatTimeLike(iso){
-  if (!iso) return "TBA";
-  const hasTime = /T\d{2}:\d{2}/.test(iso);
-  const dt = new Date(hasTime ? iso : `${iso}T00:00:00Z`);
-  if (Number.isNaN(dt.getTime())) return "TBA";
-  const opts = hasTime
+function kickoffISO(g) {
+  const raw = rawKick(g);
+  if (!raw) return null;
+  const hasTime = /T\d{2}:\d{2}/.test(raw);
+  return hasTime ? raw : `${raw}T16:00:00Z`; // noon ET approx if date only
+}
+function displayWhen(g) {
+  const raw = rawKick(g);
+  if (!raw) return "TBA";
+  const hasTime = /T\d{2}:\d{2}/.test(raw);
+  const dt = new Date(hasTime ? raw : `${raw}T00:00:00Z`);
+  if (Number.isNaN(dt)) return "TBA";
+  return dt.toLocaleString([], hasTime
     ? { month:"short", day:"numeric", hour:"numeric", minute:"2-digit" }
-    : { month:"short", day:"numeric" };
-  return dt.toLocaleString([], opts);
+    : { month:"short", day:"numeric" });
 }
 function resultForRow(g){
-  const hp = g?.home_points ?? g?.homePoints;
-  const ap = g?.away_points ?? g?.awayPoints;
+  const hp = get(g,"home_points","homePoints");
+  const ap = get(g,"away_points","awayPoints");
   if (hp == null && ap == null) return "";
   const utAway = /tennessee/i.test(awayTeam(g) || "");
   const ut = utAway ? ap : hp;
@@ -136,22 +141,16 @@ function dotForTiming(status, iso){
   if (s.includes("final")) return "red";
   if (s.includes("in progress") || /1st|2nd|3rd|4th|half/i.test(s)) return "green";
   if (iso) {
-    const t = new Date(normalizeKickoffForCountdown(iso)).getTime();
-    const now = Date.now();
-    if (t - now <= 72*3600*1000) return "yellow";
+    const t = new Date(iso).getTime();
+    if (t - Date.now() <= 72*3600*1000) return "yellow";
   }
   return "red";
 }
 
-// Rankings: CFBD shape → pick latest week's AP/Coaches
+// Rankings array → latest AP/Coaches for Tennessee
 function extractRankings(ranks) {
   if (!Array.isArray(ranks) || !ranks.length) return { ap:"NR", coaches:"NR" };
-  // try the last element; if multiple seasons/weeks, reduce to max by season/week
-  const latest = ranks.reduce((a,b) => {
-    const ak = (a.season??0)*100 + (a.week??0);
-    const bk = (b.season??0)*100 + (b.week??0);
-    return bk > ak ? b : a;
-  });
+  const latest = ranks.reduce((a,b) => ((b.season??0)*100+(b.week??0)) > ((a.season??0)*100+(a.week??0)) ? b : a);
   const polls = latest.polls || latest.Polls || [];
   const apPoll = polls.find(p => /ap/i.test(p.poll || ""));
   const coachesPoll = polls.find(p => /coach/i.test(p.poll || ""));
@@ -163,13 +162,13 @@ function extractRankings(ranks) {
   return { ap: find(apPoll), coaches: find(coachesPoll) };
 }
 
-// Lines: CFBD returns game entries each with lines[]
-function extractNextGameLines(lines, game) {
+// Lines array → find lines for the next UT game
+function extractLinesForGame(lines, game) {
   if (!Array.isArray(lines) || !lines.length || !game) return null;
-  const nextOpp = oppForUT(game);
+  const opp = oppForUT(game);
   const match = lines.find(L =>
     (/tennessee/i.test(L.home_team || "") || /tennessee/i.test(L.away_team || "")) &&
-    (new RegExp(nextOpp, "i").test(L.home_team || "") || new RegExp(nextOpp, "i").test(L.away_team || ""))
+    (new RegExp(opp, "i").test(L.home_team || "") || new RegExp(opp, "i").test(L.away_team || ""))
   ) || lines.find(L => /tennessee/i.test(L.home_team || "") || /tennessee/i.test(L.away_team || ""));
   if (!match) return null;
   const first = (match.lines && match.lines[0]) || null;
@@ -181,34 +180,32 @@ function extractNextGameLines(lines, game) {
   };
 }
 
-/* ===============================================
-   SCHEDULE (table + collapse)
-================================================= */
+/* ============================================================
+   SCHEDULE TABLE
+============================================================ */
 async function buildSchedule() {
   const table = $("#schedTable");
   if (!table) return;
 
   const meta  = await j("meta_current.json").catch(() => ({ week:"—", lastUpdated:"—" }));
   const sched = await j("ut_2025_schedule.json").catch(() => []);
-  console.debug("[APP] schedule len =", sched.length);
+  console.debug("[APP] schedule length:", sched.length, "sample:", sched[0]);
 
   $("#updatedAt2") && ($("#updatedAt2").textContent =
     (meta.lastUpdated ? meta.lastUpdated.replace("T"," ").replace("Z","") : "—"));
 
-  // Sort by date/time
-  sched.sort((a,b) => {
-    const ia = pickIso(a), ib = pickIso(b);
-    const da = ia ? new Date(ia.includes("T")? ia : `${ia}T00:00:00Z`) : 0;
-    const db = ib ? new Date(ib.includes("T")? ib : `${ib}T00:00:00Z`) : 0;
-    return da - db;
+  // Sort by kickoff (falls back if only date is present)
+  const sorted = [...sched].sort((a,b) => {
+    const ta = kickoffISO(a) ? new Date(kickoffISO(a)).getTime() : 0;
+    const tb = kickoffISO(b) ? new Date(kickoffISO(b)).getTime() : 0;
+    return ta - tb;
   });
 
   const tbody = $("#schedRows");
-  tbody.innerHTML = sched.map((g, idx) => {
-    const iso = pickIso(g);
+  tbody.innerHTML = sorted.map((g, idx) => {
     const extra = idx >= 3 ? ` data-extra="true"` : "";
     return `<tr${extra}>
-      <td>${formatTimeLike(iso)}</td>
+      <td>${displayWhen(g)}</td>
       <td>${oppForUT(g) || "—"}</td>
       <td>${homeAway(g)}</td>
       <td>${g.tv ?? g.television ?? "—"}</td>
@@ -239,10 +236,10 @@ async function buildSchedule() {
   }
 }
 
-/* ===============================================
-   TOP STRIP — Scorebox, Next game, Rank, Odds
-================================================= */
-function setDotState(el, state){ if (el) el.setAttribute("data-state", state); }
+/* ============================================================
+   TOP STRIP — scorebox, next game, ranks, odds
+============================================================ */
+function setDotState(el, s){ if (el) el.setAttribute("data-state", s); }
 function setBothScoreboxes(text, state="red"){
   $("#scoreMsg") && ($("#scoreMsg").textContent = text);
   setDotState($("#scoreDot"), state);
@@ -255,65 +252,67 @@ async function buildTopStrip() {
   const sched = await j("ut_2025_schedule.json").catch(() => []);
   const ranks = await j("current/rankings.json").catch(() => []);
   const lines = await j("current/ut_lines.json").catch(() => []);
-  console.debug("[APP] top-strip: sched", sched.length, "ranks", Array.isArray(ranks)?ranks.length:0, "lines", Array.isArray(lines)?lines.length:0);
+  console.debug("[APP] top strip:",
+    { sched: sched.length, sample: sched[0], ranksLen: (ranks||[]).length, linesLen: (lines||[]).length });
 
-  // Next game (future by date/time)
-  const now = Date.now();
-  const withIso = sched
-    .map(g => ({ g, iso: pickIso(g) }))
-    .filter(x => !!x.iso)
-    .map(x => ({ g: x.g, t: new Date(x.iso.includes("T")? x.iso : `${x.iso}T00:00:00Z`).getTime() }))
+  // choose next game by time; if no times, by week
+  const futureByTime = sched
+    .map(g => ({ g, t: kickoffISO(g) ? new Date(kickoffISO(g)).getTime() : null }))
+    .filter(x => x.t && x.t > nowMs())
     .sort((a,b) => a.t - b.t);
 
-  const future = withIso.find(x => x.t > now);
-  const game = future?.g || withIso[0]?.g || null;
+  let game = futureByTime[0]?.g || null;
+  if (!game) {
+    const wk = Math.min(...sched.map(g => g.week ?? 999).filter(n => n !== 999));
+    const next = (meta.week && Number.isFinite(+meta.week))
+      ? (sched.find(g => (g.week ?? 0) >= +meta.week) || sched[0])
+      : sched[0];
+    game = next || null;
+  }
 
   if (!game) {
     setBothScoreboxes("No UT game found for this season.", "red");
   } else {
-    const iso = pickIso(game);
-    const when = formatTimeLike(iso);
+    const iso = kickoffISO(game);
+    const when = displayWhen(game);
     const msg = `${awayTeam(game)} @ ${homeTeam(game)} — ${when}`;
     const state = dotForTiming(game.status, iso);
     setBothScoreboxes(msg, state);
 
-    // next/current panel + countdown
     const who   = oppForUT(game);
     const title = meta.week ? `Week ${meta.week}: Tennessee vs ${who}` : `Tennessee vs ${who}`;
     $("#nextLine") && ($("#nextLine").textContent = `${title} — ${when}`);
     $(".nextLine") && ($(".nextLine").textContent = `${title} — ${when}`);
     $("#nextVenue") && ($("#nextVenue").textContent = game.venue || "");
     $(".nextVenue") && ($(".nextVenue").textContent = game.venue || "");
-    setCountdownKickoff(normalizeKickoffForCountdown(iso));
 
-    // GCal link(s)
-    const startIso = normalizeKickoffForCountdown(iso);
-    if (startIso) {
-      const start = new Date(startIso);
+    if (iso) {
+      const start = new Date(iso);
       const end   = new Date(start.getTime() + 3*3600*1000);
       const fmt   = d => d.toISOString().replace(/[-:]|\.\d{3}/g,"");
       const calUrl =
         `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(`Tennessee vs ${who}`)}&dates=${fmt(start)}/${fmt(end)}&location=${encodeURIComponent(game.venue || "")}&details=${encodeURIComponent("Unofficial Gameday Hub")}`;
       $("#addToCalendar") && ($("#addToCalendar").href = calUrl);
       $$(".addToCalendar").forEach(a => a.href = calUrl);
+      setCountdownKickoff(iso);
+    } else {
+      setCountdownKickoff(null);
     }
 
-    // Odds (choose next game's lines)
-    const l = extractNextGameLines(lines, game);
+    const L = extractLinesForGame(lines, game);
     $("#oddsLine") && ($("#oddsLine").textContent =
-      l ? `${l.provider}: spread ${l.spread}, O/U ${l.ou}` : "Odds data coming soon.");
+      L ? `${L.provider}: spread ${L.spread}, O/U ${L.ou}` : "Odds data coming soon.");
   }
 
-  // Rankings (AP + Coaches) from CFBD shape
   const rk = extractRankings(ranks);
   const rankLine = `AP: ${rk.ap}  •  Coaches: ${rk.coaches}`;
   $("#rankLine") && ($("#rankLine").textContent = rankLine);
   $$(".rankLine").forEach(n => n.textContent = rankLine);
 }
 
-/* ===============================================
-   PLACES (optional)
-================================================= */
+/* ============================================================
+   PLACES (optional JSON)
+============================================================ */
 async function buildPlaces() {
   const list = $("#placesList");
   const empty = $("#placesEmpty");
@@ -326,9 +325,9 @@ async function buildPlaces() {
   ).join("");
 }
 
-/* ===============================================
+/* ============================================================
    INIT
-================================================= */
+============================================================ */
 async function init() {
   initNav();
   initCountdown();
@@ -336,8 +335,6 @@ async function init() {
 
   await Promise.all([ buildSchedule(), buildTopStrip(), buildPlaces() ]);
 
-  // light refresh during Saturday
-  if (new Date().getDay() === 6) setInterval(() => buildTopStrip(), 30000);
+  if (new Date().getDay() === 6) setInterval(buildTopStrip, 30000);
 }
-
 document.addEventListener("DOMContentLoaded", init);
