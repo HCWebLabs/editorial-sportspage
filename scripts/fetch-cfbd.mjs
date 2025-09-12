@@ -1,117 +1,196 @@
-// scripts/fetch-cfbd.mjs
-import { writeFile, mkdir } from "node:fs/promises";
+/**
+ * CFBD data pull → writes flat JSON your site reads (+ ICS files).
+ * Node 18/20 (global fetch). Requires CFBD_API_KEY repo secret.
+ */
+
+import fs from "node:fs/promises";
 import path from "node:path";
 
 const API_KEY = process.env.CFBD_API_KEY;
-if (!API_KEY) { console.error("Missing CFBD_API_KEY"); process.exit(1); }
+if (!API_KEY) { console.error("ERROR: CFBD_API_KEY is not set."); process.exit(1); }
 
-const YEAR = 2025;
+const SEASON = 2025;
 const TEAM = "Tennessee";
 const SEASON_TYPE = "regular";
 
-const OUT_DIR = "data";
-const CURRENT_DIR = path.join(OUT_DIR, "current");
-const BASE = "https://api.collegefootballdata.com";
+const DATA_DIR = "data";
+const CURRENT_DIR = path.join(DATA_DIR, "current");
 
-async function ensureDirs(){ await mkdir(OUT_DIR,{recursive:true}); await mkdir(CURRENT_DIR,{recursive:true}); }
-async function get(rel){
-  const r = await fetch(`${BASE}${rel}`, { headers:{ Authorization:`Bearer ${API_KEY}` } });
-  if (!r.ok) throw new Error(`HTTP ${r.status} ${rel}\n${await r.text().catch(()=>"")}`);
-  return r.json();
+// ---------- utils ----------
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+async function ensureDir(p){ await fs.mkdir(p,{recursive:true}); }
+async function readIfExists(p){ try{ return JSON.parse(await fs.readFile(p,"utf8")); } catch{ return null; } }
+async function writeJson(rel, obj){
+  const full = path.resolve(rel); await ensureDir(path.dirname(full));
+  const next = JSON.stringify(obj,null,2)+"\n";
+  const prev = await fs.readFile(full,"utf8").catch(()=>null);
+  if (prev === next) { console.log("unchanged:", rel); return false; }
+  await fs.writeFile(full,next,"utf8"); console.log("wrote", rel); return true;
 }
-const wjson = (f,d)=>writeFile(f,JSON.stringify(d,null,2)).then(()=>console.log("wrote",f));
-const wtext = (f,t)=>writeFile(f,t,"utf8").then(()=>console.log("wrote",f));
-
-const isoFrom = g => g.start_date || g.startDate || g.start_time || g.startTime || null;
-
-function normalizeSchedule(arr){
-  return arr.map(g=>{
-    const isHome = String(g.home_team||"").includes("Tennessee");
-    return {
-      id: g.id,
-      season: g.season,
-      week: g.week,
-      season_type: g.season_type,
-      start_time: isoFrom(g),
-      start_time_tbd: g.start_time_tbd ?? false,
-      neutral_site: g.neutral_site ?? false,
-      conference_game: g.conference_game ?? false,
-      venue: g.venue || (isHome ? "Neyland Stadium" : ""),
-      home_team: g.home_team,
-      away_team: g.away_team,
-      home_points: g.home_points ?? null,
-      away_points: g.away_points ?? null,
-      tv: g.tv || g.television || g.broadcast || null,
-      line: g.line ?? null,
-      over_under: g.over_under ?? null
-    };
-  });
+async function writeText(rel, text){
+  const full = path.resolve(rel); await ensureDir(path.dirname(full));
+  const next = text.endsWith("\r\n") ? text : text;
+  const prev = await fs.readFile(full,"utf8").catch(()=>null);
+  if (prev === next) { console.log("unchanged:", rel); return false; }
+  await fs.writeFile(full,next,"utf8"); console.log("wrote", rel); return true;
 }
-const nextGame = sched=>{
-  const f = sched.filter(g=>g.start_time).sort((a,b)=>new Date(a.start_time)-new Date(b.start_time));
+async function getWithRetry(url, {tries=6, init={}}={}){
+  for (let a=1;;a++){
+    const r = await fetch(url, { ...init, headers:{...(init.headers||{}), Authorization:`Bearer ${API_KEY}`}});
+    if (r.status===429 || r.status>=500){
+      if (a>=tries) throw new Error(`${r.status} after ${tries} tries: ${url}`);
+      const ra = r.headers.get("retry-after");
+      const wait = ra ? Number(ra)*1000 : Math.min(30000, a*2000);
+      console.warn(`[${r.status}] ${url} → retry in ${wait}ms (attempt ${a}/${tries})`);
+      await sleep(wait); continue;
+    }
+    if (!r.ok) throw new Error(`HTTP ${r.status} ${url}: ${await r.text().catch(()=> "")}`);
+    return r.json();
+  }
+}
+
+// ---------- normalizers ----------
+const pick = (o,...ks)=> ks.find(k=>o?.[k]!=null) ? o[ks.find(k=>o?.[k]!=null)] : null;
+const onlyDate = iso => iso ? String(iso).slice(0,10) : null;
+
+function normalizeGame(g){
+  const raw = pick(g,"start_time","startTime","start_date","startDate","date","game_date","gameDate");
+  const hasTime = raw && /T\d{2}:\d{2}/.test(raw);
+  return {
+    id: g.id ?? null,
+    week: g.week ?? null,
+    start_time: hasTime ? raw : null,
+    start_date: hasTime ? onlyDate(raw) : (raw ? String(raw) : null),
+    home_team: pick(g,"home_team","homeTeam","home") ?? "",
+    away_team: pick(g,"away_team","awayTeam","away") ?? "",
+    home_points: pick(g,"home_points","homePoints") ?? null,
+    away_points: pick(g,"away_points","awayPoints") ?? null,
+    status: g.status ?? null,
+    tv: pick(g,"tv","television") ?? null,
+    venue: g.venue ?? null,
+    neutral_site: !!pick(g,"neutral_site","neutral"),
+  };
+}
+const kickoffIsoFromGame = (g)=> g.start_time ? g.start_time : g.start_date ? `${g.start_date}T16:00:00Z` : null;
+
+function pickNextGame(sched){
   const now = Date.now();
-  return f.find(g=>new Date(g.start_time).getTime()>now) || null;
-};
-const currentThisWeek = sched=>{
+  const withTs = sched.map(g=>({g,t: kickoffIsoFromGame(g)? new Date(kickoffIsoFromGame(g)).getTime():null}))
+                      .filter(x=>x.t!=null)
+                      .sort((a,b)=>a.t-b.t);
+  return withTs.find(x=>x.t>now)?.g || null;
+}
+function pickLastGame(sched){
   const now = Date.now();
-  const ip = sched.find(g =>
-    (g.home_points!=null || g.away_points!=null) &&
-    g.start_time && new Date(g.start_time).getTime() <= now
-  );
-  if (ip) return ip;
-  const start = now - 4*86400e3, end = now + 4*86400e3;
-  return sched.find(g=>{
-    if (!g.start_time) return false;
-    const t = new Date(g.start_time).getTime();
-    return t>=start && t<=end;
-  }) || null;
-};
+  const withTs = sched.map(g=>({g,t: kickoffIsoFromGame(g)? new Date(kickoffIsoFromGame(g)).getTime():null}))
+                      .filter(x=>x.t!=null)
+                      .sort((a,b)=>a.t-b.t);
+  return [...withTs].reverse().find(x=>x.t<=now)?.g || null;
+}
+
+// ---------- ICS helpers ----------
+const icsEsc = s => String(s||"").replace(/([,;])/g,"\\$1").replace(/\n/g,"\\n");
+const icsStamp = iso => String(iso).replace(/[-:]|\.\d{3}/g,"");
 function icsForGame(g){
-  if (!g || !g.start_time) return "";
-  const isHome = String(g.home_team||"").includes("Tennessee");
-  const opp = isHome ? g.away_team : g.home_team;
-  const start = new Date(g.start_time);
-  const end   = new Date(start.getTime()+3*60*60*1000);
-  const fmt = d=>d.toISOString().replace(/[-:]|\.\d{3}/g,"");
-  const uid = `ut-${g.id || Math.random().toString(36).slice(2)}@hcweb-labs`;
+  const iso = kickoffIsoFromGame(g);
+  if (!iso) return null;
+  const start = new Date(iso);
+  const end = new Date(start.getTime() + 3*3600*1000);
+  const opp = (/tennessee/i.test((g.home_team||"")) ? g.away_team : g.home_team) || "Opponent";
   return [
-    "BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//HC Web Labs//UT Volunteers Gameday//EN","CALSCALE:GREGORIAN","METHOD:PUBLISH",
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Gameday Hub//CFBD//EN",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
     "BEGIN:VEVENT",
-    `UID:${uid}`,
-    `DTSTAMP:${fmt(new Date())}Z`,
-    `DTSTART:${fmt(start)}Z`,
-    `DTEND:${fmt(end)}Z`,
-    `SUMMARY:Tennessee vs ${opp}`,
-    `LOCATION:${(g.venue||"Neyland Stadium").replace(/\r?\n/g," ")}`,
-    "DESCRIPTION:Unofficial Gameday Hub",
-    "END:VEVENT","END:VCALENDAR",""
-  ].join("\r\n");
+    `UID:ut-${g.id ?? `${g.week}-${icsStamp(iso)}`}@gameday-hub`,
+    `DTSTAMP:${icsStamp(new Date().toISOString())}`,
+    `DTSTART:${icsStamp(start.toISOString())}`,
+    `DTEND:${icsStamp(end.toISOString())}`,
+    `SUMMARY:${icsEsc(`Tennessee vs ${opp}`)}`,
+    g.venue ? `LOCATION:${icsEsc(g.venue)}` : null,
+    `DESCRIPTION:${icsEsc("Unofficial Gameday Hub")}`,
+    "END:VEVENT",
+    "END:VCALENDAR",
+    ""
+  ].filter(Boolean).join("\r\n");
+}
+function icsForSeason(sched){
+  const blocks = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Gameday Hub//CFBD//EN",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH"
+  ];
+  for (const g of sched){
+    const body = icsForGame(g);
+    if (!body) continue;
+    const vevent = body.split("\r\n").filter(l => !/^BEGIN:VCALENDAR|END:VCALENDAR|VERSION:|PRODID:|CALSCALE:|METHOD:/.test(l));
+    blocks.push(...vevent);
+  }
+  blocks.push("END:VCALENDAR",""); 
+  return blocks.join("\r\n");
 }
 
+// ---------- main ----------
 async function main(){
-  await ensureDirs();
+  let wrote = false;
 
-  // Full schedule
-  const raw = await get(`/games?year=${YEAR}&team=${encodeURIComponent(TEAM)}&seasonType=${SEASON_TYPE}`);
-  const schedule = normalizeSchedule(raw).sort((a,b)=>(a.week||0)-(b.week||0));
-  await wjson(path.join(OUT_DIR,"ut_2025_schedule.json"), schedule);
+  // schedule
+  let rawSched = [];
+  try {
+    rawSched = await getWithRetry(`https://api.collegefootballdata.com/games?year=${SEASON}&team=${encodeURIComponent(TEAM)}&seasonType=${SEASON_TYPE}`);
+  } catch(e){ console.error("games fetch failed:", e.message); }
 
-  // Current OR next (guarantee a full object with teams)
-  const curr = currentThisWeek(schedule) || nextGame(schedule) || {};
-  await wjson(path.join(CURRENT_DIR,"ut_game.json"), curr);
+  let sched = [];
+  if (Array.isArray(rawSched) && rawSched.length){
+    sched = rawSched.map(normalizeGame).sort((a,b)=>{
+      const ai = kickoffIsoFromGame(a) || "2100-01-01T00:00:00Z";
+      const bi = kickoffIsoFromGame(b) || "2100-01-01T00:00:00Z";
+      return new Date(ai)-new Date(bi);
+    });
+    wrote |= await writeJson(path.join(DATA_DIR,"ut_2025_schedule.json"), sched);
+  }
 
-  // Rankings + lines
-  const rankingsAll = await get(`/rankings?year=${YEAR}`).catch(()=>[]);
-  await wjson(path.join(CURRENT_DIR,"rankings.json"), Array.isArray(rankingsAll)? rankingsAll[rankingsAll.length-1]: rankingsAll);
+  // rankings
+  try {
+    const ranks = await getWithRetry(`https://api.collegefootballdata.com/rankings?year=${SEASON}`);
+    if (Array.isArray(ranks)) wrote |= await writeJson(path.join(CURRENT_DIR,"rankings.json"), ranks);
+  } catch(e){ console.error("rankings fetch failed:", e.message); }
 
-  const lines = await get(`/lines?year=${YEAR}&team=${encodeURIComponent(TEAM)}`).catch(()=>[]);
-  await wjson(path.join(CURRENT_DIR,"ut_lines.json"), lines);
+  // lines
+  try {
+    const lines = await getWithRetry(`https://api.collegefootballdata.com/lines?year=${SEASON}&team=${encodeURIComponent(TEAM)}&seasonType=${SEASON_TYPE}`);
+    if (Array.isArray(lines)) wrote |= await writeJson(path.join(CURRENT_DIR,"ut_lines.json"), lines);
+  } catch(e){ console.error("lines fetch failed:", e.message); }
 
-  // Meta + ICS
-  const nxt = nextGame(schedule);
-  const meta = { lastUpdated:new Date().toISOString(), week: nxt?.week ?? curr?.week ?? "—", nextStart: nxt?.start_time || null };
-  await wjson(path.join(OUT_DIR,"meta_current.json"), meta);
+  // meta + current/next game + ICS
+  const next = pickNextGame(sched);
+  const last = pickLastGame(sched);
+  const meta = {
+    season: SEASON,
+    week: next?.week ?? null,           // keep for backward compat (means "next")
+    weekNext: next?.week ?? null,
+    weekCurrent: last?.week ?? null,
+    lastUpdated: new Date().toISOString(),
+  };
+  wrote |= await writeJson(path.join(DATA_DIR,"meta_current.json"), meta);
 
-  await wtext(path.join(OUT_DIR,"ut_next.ics"), icsForGame(nxt || curr));
+  if (next){
+    wrote |= await writeJson(path.join(CURRENT_DIR,"ut_game.json"), next);
+    const icsNext = icsForGame(next);
+    if (icsNext) wrote |= await writeText(path.join(CURRENT_DIR,"ut_next.ics"), icsNext);
+  }
+
+  if (sched.length){
+    const icsAll = icsForSeason(sched);
+    if (icsAll) wrote |= await writeText(path.join(DATA_DIR,"ut_2025_schedule.ics"), icsAll);
+  }
+
+  if (!wrote) console.log("No data changes to commit.");
 }
+
 main().catch(e=>{ console.error(e); process.exit(1); });
+
