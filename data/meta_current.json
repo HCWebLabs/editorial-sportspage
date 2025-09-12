@@ -1,5 +1,7 @@
 {
-  "lastUpdated": "2025-09-12T13:15:46.583Z",
+  "season": 2025,
   "week": 3,
-  "nextStart": "2025-09-13T19:30:00.000Z"
+  "weekNext": 3,
+  "weekCurrent": 2,
+  "lastUpdated": "2025-09-12T14:39:50.048Z"
 }

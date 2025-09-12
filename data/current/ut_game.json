@@ -1,15 +1,14 @@
 {
   "id": 401752705,
-  "season": 2025,
   "week": 3,
   "start_time": "2025-09-13T19:30:00.000Z",
-  "start_time_tbd": false,
-  "neutral_site": false,
-  "conference_game": false,
-  "venue": "Neyland Stadium",
+  "start_date": "2025-09-13",
+  "home_team": "Tennessee",
+  "away_team": "Georgia",
   "home_points": null,
   "away_points": null,
+  "status": null,
   "tv": null,
-  "line": null,
-  "over_under": null
+  "venue": "Neyland Stadium",
+  "neutral_site": false
 }

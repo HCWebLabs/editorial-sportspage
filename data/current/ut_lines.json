@@ -27,59 +27,6 @@
     ]
   },
   {
-    "id": 401752720,
-    "season": 2025,
-    "seasonType": "regular",
-    "week": 5,
-    "startDate": "2025-09-27T04:00:00.000Z",
-    "homeTeam": "Mississippi State",
-    "homeConference": "SEC",
-    "homeClassification": "fbs",
-    "homeScore": null,
-    "awayTeam": "Tennessee",
-    "awayConference": "SEC",
-    "awayClassification": "fbs",
-    "awayScore": null,
-    "lines": []
-  },
-  {
-    "id": 401752692,
-    "season": 2025,
-    "seasonType": "regular",
-    "week": 2,
-    "startDate": "2025-09-06T19:30:00.000Z",
-    "homeTeam": "Tennessee",
-    "homeConference": "SEC",
-    "homeClassification": "fbs",
-    "homeScore": 72,
-    "awayTeam": "East Tennessee State",
-    "awayConference": "Southern",
-    "awayClassification": "fcs",
-    "awayScore": 17,
-    "lines": [
-      {
-        "provider": "Bovada",
-        "spread": -39.5,
-        "formattedSpread": "Tennessee -39.5",
-        "spreadOpen": -41,
-        "overUnder": 58.5,
-        "overUnderOpen": 56.5,
-        "homeMoneyline": null,
-        "awayMoneyline": null
-      },
-      {
-        "provider": "ESPN Bet",
-        "spread": -40.5,
-        "formattedSpread": "Tennessee -40.5",
-        "spreadOpen": -41,
-        "overUnder": 58.5,
-        "overUnderOpen": 56.5,
-        "homeMoneyline": null,
-        "awayMoneyline": null
-      }
-    ]
-  },
-  {
     "id": 401752791,
     "season": 2025,
     "seasonType": "regular",
@@ -96,53 +43,6 @@
     "lines": []
   },
   {
-    "id": 401752705,
-    "season": 2025,
-    "seasonType": "regular",
-    "week": 3,
-    "startDate": "2025-09-13T19:30:00.000Z",
-    "homeTeam": "Tennessee",
-    "homeConference": "SEC",
-    "homeClassification": "fbs",
-    "homeScore": null,
-    "awayTeam": "Georgia",
-    "awayConference": "SEC",
-    "awayClassification": "fbs",
-    "awayScore": null,
-    "lines": [
-      {
-        "provider": "ESPN Bet",
-        "spread": 3.5,
-        "formattedSpread": "Georgia -3.5",
-        "spreadOpen": 7,
-        "overUnder": 49.5,
-        "overUnderOpen": 50.5,
-        "homeMoneyline": 155,
-        "awayMoneyline": -185
-      },
-      {
-        "provider": "DraftKings",
-        "spread": 4,
-        "formattedSpread": "Georgia -4",
-        "spreadOpen": 7.5,
-        "overUnder": 50.5,
-        "overUnderOpen": 50.5,
-        "homeMoneyline": 150,
-        "awayMoneyline": -180
-      },
-      {
-        "provider": "Bovada",
-        "spread": 3.5,
-        "formattedSpread": "Georgia -3.5",
-        "spreadOpen": 6.5,
-        "overUnder": 50,
-        "overUnderOpen": 50.5,
-        "homeMoneyline": 150,
-        "awayMoneyline": -210
-      }
-    ]
-  },
-  {
     "id": 401752715,
     "season": 2025,
     "seasonType": "regular",
@@ -154,6 +54,22 @@
     "homeScore": null,
     "awayTeam": "UAB",
     "awayConference": "American Athletic",
+    "awayClassification": "fbs",
+    "awayScore": null,
+    "lines": []
+  },
+  {
+    "id": 401752747,
+    "season": 2025,
+    "seasonType": "regular",
+    "week": 9,
+    "startDate": "2025-10-25T04:00:00.000Z",
+    "homeTeam": "Kentucky",
+    "homeConference": "SEC",
+    "homeClassification": "fbs",
+    "homeScore": null,
+    "awayTeam": "Tennessee",
+    "awayConference": "SEC",
     "awayClassification": "fbs",
     "awayScore": null,
     "lines": []
@@ -186,6 +102,22 @@
     "homeScore": null,
     "awayTeam": "New Mexico State",
     "awayConference": "Conference USA",
+    "awayClassification": "fbs",
+    "awayScore": null,
+    "lines": []
+  },
+  {
+    "id": 401752720,
+    "season": 2025,
+    "seasonType": "regular",
+    "week": 5,
+    "startDate": "2025-09-27T04:00:00.000Z",
+    "homeTeam": "Mississippi State",
+    "homeConference": "SEC",
+    "homeClassification": "fbs",
+    "homeScore": null,
+    "awayTeam": "Tennessee",
+    "awayConference": "SEC",
     "awayClassification": "fbs",
     "awayScore": null,
     "lines": []
@@ -291,19 +223,87 @@
     ]
   },
   {
-    "id": 401752747,
+    "id": 401752692,
     "season": 2025,
     "seasonType": "regular",
-    "week": 9,
-    "startDate": "2025-10-25T04:00:00.000Z",
-    "homeTeam": "Kentucky",
+    "week": 2,
+    "startDate": "2025-09-06T19:30:00.000Z",
+    "homeTeam": "Tennessee",
+    "homeConference": "SEC",
+    "homeClassification": "fbs",
+    "homeScore": 72,
+    "awayTeam": "East Tennessee State",
+    "awayConference": "Southern",
+    "awayClassification": "fcs",
+    "awayScore": 17,
+    "lines": [
+      {
+        "provider": "Bovada",
+        "spread": -39.5,
+        "formattedSpread": "Tennessee -39.5",
+        "spreadOpen": -41,
+        "overUnder": 58.5,
+        "overUnderOpen": 56.5,
+        "homeMoneyline": null,
+        "awayMoneyline": null
+      },
+      {
+        "provider": "ESPN Bet",
+        "spread": -40.5,
+        "formattedSpread": "Tennessee -40.5",
+        "spreadOpen": -41,
+        "overUnder": 58.5,
+        "overUnderOpen": 56.5,
+        "homeMoneyline": null,
+        "awayMoneyline": null
+      }
+    ]
+  },
+  {
+    "id": 401752705,
+    "season": 2025,
+    "seasonType": "regular",
+    "week": 3,
+    "startDate": "2025-09-13T19:30:00.000Z",
+    "homeTeam": "Tennessee",
     "homeConference": "SEC",
     "homeClassification": "fbs",
     "homeScore": null,
-    "awayTeam": "Tennessee",
+    "awayTeam": "Georgia",
     "awayConference": "SEC",
     "awayClassification": "fbs",
     "awayScore": null,
-    "lines": []
+    "lines": [
+      {
+        "provider": "ESPN Bet",
+        "spread": 3.5,
+        "formattedSpread": "Georgia -3.5",
+        "spreadOpen": 7,
+        "overUnder": 49.5,
+        "overUnderOpen": 50.5,
+        "homeMoneyline": 155,
+        "awayMoneyline": -185
+      },
+      {
+        "provider": "DraftKings",
+        "spread": 4,
+        "formattedSpread": "Georgia -4",
+        "spreadOpen": 7.5,
+        "overUnder": 50.5,
+        "overUnderOpen": 50.5,
+        "homeMoneyline": 150,
+        "awayMoneyline": -180
+      },
+      {
+        "provider": "Bovada",
+        "spread": 3.5,
+        "formattedSpread": "Georgia -3.5",
+        "spreadOpen": 6.5,
+        "overUnder": 50,
+        "overUnderOpen": 50.5,
+        "homeMoneyline": 150,
+        "awayMoneyline": -210
+      }
+    ]
   }
 ]
