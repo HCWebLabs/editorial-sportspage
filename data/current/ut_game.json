@@ -1,14 +1,14 @@
 {
-  "id": 401752715,
-  "week": 4,
-  "start_time": "2025-09-20T16:45:00.000Z",
-  "start_date": "2025-09-20",
-  "home_team": "Tennessee",
-  "away_team": "UAB",
+  "id": 401752720,
+  "week": 5,
+  "start_time": "2025-09-27T20:15:00.000Z",
+  "start_date": "2025-09-27",
+  "home_team": "Mississippi State",
+  "away_team": "Tennessee",
   "home_points": null,
   "away_points": null,
   "status": null,
   "tv": null,
-  "venue": "Neyland Stadium",
+  "venue": "Davis Wade Stadium",
   "neutral_site": false
 }
