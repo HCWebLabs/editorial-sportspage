@@ -77,7 +77,7 @@ body{
 /* BACKGROUND IMAGE — no gradient or opacity applied */
 body::before{
   content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
-  background:url("https://imgur.com/PbBNj9s") center/cover no-repeat;
+  background:url("https://i.imgur.com/PbBNj9s.jpg") center/cover no-repeat;
   opacity:1; mix-blend-mode:normal;
 }
 
