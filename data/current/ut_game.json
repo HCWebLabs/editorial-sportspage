@@ -1,14 +1,14 @@
 {
-  "id": 401752747,
-  "week": 9,
-  "start_time": "2025-10-25T23:45:00.000Z",
-  "start_date": "2025-10-25",
-  "home_team": "Kentucky",
-  "away_team": "Tennessee",
+  "id": 401752757,
+  "week": 10,
+  "start_time": "2025-11-01T04:00:00.000Z",
+  "start_date": "2025-11-01",
+  "home_team": "Tennessee",
+  "away_team": "Oklahoma",
   "home_points": null,
   "away_points": null,
   "status": null,
   "tv": null,
-  "venue": "Kroger Field",
+  "venue": "Neyland Stadium",
   "neutral_site": false
 }
