@@ -1,14 +1,14 @@
 {
-  "id": 401752771,
-  "week": 12,
-  "start_time": "2025-11-15T21:15:00.000Z",
-  "start_date": "2025-11-15",
-  "home_team": "Tennessee",
-  "away_team": "New Mexico State",
+  "id": 401752775,
+  "week": 13,
+  "start_time": "2025-11-22T05:00:00.000Z",
+  "start_date": "2025-11-22",
+  "home_team": "Florida",
+  "away_team": "Tennessee",
   "home_points": null,
   "away_points": null,
   "status": null,
   "tv": null,
-  "venue": "Neyland Stadium",
+  "venue": "Ben Hill Griffin Stadium",
   "neutral_site": false
 }
