@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy | Tennessee Gameday Hub</title>
+  <meta name="description" content="Privacy Policy for Tennessee Gameday Hub - How we collect, use, and protect your information.">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Source+Sans+3:wght@400;600;700;900&display=swap" rel="stylesheet">
+  
+  <style>
+/* ===================================
+   CSS VARIABLES
+   =================================== */
+:root {
+  /* Colors */
+  --primary: #FF8200;
+  --primary-light: #FF9933;
+  --primary-dark: #CC6800;
+  --field-dark: #0a3d2e;
+  --field-medium: #0f5542;
+  --bg-primary: #051a13;
+  --text-primary: #f5f5f5;
+  --text-secondary: rgba(245, 245, 245, 0.8);
+  --text-muted: rgba(245, 245, 245, 0.6);
+  
+  /* Fonts */
+  --font-sans: 'Source Sans 3', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-display: 'Anton', 'Impact', sans-serif;
+  
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+  
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 350ms ease;
+}
+
+/* ===================================
+   RESET & BASE
+   =================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  background-image: url('https://i.imgur.com/u1ew6vM.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(10, 61, 46, 0.88), rgba(15, 85, 66, 0.88));
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ===================================
+   HEADER
+   =================================== */
+.site-header {
+  position: relative;
+  z-index: 10;
+  background: rgba(5, 26, 19, 0.98);
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid rgba(255, 130, 0, 0.3);
+  padding: var(--space-4) 0;
+}
+
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.site-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: white;
+  text-decoration: none;
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.logo-icon {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.logo-text {
+  display: none;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-full);
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: all var(--transition-base);
+  white-space: nowrap;
+}
+
+.back-link:hover {
+  background: rgba(255, 130, 0, 0.2);
+  border-color: var(--primary);
+  transform: translateX(-4px);
+}
+
+@media (min-width: 640px) {
+  .site-logo {
+    font-size: 1.5rem;
+  }
+  
+  .logo-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 1.5rem;
+  }
+  
+  .logo-text {
+    display: block;
+  }
+  
+  .back-link {
+    padding: var(--space-3) var(--space-5);
+  }
+}
+
+/* ===================================
+   MAIN CONTENT
+   =================================== */
+.main-content {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-4);
+}
+
+@media (min-width: 768px) {
+  .main-content {
+    padding: var(--space-12) var(--space-6);
+  }
+}
+
+/* ===================================
+   CONTENT CONTAINER
+   =================================== */
+.content-container {
+  background: rgba(10, 61, 46, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-2xl);
+  border: 2px solid rgba(255, 130, 0, 0.2);
+  padding: var(--space-6);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+@media (min-width: 768px) {
+  .content-container {
+    padding: var(--space-10);
+  }
+}
+
+.page-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: white;
+  margin-bottom: var(--space-2);
+}
+
+.page-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-6);
+  padding-bottom: var(--space-4);
+  border-bottom: 2px solid rgba(255, 130, 0, 0.2);
+}
+
+/* ===================================
+   PAGE STEPPER
+   =================================== */
+.page-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-6);
+  position: relative;
+  max-width: 100%;
+  gap: var(--space-1);
+  flex-wrap: wrap;
+}
+
+.stepper-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  position: relative;
+  z-index: 2;
+  flex: 0 0 auto;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.stepper-step:hover .stepper-circle {
+  transform: scale(1.1);
+  border-color: var(--primary);
+}
+
+.stepper-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(5, 26, 19, 0.6);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.stepper-step.active .stepper-circle {
+  background: linear-gradient(135deg, #FF9933, #FF8200);
+  border-color: #FF8200;
+  color: white;
+  box-shadow: 0 0 0 3px rgba(255, 130, 0, 0.15);
+}
+
+.stepper-step.completed .stepper-circle {
+  background: rgba(255, 130, 0, 0.2);
+  border-color: rgba(255, 130, 0, 0.5);
+  color: var(--primary);
+}
+
+.stepper-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.3);
+  text-align: center;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  max-width: 70px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stepper-step.active .stepper-label {
+  color: var(--primary-light);
+  font-weight: 700;
+}
+
+.stepper-step.completed .stepper-label {
+  color: rgba(255, 130, 0, 0.5);
+}
+
+.stepper-line {
+  flex: 0 0 24px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  position: relative;
+  border-radius: 2px;
+  overflow: hidden;
+  align-self: center;
+  margin-bottom: 18px;
+}
+
+.stepper-line::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #FF9933, #FF8200);
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stepper-line.completed::after {
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .stepper-circle {
+    width: 36px;
+    height: 36px;
+    font-size: 0.875rem;
+  }
+  
+  .stepper-label {
+    font-size: 0.75rem;
+    max-width: 80px;
+  }
+  
+  .stepper-line {
+    flex: 0 0 32px;
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 639px) {
+  .page-stepper {
+    gap: 2px;
+  }
+  
+  .stepper-label {
+    font-size: 0.65rem;
+    max-width: 60px;
+  }
+  
+  .stepper-circle {
+    width: 28px;
+    height: 28px;
+    font-size: 0.7rem;
+  }
+  
+  .stepper-line {
+    flex: 0 0 16px;
+    margin-bottom: 16px;
+  }
+}
+
+/* ===================================
+   PAGE DISPLAY
+   =================================== */
+.page-section {
+  display: none;
+}
+
+.page-section.active {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===================================
+   CONTENT SECTIONS
+   =================================== */
+.section-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--primary-light);
+  margin-bottom: var(--space-4);
+}
+
+.page-section p {
+  margin-bottom: var(--space-4);
+  color: rgba(245, 245, 245, 0.9);
+  line-height: 1.4;
+  font-size: 1rem;
+}
+
+.page-section p:last-child {
+  margin-bottom: 0;
+}
+
+.page-section ul,
+.page-section ol {
+  margin-bottom: var(--space-4);
+  padding-left: var(--space-6);
+  color: rgba(245, 245, 245, 0.9);
+}
+
+.page-section li {
+  margin-bottom: var(--space-2);
+  line-height: 1.4;
+  font-size: 1rem;
+}
+
+.page-section strong {
+  color: white;
+  font-weight: 700;
+}
+
+.page-section a {
+  color: var(--primary-light);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 130, 0, 0.3);
+  transition: all var(--transition-base);
+}
+
+.page-section a:hover {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+/* ===================================
+   NAVIGATION BUTTONS
+   =================================== */
+.page-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--space-8);
+  padding-top: var(--space-6);
+  border-top: 2px solid rgba(255, 130, 0, 0.2);
+  gap: var(--space-4);
+}
+
+.nav-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  border: none;
+  border-radius: var(--radius-full);
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  box-shadow: 0 4px 12px rgba(255, 130, 0, 0.3);
+  font-family: var(--font-sans);
+}
+
+.nav-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 130, 0, 0.4);
+}
+
+.nav-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.nav-button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.nav-button.secondary {
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: none;
+}
+
+.nav-button.secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+}
+
+/* ===================================
+   FOOTER
+   =================================== */
+.site-footer {
+  position: relative;
+  z-index: 1;
+  background: rgba(5, 26, 19, 0.98);
+  backdrop-filter: blur(10px);
+  border-top: 2px solid rgba(255, 130, 0, 0.3);
+  padding: var(--space-8) 0 var(--space-6);
+  margin-top: var(--space-12);
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-6);
+  text-align: center;
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.footer-brand {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: white;
+}
+
+.footer-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+.footer-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: color var(--transition-base);
+  position: relative;
+}
+
+.footer-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--primary);
+  transition: width var(--transition-base);
+}
+
+.footer-link:hover {
+  color: var(--primary-light);
+}
+
+.footer-link:hover::after {
+  width: 100%;
+}
+
+.footer-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-top: var(--space-4);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  width: 100%;
+}
+
+.footer-copyright {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.footer-disclaimer {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
+@media (min-width: 768px) {
+  .footer-content {
+    padding: 0 var(--space-6);
+  }
+  
+  .footer-nav {
+    gap: var(--space-6);
+  }
+  
+  .footer-link {
+    font-size: 1rem;
+  }
+}
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="index.html" class="site-logo">
+        <div class="logo-icon">
+          <i class="fa-solid fa-football"></i>
+        </div>
+        <span class="logo-text">Tennessee Gameday</span>
+      </a>
+      
+      <a href="index.html" class="back-link">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Back to Hub</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="content-container">
+      <h1 class="page-title">Privacy Policy</h1>
+      <p class="page-subtitle">Last Updated: January 2025</p>
+
+      <!-- Page Stepper -->
+      <div class="page-stepper">
+        <div class="stepper-step" data-page="1">
+          <div class="stepper-circle">1</div>
+          <span class="stepper-label">Introduction</span>
+        </div>
+        <div class="stepper-line"></div>
+        <div class="stepper-step" data-page="2">
+          <div class="stepper-circle">2</div>
+          <span class="stepper-label">Collection</span>
+        </div>
+        <div class="stepper-line"></div>
+        <div class="stepper-step" data-page="3">
+          <div class="stepper-circle">3</div>
+          <span class="stepper-label">Usage</span>
+        </div>
+        <div class="stepper-line"></div>
+        <div class="stepper-step" data-page="4">
+          <div class="stepper-circle">4</div>
+          <span class="stepper-label">Sharing</span>
+        </div>
+        <div class="stepper-line"></div>
+        <div class="stepper-step" data-page="5">
+          <div class="stepper-circle">5</div>
+          <span class="stepper-label">Security</span>
+        </div>
+        <div class="stepper-line"></div>
+        <div class="stepper-step" data-page="6">
+          <div class="stepper-circle">6</div>
+          <span class="stepper-label">Your Rights</span>
+        </div>
+        <div class="stepper-line"></div>
+        <div class="stepper-step" data-page="7">
+          <div class="stepper-circle">7</div>
+          <span class="stepper-label">Contact</span>
+        </div>
+      </div>
+
+      <!-- Page 1: Introduction -->
+      <div class="page-section active" data-page="1">
+        <h2 class="section-title">Introduction</h2>
+        <p>
+          Welcome to Tennessee Gameday Hub ("we," "our," or "us"). We are committed to protecting your privacy and ensuring you have a positive experience on our website. This Privacy Policy outlines how we collect, use, and protect your personal information.
+        </p>
+      </div>
+
+      <!-- Page 2: Information We Collect -->
+      <div class="page-section" data-page="2">
+        <h2 class="section-title">Information We Collect</h2>
+        <p>We may collect the following types of information:</p>
+        <ul>
+          <li><strong>Personal Information:</strong> Name, email address, phone number, and business details when you submit a listing.</li>
+          <li><strong>Usage Data:</strong> Information about how you interact with our website, including IP address, browser type, and pages visited.</li>
+          <li><strong>Cookies:</strong> We use cookies to enhance your browsing experience and analyze website traffic.</li>
+        </ul>
+      </div>
+
+      <!-- Page 3: How We Use Your Information -->
+      <div class="page-section" data-page="3">
+        <h2 class="section-title">How We Use Your Information</h2>
+        <p>We use the information we collect to:</p>
+        <ul>
+          <li>Display your business listing on Tennessee Gameday Hub.</li>
+          <li>Communicate with you about your submission and approval status.</li>
+          <li>Improve our website and user experience.</li>
+          <li>Send promotional communications (only with your consent).</li>
+          <li>Comply with legal obligations.</li>
+        </ul>
+      </div>
+
+      <!-- Page 4: Data Sharing and Disclosure -->
+      <div class="page-section" data-page="4">
+        <h2 class="section-title">Data Sharing and Disclosure</h2>
+        <p>
+          We do not sell, trade, or rent your personal information to third parties. We may share your information only in the following circumstances:
+        </p>
+        <ul>
+          <li><strong>With Your Consent:</strong> When you explicitly agree to share your information.</li>
+          <li><strong>Legal Requirements:</strong> When required by law or to protect our rights.</li>
+          <li><strong>Service Providers:</strong> With trusted third-party services that help us operate our website (e.g., hosting providers).</li>
+        </ul>
+      </div>
+
+      <!-- Page 5: Data Security -->
+      <div class="page-section" data-page="5">
+        <h2 class="section-title">Data Security</h2>
+        <p>
+          We implement appropriate technical and organizational measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. However, no method of transmission over the internet is 100% secure.
+        </p>
+        <p>
+          We regularly review and update our security practices to ensure the highest level of protection for your data.
+        </p>
+      </div>
+
+      <!-- Page 6: Your Rights -->
+      <div class="page-section" data-page="6">
+        <h2 class="section-title">Your Rights</h2>
+        <p>You have the right to:</p>
+        <ul>
+          <li>Access, update, or delete your personal information.</li>
+          <li>Opt-out of promotional communications.</li>
+          <li>Request a copy of your data.</li>
+          <li>Lodge a complaint with a data protection authority.</li>
+        </ul>
+        <p>
+          To exercise any of these rights, please contact us using the information provided in the Contact section.
+        </p>
+      </div>
+
+      <!-- Page 7: Contact Us -->
+      <div class="page-section" data-page="7">
+        <h2 class="section-title">Contact Us</h2>
+        <p>
+          If you have any questions about this Privacy Policy or how we handle your data, please contact us at:
+        </p>
+        <p>
+          <strong>Email:</strong> <a href="/cdn-cgi/l/email-protection#1666647f6077756f5662737878736565737371777b7372776f7e63743875797b"><span class="__cf_email__" data-cfemail="c9b9bba0bfa8aab089bdaca7a7acbabaacacaea8a4acada8b0a1bcabe7aaa6a4">[email&#160;protected]</span></a>
+        </p>
+        <p>
+          <strong>Note:</strong> We may update this Privacy Policy from time to time. Any changes will be posted on this page with an updated "Last Updated" date.
+        </p>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="page-navigation">
+        <button class="nav-button secondary" id="prevBtn">
+          <i class="fa-solid fa-arrow-left"></i>
+          <span>Previous</span>
+        </button>
+        <button class="nav-button" id="nextBtn">
+          <span>Next</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div class="footer-logo">
+        <div class="logo-icon">
+          <i class="fa-solid fa-football"></i>
+        </div>
+        <span class="footer-brand">Tennessee Gameday Hub</span>
+      </div>
+      
+      <nav class="footer-nav">
+        <a href="index.html" class="footer-link">Home</a>
+        <a href="#" class="footer-link">About</a>
+        <a href="submit-listing-wizard.html" class="footer-link">Submit Listing</a>
+        <a href="privacy-policy.html" class="footer-link">Privacy Policy</a>
+        <a href="terms-of-service.html" class="footer-link">Terms of Service</a>
+      </nav>
+      
+      <div class="footer-bottom">
+        <p class="footer-copyright">
+          &copy; 2025 Tennessee Gameday Hub. All rights reserved.
+        </p>
+        <p class="footer-disclaimer">
+          Not affiliated with the University of Tennessee or any official athletic program.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    let currentPage = 1;
+    const totalPages = 7;
+
+    function showPage(pageNum) {
+      // Hide all pages
+      document.querySelectorAll('.page-section').forEach(section => {
+        section.classList.remove('active');
+      });
+      
+      // Show current page
+      document.querySelector(`.page-section[data-page="${pageNum}"]`).classList.add('active');
+      
+      // Update stepper
+      document.querySelectorAll('.stepper-step').forEach((step, index) => {
+        const stepPage = parseInt(step.getAttribute('data-page'));
+        step.classList.remove('active', 'completed');
+        
+        if (stepPage === pageNum) {
+          step.classList.add('active');
+        } else if (stepPage < pageNum) {
+          step.classList.add('completed');
+        }
+      });
+      
+      // Update lines
+      document.querySelectorAll('.stepper-line').forEach((line, index) => {
+        line.classList.remove('completed');
+        if (index < pageNum - 1) {
+          line.classList.add('completed');
+        }
+      });
+      
+      // Update buttons
+      document.getElementById('prevBtn').disabled = (pageNum === 1);
+      document.getElementById('nextBtn').disabled = (pageNum === totalPages);
+      
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function changePage(direction) {
+      currentPage += direction;
+      if (currentPage < 1) currentPage = 1;
+      if (currentPage > totalPages) currentPage = totalPages;
+      showPage(currentPage);
+    }
+
+    // Click on stepper circles to jump to page
+    document.querySelectorAll('.stepper-step').forEach(step => {
+      step.addEventListener('click', function() {
+        const pageNum = parseInt(this.getAttribute('data-page'));
+        currentPage = pageNum;
+        showPage(currentPage);
+      });
+    });
+
+    // Add event listeners to navigation buttons
+    document.getElementById('prevBtn').addEventListener('click', function() {
+      changePage(-1);
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', function() {
+      changePage(1);
+    });
+
+    // Initialize
+    showPage(1);
+  </script>
+</body>
+</html>
