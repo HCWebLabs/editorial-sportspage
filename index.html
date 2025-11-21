@@ -1,0 +1,2700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tennessee Gameday Hub | Your Complete Fan Guide</title>
+  <meta name="description" content="Your complete Tennessee gameday resource: live scores, schedule, weather, map, and fan guide for football fans.">
+  <meta name="theme-color" content="#FF8200">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Source+Sans+3:wght@400;600;700;900&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  
+  <style>
+/* ===================================
+   CSS CUSTOM PROPERTIES (Variables)
+   =================================== */
+:root {
+  /* Tennessee Colors */
+  --tn-orange: #FF8200;
+  --tn-orange-dark: #E67300;
+  --tn-orange-light: #FF9933;
+  --smokey-gray: #58595B;
+  --white: #FFFFFF;
+  
+  /* Semantic Colors */
+  --primary: var(--tn-orange);
+  --primary-dark: var(--tn-orange-dark);
+  --primary-light: var(--tn-orange-light);
+  
+  /* UI Colors */
+  --text-primary: #1a1a1a;
+  --text-secondary: #4a4a4a;
+  --text-muted: rgba(245, 245, 245, 0.7);
+  --bg-primary: #fafafa;
+  --bg-secondary: #ffffff;
+  --border-color: #e5e5e5;
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+  --shadow-xl: 0 16px 48px rgba(0,0,0,0.15);
+  
+  /* Field Green (for cards) */
+  --field-dark: #0a3d2e;
+  --field-medium: #0f5542;
+  --field-light: #1a6b55;
+  
+  /* Glass Effect */
+  --glass-bg: rgba(255, 255, 255, 0.95);
+  --glass-border: rgba(255, 130, 0, 0.15);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  
+  /* Status Colors */
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --info: #3b82f6;
+  
+  /* Typography Scale (Fluid) */
+  --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+  --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  --text-lg: clamp(1.125rem, 1.05rem + 0.35vw, 1.375rem);
+  --text-xl: clamp(1.25rem, 1.15rem + 0.5vw, 1.75rem);
+  --text-2xl: clamp(1.5rem, 1.35rem + 0.75vw, 2.25rem);
+  --text-3xl: clamp(1.875rem, 1.65rem + 1.125vw, 3rem);
+  --text-4xl: clamp(2.25rem, 1.95rem + 1.5vw, 3.75rem);
+  
+  /* Spacing Scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  
+  /* Containers */
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --container-2xl: 1536px;
+  
+  /* Border Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-full: 9999px;
+  
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 350ms ease;
+  
+  /* Fonts */
+  --font-sans: 'Source Sans 3', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-display: 'Anton', 'Impact', sans-serif;
+}
+
+/* ===================================
+   RESET & BASE STYLES
+   =================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  scroll-padding-top: 100px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.4;
+  color: var(--text-primary);
+  background: #0a3d2e;
+  overflow-x: hidden;
+  position: relative;
+  min-height: 100vh;
+}
+
+/* Full-Screen Background Video Container */
+.bg-video {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.bg-video video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+.bg-video video.loaded {
+  opacity: 1;
+}
+
+/* Dark overlay for readability */
+.bg-video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg, 
+    rgba(5, 20, 15, 0.75) 0%, 
+    rgba(8, 30, 22, 0.75) 100%
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+/* ===================================
+   TYPOGRAPHY
+   =================================== */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-4);
+}
+
+h1 { font-size: var(--text-4xl); }
+h2 { font-size: var(--text-3xl); }
+h3 { font-size: var(--text-2xl); }
+h4 { font-size: var(--text-xl); }
+h5 { font-size: var(--text-lg); }
+h6 { font-size: var(--text-base); }
+
+p {
+  margin-bottom: var(--space-4);
+  line-height: 1.3;
+  color: rgba(245, 245, 245, 0.9);
+}
+
+ul, ol {
+  line-height: 1.3;
+  color: rgba(245, 245, 245, 0.9);
+}
+
+li {
+  line-height: 1.3;
+  color: rgba(245, 245, 245, 0.9);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.text-small {
+  font-size: var(--text-sm);
+}
+
+.text-xs {
+  font-size: var(--text-xs);
+}
+
+/* ===================================
+   LAYOUT UTILITIES
+   =================================== */
+.container {
+  width: 100%;
+  max-width: var(--container-xl);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-4);
+  padding-right: var(--space-4);
+}
+
+@media (min-width: 640px) {
+  .container { padding-left: var(--space-6); padding-right: var(--space-6); }
+}
+
+@media (min-width: 1024px) {
+  .container { padding-left: var(--space-8); padding-right: var(--space-8); }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ===================================
+   HEADER & NAVIGATION
+   =================================== */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px) saturate(180%);
+  border-bottom: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: var(--space-4);
+  padding-bottom: var(--space-4);
+  gap: var(--space-4);
+}
+
+/* Logo */
+.site-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-lg);
+  font-weight: 800;
+  color: var(--text-primary);
+  transition: transform var(--transition-fast);
+}
+
+.site-logo:hover {
+  transform: translateY(-2px);
+}
+
+.logo-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  border-radius: var(--radius-lg);
+  display: grid;
+  place-items: center;
+  color: white;
+  font-size: 1.25rem;
+  box-shadow: 0 4px 12px rgba(255, 130, 0, 0.3);
+}
+
+.logo-text {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .logo-text { display: block; }
+}
+
+/* Desktop Nav */
+.desktop-nav {
+  display: none;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+@media (min-width: 768px) {
+  .desktop-nav { display: flex; }
+}
+
+.nav-link {
+  font-weight: 600;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  position: relative;
+  padding: var(--space-2) 0;
+  transition: color var(--transition-fast);
+}
+
+.nav-link:hover {
+  color: var(--primary);
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--primary);
+  transition: width var(--transition-base);
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+.nav-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  border-radius: var(--radius-full);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  box-shadow: 0 4px 12px rgba(255, 130, 0, 0.3);
+  transition: all var(--transition-base);
+}
+
+.nav-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 130, 0, 0.4);
+}
+
+.nav-cta::after {
+  display: none;
+}
+
+/* Mobile Menu Button */
+.mobile-menu-btn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  padding: var(--space-2);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  z-index: 101;
+}
+
+@media (min-width: 767px) {
+  .mobile-menu-btn { display: none; }
+}
+
+.mobile-menu-btn i {
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  transition: all var(--transition-base);
+}
+
+.mobile-menu-btn[aria-expanded="true"] i {
+  transform: rotate(90deg);
+}
+
+/* Mobile Nav - FULL-SCREEN PREMIUM GRID DESIGN */
+.mobile-nav {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, var(--field-dark) 0%, var(--field-medium) 50%, var(--field-dark) 100%);
+  padding: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-slow);
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-nav.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.mobile-nav-header {
+  position: absolute;
+  top: var(--space-5);
+  right: var(--space-5);
+  z-index: 10;
+}
+
+.mobile-nav-title {
+  display: none;
+}
+
+.mobile-nav-close {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 130, 0, 0.5);
+  color: var(--primary-light);
+  font-size: 1.75rem;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 20px rgba(255, 130, 0, 0.3);
+}
+
+.mobile-nav-close:hover,
+.mobile-nav-close:active {
+  background: rgba(255, 130, 0, 0.2);
+  border-color: var(--primary);
+  transform: rotate(180deg) scale(1.1);
+  color: white;
+  box-shadow: 0 6px 30px rgba(255, 130, 0, 0.5);
+}
+
+.mobile-nav-overlay {
+  display: none;
+}
+
+.mobile-nav-links {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+  padding: var(--space-10) var(--space-4) var(--space-6) var(--space-4);
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.mobile-nav-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  aspect-ratio: 4 / 3;
+  color: white;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1rem, 4vw, 1.5rem);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: center;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-xl);
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  transition: all var(--transition-base);
+  text-decoration: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Submit Listing spans 2 columns on portrait (2-col grid) */
+.mobile-nav-link:last-child {
+  grid-column: span 2;
+  aspect-ratio: auto;
+}
+
+.mobile-nav-link::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 130, 0, 0.1), rgba(255, 153, 51, 0.1));
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+.mobile-nav-link:hover::before,
+.mobile-nav-link:active::before {
+  opacity: 1;
+}
+
+.mobile-nav-link:hover,
+.mobile-nav-link:active {
+  border-color: var(--primary);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 8px 30px rgba(255, 130, 0, 0.4);
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.mobile-nav-link i {
+  width: auto;
+  text-align: center;
+  color: var(--primary-light);
+  font-size: clamp(2rem, 8vw, 3rem);
+  transition: all var(--transition-base);
+  position: relative;
+  z-index: 1;
+}
+
+.mobile-nav-link:hover i,
+.mobile-nav-link:active i {
+  color: white;
+  transform: scale(1.15) rotateY(360deg);
+}
+
+.mobile-nav-link span {
+  display: block;
+  line-height: 1.2;
+  position: relative;
+  z-index: 1;
+}
+
+/* Mobile Nav Responsive Adjustments */
+@media (max-width: 480px) {
+  .mobile-nav-header {
+    top: var(--space-4);
+    right: var(--space-4);
+  }
+  
+  .mobile-nav-close {
+    width: 48px;
+    height: 48px;
+    font-size: 1.5rem;
+  }
+  
+  .mobile-nav-link {
+    padding: var(--space-4);
+  }
+}
+
+@media (max-width: 360px) {
+  .mobile-nav-close {
+    width: 44px;
+    height: 44px;
+    font-size: 1.3rem;
+  }
+  
+  .mobile-nav-links {
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+    padding: var(--space-8) var(--space-3) var(--space-3) var(--space-3);
+  }
+  
+  .mobile-nav-link {
+    padding: var(--space-3) var(--space-4);
+    gap: var(--space-1);
+    aspect-ratio: auto;
+    min-height: 70px;
+  }
+  
+  .mobile-nav-link i {
+    font-size: clamp(1.75rem, 7vw, 2.25rem);
+  }
+  
+  .mobile-nav-link span {
+    font-size: clamp(1rem, 4vw, 1.25rem);
+  }
+  
+  .mobile-nav-link:last-child {
+    grid-column: span 1;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .mobile-nav-links {
+    grid-template-columns: repeat(3, 1fr);
+    padding: var(--space-4);
+    gap: var(--space-3);
+  }
+  
+  .mobile-nav-link {
+    aspect-ratio: auto;
+    padding: var(--space-4);
+  }
+  
+  .mobile-nav-link:last-child {
+    grid-column: span 2;
+  }
+}
+
+@media (orientation: landscape) and (min-width: 641px) and (max-width: 767px) and (min-height: 500px) {
+  .mobile-nav-links {
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 700px;
+  }
+  
+  .mobile-nav-link:last-child {
+    grid-column: span 2;
+  }
+}
+
+/* ===================================
+   COMPACT COUNTDOWN (Header Strip)
+   =================================== */
+.countdown-strip {
+  background: linear-gradient(135deg, var(--field-dark), var(--field-medium));
+  border-bottom: 1px solid rgba(255, 130, 0, 0.2);
+  padding: var(--space-3) 0;
+  position: relative;
+  z-index: 1;
+}
+
+.countdown-compact {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.countdown-unit-compact {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 60px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.countdown-value-compact {
+  display: block;
+  font-size: var(--text-xl);
+  font-weight: 900;
+  color: var(--field-dark);
+  line-height: 1;
+}
+
+.countdown-label-compact {
+  display: block;
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 2px;
+}
+
+@media (max-width: 640px) {
+  .countdown-compact { gap: var(--space-2); }
+  .countdown-unit-compact { 
+    min-width: 50px; 
+    padding: var(--space-2);
+  }
+  .countdown-value-compact { font-size: var(--text-lg); }
+}
+
+/* ===================================
+   HERO CARD (now in bento grid)
+   =================================== */
+.hero-card {
+  background: linear-gradient(135deg, var(--field-dark), var(--field-medium));
+  border-radius: var(--radius-2xl);
+  padding: var(--space-8);
+  color: white;
+  box-shadow: var(--shadow-xl);
+}
+
+.hero-title {
+  color: white;
+  margin-bottom: var(--space-4);
+}
+
+.hero-subtitle {
+  font-size: var(--text-lg);
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: var(--space-8);
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-full);
+  font-weight: 700;
+  font-size: 1rem;
+  transition: all var(--transition-base);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  color: white;
+  box-shadow: 0 4px 12px rgba(255, 130, 0, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 130, 0, 0.4);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.btn-sm {
+  padding: var(--space-2) var(--space-4);
+  font-size: 1rem;
+}
+
+/* ===================================
+   CARDS & GRID LAYOUTS
+   =================================== */
+.section {
+  padding: var(--space-12) 0;
+  position: relative;
+  z-index: 1;
+}
+
+.section-title {
+  margin-bottom: var(--space-8);
+  text-align: center;
+}
+
+.grid {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.grid-2 {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .grid-2 { grid-template-columns: repeat(2, 1fr); }
+}
+
+.grid-3 {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+}
+
+.grid-4 {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .grid-4 { grid-template-columns: repeat(4, 1fr); }
+}
+
+.card {
+  background: linear-gradient(135deg, rgba(10, 61, 46, 0.98), rgba(15, 85, 66, 0.98));
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  color: white;
+  box-shadow: var(--shadow-lg);
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+  border: 2px dashed rgba(255, 130, 0, 0.4);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-5);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.card-title {
+  color: white;
+  margin: 0;
+  font-size: var(--text-xl);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.card-title i {
+  color: var(--primary-light);
+}
+
+.card-body {
+  color: rgba(245, 245, 245, 0.9);
+}
+
+/* Status Dot */
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+}
+
+.status-dot.red { background: var(--danger); }
+.status-dot.yellow { background: var(--warning); }
+.status-dot.green { 
+  background: var(--success); 
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.1); }
+}
+
+/* ===================================
+   TABLE STYLES
+   =================================== */
+.table-container {
+  overflow-x: auto;
+  margin: var(--space-4) 0;
+  border-radius: var(--radius-lg);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+thead {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+th {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: var(--text-xs);
+  letter-spacing: 0.05em;
+  color: rgba(245, 245, 245, 0.95);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  line-height: 1.3;
+}
+
+td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: rgba(245, 245, 245, 0.9);
+  line-height: 1.3;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+tbody tr {
+  transition: background var(--transition-fast);
+}
+
+tbody tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* ===================================
+   ICON LIST
+   =================================== */
+/* ===================================
+   SIMPLE LIST (no icons, just dots)
+   =================================== */
+.icon-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-left: var(--space-4);
+}
+
+.icon-list-item {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  line-height: 1.3;
+  position: relative;
+  padding-left: var(--space-5);
+}
+
+.icon-list-item::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--primary-light);
+  font-size: 1.25rem;
+  line-height: 1;
+  font-weight: bold;
+}
+
+/* ===================================
+   BENTO BOX LAYOUT
+   =================================== */
+.bento-container {
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: repeat(12, 1fr);
+  grid-auto-rows: minmax(200px, auto);
+}
+
+/* Hero - 12x1 full width at top */
+.bento-hero {
+  grid-column: span 12;
+  grid-row: span 1;
+}
+
+/* Status Cards - 4x1 each (3 cards side by side) */
+.bento-status-score {
+  grid-column: span 4;
+  grid-row: span 1;
+}
+
+.bento-status-next {
+  grid-column: span 4;
+  grid-row: span 1;
+}
+
+.bento-status-rank {
+  grid-column: span 4;
+  grid-row: span 1;
+}
+
+/* Schedule - 8x2 on desktop */
+.bento-schedule {
+  grid-column: span 8;
+  grid-row: span 2;
+}
+
+/* Map - 4x2 tall */
+.bento-map {
+  grid-column: span 4;
+  grid-row: span 2;
+}
+
+/* Guide - 8x1 wide */
+.bento-guide {
+  grid-column: span 8;
+  grid-row: span 1;
+}
+
+/* Weather - 4x1 */
+.bento-weather {
+  grid-column: span 4;
+  grid-row: span 1;
+}
+
+/* Specials - 6x1 */
+.bento-specials {
+  grid-column: span 6;
+  grid-row: span 1;
+}
+
+/* Fan News - 6x1 */
+.bento-fannews {
+  grid-column: span 6;
+  grid-row: span 1;
+}
+
+/* Tailgate Tips - 4x1 */
+.bento-tailgate {
+  grid-column: span 4;
+  grid-row: span 1;
+}
+
+/* Visiting Fans - 4x1 */
+.bento-visiting {
+  grid-column: span 4;
+  grid-row: span 1;
+}
+
+/* Transport - 4x1 */
+.bento-transport {
+  grid-column: span 4;
+  grid-row: span 1;
+}
+
+/* Game Odds - 4x1 */
+.bento-odds {
+  grid-column: span 4;
+  grid-row: span 1;
+}
+
+/* Merch - 4x1 */
+.bento-merch {
+  grid-column: span 4;
+  grid-row: span 1;
+}
+
+/* Social - 4x1 */
+.bento-social {
+  grid-column: span 4;
+  grid-row: span 1;
+}
+
+/* Submit - 6x1 */
+.bento-submit {
+  grid-column: span 6;
+  grid-row: span 1;
+}
+
+/* Newsletter - 6x1 */
+.bento-newsletter {
+  grid-column: span 6;
+  grid-row: span 1;
+}
+
+/* Tablet: 768px - 1023px */
+@media (max-width: 1023px) {
+  .bento-container {
+    grid-template-columns: repeat(6, 1fr);
+    gap: var(--space-5);
+  }
+  
+  .bento-hero {
+    grid-column: span 6;
+    grid-row: span 1;
+  }
+  
+  .bento-status-score,
+  .bento-status-next,
+  .bento-status-rank {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+  
+  .bento-schedule {
+    grid-column: span 6;
+    grid-row: span 2;
+  }
+  
+  .bento-map {
+    grid-column: span 6;
+    grid-row: span 2;
+  }
+  
+  .bento-guide {
+    grid-column: span 6;
+    grid-row: span 1;
+  }
+  
+  .bento-weather {
+    grid-column: span 6;
+    grid-row: span 1;
+  }
+  
+  .bento-specials,
+  .bento-fannews,
+  .bento-submit,
+  .bento-newsletter {
+    grid-column: span 6;
+    grid-row: span 1;
+  }
+  
+  .bento-tailgate,
+  .bento-visiting,
+  .bento-transport,
+  .bento-odds,
+  .bento-merch,
+  .bento-social {
+    grid-column: span 3;
+    grid-row: span 1;
+  }
+}
+
+/* Mobile: 640px - 767px */
+@media (max-width: 767px) {
+  .bento-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+    grid-auto-rows: minmax(180px, auto);
+  }
+  
+  .bento-hero,
+  .bento-status-score,
+  .bento-status-next,
+  .bento-status-rank,
+  .bento-schedule,
+  .bento-map,
+  .bento-guide,
+  .bento-weather,
+  .bento-specials,
+  .bento-fannews,
+  .bento-transport {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+  
+  .bento-tailgate,
+  .bento-visiting,
+  .bento-odds,
+  .bento-merch,
+  .bento-social,
+  .bento-submit,
+  .bento-newsletter {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+}
+
+/* Small Mobile: < 640px */
+@media (max-width: 639px) {
+  .bento-container {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    grid-auto-rows: auto;
+  }
+  
+  .bento-hero,
+  .bento-status-score,
+  .bento-status-next,
+  .bento-status-rank,
+  .bento-schedule,
+  .bento-map,
+  .bento-guide,
+  .bento-weather,
+  .bento-specials,
+  .bento-fannews,
+  .bento-tailgate,
+  .bento-visiting,
+  .bento-transport,
+  .bento-odds,
+  .bento-merch,
+  .bento-social,
+  .bento-submit,
+  .bento-newsletter {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+}
+
+/* ===================================
+   MAP EMBED
+   =================================== */
+.map-embed {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin: var(--space-4) 0;
+}
+
+.map-embed iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* ===================================
+   WEATHER WIDGET
+   =================================== */
+.weather-widget {
+  margin: var(--space-4) 0;
+}
+
+/* ===================================
+   FORMS
+   =================================== */
+.form-group {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+input[type="email"] {
+  flex: 1;
+  min-width: 200px;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-radius: var(--radius-lg);
+  font-size: var(--text-sm);
+  transition: all var(--transition-fast);
+}
+
+input[type="email"]:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+input[type="email"]::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ===================================
+   FOOTER
+   =================================== */
+/* ===================================
+   FOOTER
+   =================================== */
+.site-footer {
+  position: relative;
+  z-index: 1;
+  background: rgba(5, 26, 19, 0.98);
+  backdrop-filter: blur(10px);
+  border-top: 2px solid rgba(255, 130, 0, 0.3);
+  padding: var(--space-6) 0 var(--space-4);
+  margin-top: var(--space-12);
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  text-align: center;
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.footer-logo .logo-icon {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, var(--tn-orange-light), var(--tn-orange));
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.125rem;
+  flex-shrink: 0;
+}
+
+.footer-brand {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: white;
+}
+
+.footer-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
+.footer-link {
+  color: rgba(245, 245, 245, 0.8);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: color 0.25s ease;
+  position: relative;
+}
+
+.footer-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--tn-orange);
+  transition: width 0.25s ease;
+}
+
+.footer-link:hover {
+  color: var(--tn-orange-light);
+}
+
+.footer-link:hover::after {
+  width: 100%;
+}
+
+.footer-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-top: var(--space-3);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  width: 100%;
+}
+
+.footer-copyright {
+  color: rgba(245, 245, 245, 0.8);
+  font-size: 0.8125rem;
+  margin: 0 0 4px 0;
+  line-height: 1.4;
+}
+
+.footer-disclaimer {
+  color: rgba(245, 245, 245, 0.6);
+  font-size: 0.75rem;
+  font-style: italic;
+  margin: 0 0 4px 0;
+  line-height: 1.4;
+}
+
+.footer-disclaimer:last-child {
+  margin-bottom: 0;
+}
+
+@media (min-width: 768px) {
+  .footer-content {
+    padding: 0 var(--space-6);
+  }
+  
+  .footer-nav {
+    gap: var(--space-5);
+  }
+  
+  .footer-link {
+    font-size: 0.9375rem;
+  }
+  
+  .footer-logo .logo-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.25rem;
+  }
+  
+  .footer-brand {
+    font-size: 1.25rem;
+  }
+}
+
+/* ===================================
+   UTILITY CLASSES
+   =================================== */
+.mb-4 { margin-bottom: var(--space-4); }
+.mb-6 { margin-bottom: var(--space-6); }
+.mb-8 { margin-bottom: var(--space-8); }
+.mt-4 { margin-top: var(--space-4); }
+.mt-6 { margin-top: var(--space-6); }
+.mt-8 { margin-top: var(--space-8); }
+
+.text-center { text-align: center; }
+.font-bold { font-weight: 700; }
+.font-semibold { font-weight: 600; }
+
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.gap-2 { gap: var(--space-2); }
+.gap-3 { gap: var(--space-3); }
+.gap-4 { gap: var(--space-4); }
+
+/* ===================================
+   COLLAPSIBLE SECTIONS
+   =================================== */
+.collapsible-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height var(--transition-slow);
+}
+
+.collapsible-content.open {
+  max-height: 2000px;
+}
+
+/* ===================================
+   ACCESSIBILITY
+   =================================== */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ===================================
+   LOADING STATES
+   =================================== */
+.skeleton {
+  background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-md);
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+  </style>
+</head>
+
+<body>
+  <!-- Background Video - Full Screen -->
+  <div class="bg-video">
+    <video 
+      autoplay 
+      muted 
+      loop 
+      playsinline 
+      preload="auto"
+      poster="https://i.imgur.com/u1ew6vM.jpeg"
+      id="bgVideo"
+      webkit-playsinline>
+      <!-- Direct Pexels download link -->
+      <source src="https://www.pexels.com/download/video/32006306/" type="video/mp4">
+      <!-- Fallback: Standard Pexels CDN link UHD -->
+      <source src="https://videos.pexels.com/video-files/32006306/32006306-uhd_2560_1440_25fps.mp4" type="video/mp4">
+      <!-- Fallback: HD quality -->
+      <source src="https://videos.pexels.com/video-files/32006306/32006306-hd_1920_1080_25fps.mp4" type="video/mp4">
+      Your browser does not support HTML5 video.
+    </video>
+    <div class="bg-video-overlay"></div>
+  </div>
+
+  <!-- Rocky Top Audio Clip -->
+  <audio id="rockyTopClip" preload="auto">
+    <source src="/assets/audio/rocky-top-clip.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <!-- ===================================
+       HEADER & NAVIGATION
+       =================================== -->
+  <header class="site-header">
+    <div class="container">
+      <div class="header-inner">
+        <!-- Logo -->
+        <a href="#top" class="site-logo">
+          <div class="logo-icon">
+            <i class="fa-solid fa-football"></i>
+          </div>
+          <span class="logo-text">Tennessee Gameday</span>
+        </a>
+
+        <!-- Desktop Navigation -->
+        <nav class="desktop-nav">
+          <a href="#schedule" class="nav-link">Schedule</a>
+          <a href="#specials" class="nav-link">Specials</a>
+          <a href="#map" class="nav-link">Map</a>
+          <a href="#guide" class="nav-link">Guide</a>
+          <a href="#submit" class="nav-cta">
+            <i class="fa-solid fa-paper-plane"></i>
+            <span>Submit</span>
+          </a>
+        </nav>
+
+        <!-- Mobile Menu Button -->
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu" aria-expanded="false">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Navigation -->
+  <div class="mobile-nav-overlay" id="mobileOverlay"></div>
+  <nav class="mobile-nav" id="mobileNav">
+    <div class="mobile-nav-header">
+      <span class="mobile-nav-title">Menu</span>
+      <button class="mobile-nav-close" id="mobileNavClose" aria-label="Close menu">
+        <i class="fa-solid fa-times"></i>
+      </button>
+    </div>
+    <div class="mobile-nav-links">
+      <a href="#schedule" class="mobile-nav-link">
+        <i class="fa-regular fa-calendar"></i>
+        <span>Schedule</span>
+      </a>
+      <a href="#specials" class="mobile-nav-link">
+        <i class="fa-solid fa-tags"></i>
+        <span>Specials</span>
+      </a>
+      <a href="#map" class="mobile-nav-link">
+        <i class="fa-solid fa-location-dot"></i>
+        <span>Map</span>
+      </a>
+      <a href="#guide" class="mobile-nav-link">
+        <i class="fa-solid fa-book"></i>
+        <span>Guide</span>
+      </a>
+      <a href="#submit" class="mobile-nav-link">
+        <i class="fa-solid fa-paper-plane"></i>
+        <span>Submit Listing</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- ===================================
+       COMPACT COUNTDOWN STRIP
+       =================================== -->
+  <div class="countdown-strip">
+    <div class="container">
+      <div class="countdown-compact" id="countdown" data-kickoff="2025-09-27T15:30:00-04:00">
+        <div class="countdown-unit-compact">
+          <span class="countdown-value-compact" id="cd-days">00</span>
+          <span class="countdown-label-compact">Days</span>
+        </div>
+        <div class="countdown-unit-compact">
+          <span class="countdown-value-compact" id="cd-hrs">00</span>
+          <span class="countdown-label-compact">Hours</span>
+        </div>
+        <div class="countdown-unit-compact">
+          <span class="countdown-value-compact" id="cd-min">00</span>
+          <span class="countdown-label-compact">Mins</span>
+        </div>
+        <div class="countdown-unit-compact">
+          <span class="countdown-value-compact" id="cd-sec">00</span>
+          <span class="countdown-label-compact">Secs</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================
+       BENTO BOX GRID LAYOUT
+       =================================== -->
+  <section class="section">
+    <div class="container">
+      <div class="bento-container">
+        
+        <!-- Hero Card (12x1) -->
+        <div class="hero-card bento-hero">
+          <h1 class="hero-title">Tennessee Gameday Hub</h1>
+          <p class="hero-subtitle">Your complete Tennessee gameday resource: live scores, schedule, weather, and fan guide.</p>
+          <div class="hero-actions">
+            <a href="#map" class="btn btn-primary">
+              <i class="fa-solid fa-location-dot"></i>
+              <span>Stadium Map</span>
+            </a>
+            <a href="#schedule" class="btn btn-secondary">
+              <i class="fa-regular fa-calendar"></i>
+              <span>View Schedule</span>
+            </a>
+            <a href="#weather" class="btn btn-secondary">
+              <i class="fa-solid fa-cloud-sun"></i>
+              <span>Weather</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Status Cards (4x1 each) -->
+        <div class="card bento-status-score">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fa-solid fa-tower-broadcast"></i>
+              Live Score
+            </h3>
+            <span class="status-dot red" id="scoreDot"></span>
+          </div>
+          <div class="card-body">
+            <p class="text-muted text-small">Tennessee</p>
+            <p id="scoreMsg">No game in progress.</p>
+          </div>
+        </div>
+
+        <div class="card bento-status-next">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fa-solid fa-calendar-days"></i>
+              Next Game
+            </h3>
+          </div>
+          <div class="card-body">
+            <p id="nextLine" class="font-semibold mb-4">Loading...</p>
+            <p id="nextVenue" class="text-small text-muted mb-4"></p>
+            <div class="flex flex-col gap-2">
+              <a href="#" id="addToCalendar" class="btn btn-primary btn-sm" target="_blank" rel="noopener">
+                <i class="fa-regular fa-calendar-plus"></i>
+                <span>Add to Calendar</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card bento-status-rank">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fa-solid fa-ranking-star"></i>
+              Team Rank
+            </h3>
+          </div>
+          <div class="card-body">
+            <p id="rankLine">Rank data coming soon.</p>
+          </div>
+        </div>
+        
+        <!-- Schedule & Results (8x2) -->
+        <div class="card bento-schedule" id="schedule">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">
+                <i class="fa-solid fa-calendar-check"></i>
+                Schedule & Results
+              </h2>
+              <p id="seasonRecord" class="text-xs" style="color: var(--primary-light); margin-top: 8px;"></p>
+            </div>
+            <span class="text-xs text-muted">Updated <span id="updatedAt">—</span></span>
+          </div>
+          <div class="card-body">
+            <p id="seasonMessage" class="text-sm" style="margin-bottom: 16px; display: none;"></p>
+            <div class="table-container">
+              <table id="schedTable">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Opponent</th>
+                    <th>H/A</th>
+                    <th>TV</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody id="schedRows">
+                  <tr><td colspan="5" style="text-align:center; padding:20px;">Loading schedule...</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="mt-6">
+              <button id="schedMore" class="btn btn-secondary btn-sm" type="button">
+                <i class="fa-solid fa-angles-down"></i>
+                <span>Show More Games</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Map Card (1x2) -->
+        <div class="card bento-map" id="map">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fa-solid fa-map-location-dot"></i>
+              Stadium Map
+            </h3>
+          </div>
+          <div class="card-body" style="padding:0;">
+            <div class="map-embed" style="margin: 0; padding-bottom: 75%; border-radius: var(--radius-lg) var(--radius-lg) 0 0;">
+              <iframe 
+                title="Neyland Stadium area map" 
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade" 
+                allowfullscreen
+                src="https://www.google.com/maps?q=35.955,-83.925&z=15&output=embed">
+              </iframe>
+            </div>
+            <div style="padding: var(--space-4);">
+              <div class="grid grid-2" style="gap: var(--space-3); margin-bottom: var(--space-4);">
+                <a href="https://www.google.com/maps/@35.955,-83.925,15z" class="btn btn-primary btn-sm" target="_blank" rel="noopener">
+                  <i class="fa-solid fa-up-right-from-square"></i>
+                  <span>Open Map</span>
+                </a>
+                <a href="https://www.google.com/maps/dir/?api=1&destination=35.955%2C-83.925" class="btn btn-secondary btn-sm" target="_blank" rel="noopener">
+                  <i class="fa-solid fa-diamond-turn-right"></i>
+                  <span>Directions</span>
+                </a>
+              </div>
+              <h4 class="text-small" style="margin-bottom: var(--space-3);">Nearby Spots</h4>
+              <ul id="placesList" class="icon-list"></ul>
+              <p id="placesEmpty" class="text-xs text-muted">No places loaded yet.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gameday Guide (2x1) -->
+        <div class="card bento-guide" id="guide">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fa-solid fa-book-open"></i>
+              Gameday Guide
+            </h2>
+          </div>
+          <div class="card-body">
+            <div class="grid grid-2 mb-6">
+              <div>
+                <h4 class="mb-4">Getting There</h4>
+                <ul class="icon-list">
+                  <li class="icon-list-item">
+                    <span>Rideshare or public lots; expect road closures near campus.</span>
+                  </li>
+                  <li class="icon-list-item">
+                    <span>Plan 60–90 minutes for traffic and entry queues.</span>
+                  </li>
+                  <li class="icon-list-item">
+                    <span>Pick a meetup spot in case phones die.</span>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <h4 class="mb-4">Food & Water</h4>
+                <ul class="icon-list">
+                  <li class="icon-list-item">
+                    <span>Many venues are cashless—bring a card or mobile pay.</span>
+                  </li>
+                  <li class="icon-list-item">
+                    <span>Hydrate early; find refill spots on concourses.</span>
+                  </li>
+                  <li class="icon-list-item">
+                    <span>Family sections are great with kids; consider ear protection.</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div id="guideExtra" class="collapsible-content">
+              <div class="grid grid-2 mb-6">
+                <div>
+                  <h4 class="mb-4">Entry & Bags</h4>
+                  <ul class="icon-list">
+                    <li class="icon-list-item">
+                      <span>Many venues have clear bag rules and metal detectors.</span>
+                    </li>
+                    <li class="icon-list-item">
+                      <span>Leave large items, outside alcohol, and prohibited items at home.</span>
+                    </li>
+                    <li class="icon-list-item">
+                      <span>Always verify with the official event page before you go.</span>
+                    </li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 class="mb-4">Accessibility</h4>
+                  <ul class="icon-list">
+                    <li class="icon-list-item">
+                      <span>Check ADA parking, shuttle drop-offs, elevators, and seating.</span>
+                    </li>
+                    <li class="icon-list-item">
+                      <span>Service animals typically permitted—follow venue guidance.</span>
+                    </li>
+                    <li class="icon-list-item">
+                      <span>Contact accessibility office ahead for assistance.</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <button id="guideMore" class="btn btn-secondary btn-sm" type="button">
+              <i class="fa-solid fa-angles-down"></i>
+              <span>Show More</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Weather (1x1) -->
+        <div class="card bento-weather" id="weather">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fa-solid fa-cloud-sun"></i>
+              Live Weather
+            </h3>
+          </div>
+          <div class="card-body">
+            <div class="weather-widget">
+              <a class="weatherwidget-io"
+                 href="https://forecast7.com/en/35d96n83d93/knoxville/?unit=us"
+                 data-label_1="KNOXVILLE" 
+                 data-label_2="WEATHER"
+                 data-days="5" 
+                 data-theme="pure" 
+                 data-font="Inter">
+                KNOXVILLE WEATHER
+              </a>
+            </div>
+            <p class="text-xs text-muted mt-4">Forecast courtesy of weatherwidget.io. Check again closer to kickoff.</p>
+          </div>
+        </div>
+
+        <!-- Featured Specials -->
+        <div class="card bento-specials" id="specials">
+          <div class="card-header">
+            <h2 class="card-title">Featured Specials</h2>
+          </div>
+          <div class="card-body">
+            <div id="specialsGrid" class="grid grid-2"></div>
+            <p class="text-xs text-muted mt-6">Listings are community-submitted. Call ahead to confirm availability.</p>
+          </div>
+        </div>
+
+        <!-- Fan News & Notes -->
+        <div class="card bento-fannews">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fa-solid fa-newspaper"></i>
+              Fan News
+            </h3>
+          </div>
+          <div class="card-body">
+            <ul class="icon-list">
+              <li class="icon-list-item">
+                <span>Vol Walk starts 2 hours before kickoff — meet near Gate 21.</span>
+              </li>
+              <li class="icon-list-item">
+                <span>Campus concessions testing a new refill station in Section 128.</span>
+              </li>
+              <li class="icon-list-item">
+                <span>Pep band pops-up on the south concourse at halftime (unofficial).</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Tailgate Tips -->
+        <div class="card bento-tailgate">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fa-solid fa-fire"></i>
+              Tailgate Tips
+            </h3>
+          </div>
+          <div class="card-body">
+            <ul class="icon-list">
+              <li class="icon-list-item">
+                <span>Arrive early; prime lots fill 3–4 hours pre-game.</span>
+              </li>
+              <li class="icon-list-item">
+                <span>Bring water + shade; campus heat reflects off concrete.</span>
+              </li>
+              <li class="icon-list-item">
+                <span>Pack out trash — orange bags available at lot attendants.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Visiting Fans -->
+        <div class="card bento-visiting">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fa-solid fa-users"></i>
+              Visiting Fans
+            </h3>
+          </div>
+          <div class="card-body">
+            <ul class="icon-list">
+              <li class="icon-list-item">
+                <span>Away sections typically in the upper northeast — check your row for nearest ramp.</span>
+              </li>
+              <li class="icon-list-item">
+                <span>City trolleys run pre/post game — look for green route signs.</span>
+              </li>
+              <li class="icon-list-item">
+                <span>Family-friendly eats: Market Square has quick options post-game.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Transportation & Parking -->
+        <div class="card bento-transport">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fa-solid fa-car"></i>
+              Transportation
+            </h3>
+          </div>
+          <div class="card-body">
+            <ul class="icon-list">
+              <li class="icon-list-item">
+                <span>Most campus lots are permit-only on gameday. Public cash lots open along Cumberland Ave.</span>
+              </li>
+              <li class="icon-list-item">
+                <span>Expect closures around Phillip Fulmer Way 2.5h pre-game.</span>
+              </li>
+              <li class="icon-list-item">
+                <span>Rideshare pickup zone moves to Clinch Ave after the 4th quarter.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Game Odds (moved from top) -->
+        <div class="card bento-odds">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fa-solid fa-chart-line"></i>
+              Game Odds
+            </h3>
+          </div>
+          <div class="card-body">
+            <p id="oddsLine" class="mb-4">Odds data coming soon.</p>
+            <p class="text-xs text-muted">For entertainment only. Check licensed sportsbooks for current odds.</p>
+          </div>
+        </div>
+
+        <!-- Merch & Deals -->
+        <div class="card bento-merch">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fa-solid fa-tags"></i> Merch & Deals
+            </h3>
+          </div>
+          <div class="card-body">
+            <ul class="icon-list">
+              <li class="icon-list-item">
+                <i class="fa-solid fa-shirt"></i>
+                <span>Pop-up shop by Gate 10 — clearance caps $10 while supplies last.</span>
+              </li>
+              <li class="icon-list-item">
+                <i class="fa-solid fa-percentage"></i>
+                <span>10% off orange gear at local shops with ticket stub.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Social Feed -->
+        <div class="card bento-social">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fa-brands fa-hashtag"></i> Social Feed
+            </h3>
+          </div>
+          <div class="card-body">
+            <ul class="icon-list">
+              <li class="icon-list-item">
+                <i class="fa-brands fa-x-twitter"></i>
+                <span>#GBO — share your tailgate setup and check live vibes.</span>
+              </li>
+              <li class="icon-list-item">
+                <i class="fa-solid fa-camera"></i>
+                <span>Photo opp: Torchbearer statue pre-game — best light ~90 mins before kickoff.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Submit Listing -->
+        <div class="card bento-submit" id="submit">
+          <div class="card-header">
+            <h3 class="card-title">Submit a Listing</h3>
+          </div>
+          <div class="card-body">
+            <p class="text-small mb-4">Restaurant, bar, shop, or event with a gameday special? Share it with fans.</p>
+            <a href="https://forms.gle/" class="btn btn-primary btn-sm" target="_blank" rel="noopener">
+              <i class="fa-regular fa-square-plus"></i>
+              <span>Open Submission Form</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Newsletter -->
+        <div class="card bento-newsletter">
+          <div class="card-header">
+            <h3 class="card-title">Newsletter</h3>
+          </div>
+          <div class="card-body">
+            <p class="text-small mb-4">Get a quick gameday morning email: kickoff time, weather, and new specials.</p>
+            <form class="form-group" id="newsletterForm" novalidate>
+              <input type="email" id="newsEmail" placeholder="you@email.com" required aria-label="Email address">
+              <button type="submit" class="btn btn-primary btn-sm">
+                <i class="fa-regular fa-envelope"></i>
+                <span>Subscribe</span>
+              </button>
+            </form>
+            <p class="text-xs text-muted mt-4">This is a demo site. Newsletter signup is not functional.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div class="footer-logo">
+        <div class="logo-icon">
+          <i class="fa-solid fa-football"></i>
+        </div>
+        <span class="footer-brand">Tennessee Gameday Hub</span>
+      </div>
+      
+      <nav class="footer-nav">
+        <a href="#schedule" class="footer-link">Schedule</a>
+        <a href="#guide" class="footer-link">Guide</a>
+        <a href="#specials" class="footer-link">Specials</a>
+        <a href="#map" class="footer-link">Map</a>
+        <a href="submit-listing-wizard-final.html" class="footer-link">Submit Listing</a>
+        <a href="privacy-policy-v2.html" class="footer-link">Privacy Policy</a>
+        <a href="terms-of-service-v2.html" class="footer-link">Terms of Service</a>
+      </nav>
+      
+      <div class="footer-bottom">
+        <p class="footer-copyright">
+          &copy; 2025 Tennessee Gameday Hub. All rights reserved.
+        </p>
+        <p class="footer-disclaimer">
+          Not affiliated with the University of Tennessee or any official athletic program.
+        </p>
+        <p class="footer-disclaimer" style="margin-top: 8px;">
+          Demo site created by <a href="https://www.heather-cooper.com" target="_blank" rel="noopener" style="color: var(--primary-light); text-decoration: underline;">HC Web Labs</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Weather Widget Script -->
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script async src="https://weatherwidget.io/js/widget.min.js"></script>
+
+  <!-- Main Application JavaScript -->
+  <script>
+// ========================================
+// TENNESSEE GAMEDAY HUB - MAIN APP
+// ========================================
+
+
+// Configuration
+const CONFIG = {
+  dataPath: 'https://hcweblabs.github.io/editorial-sportspage/data',
+  timezone: 'America/New_York'
+};
+
+// Helper Functions
+const $ = selector => document.querySelector(selector);
+const $$ = selector => Array.from(document.querySelectorAll(selector));
+
+const fetchJSON = async (path) => {
+  try {
+    const response = await fetch(`${CONFIG.dataPath}/${path}?t=${Date.now()}`);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return await response.json();
+  } catch (error) {
+    return null;
+  }
+};
+
+// ========================================
+// MOBILE NAVIGATION
+// ========================================
+function initMobileNav() {
+  const btn = $('#mobileMenuBtn');
+  const closeBtn = $('#mobileNavClose');
+  const nav = $('#mobileNav');
+  const overlay = $('#mobileOverlay');
+  const links = $$('.mobile-nav-link');
+  
+  if (!btn || !nav) {
+    return;
+  }
+  
+  const openMenu = () => {
+    btn.setAttribute('aria-expanded', 'true');
+    nav.classList.add('active');
+    if (overlay) overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  };
+  
+  const closeMenu = () => {
+    btn.setAttribute('aria-expanded', 'false');
+    nav.classList.remove('active');
+    if (overlay) overlay.classList.remove('active');
+    document.body.style.overflow = '';
+  };
+  
+  btn.addEventListener('click', (e) => {
+    const isOpen = btn.getAttribute('aria-expanded') === 'true';
+    isOpen ? closeMenu() : openMenu();
+  });
+  
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeMenu);
+  }
+  
+  // Click anywhere on nav background to close (not on links)
+  nav.addEventListener('click', (e) => {
+    if (e.target === nav) {
+      closeMenu();
+    }
+  });
+  
+  if (overlay) {
+    overlay.addEventListener('click', closeMenu);
+  }
+  
+  links.forEach(link => {
+    link.addEventListener('click', () => {
+      setTimeout(closeMenu, 100);
+    });
+  });
+  
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeMenu();
+  });
+  
+  window.addEventListener('resize', () => {
+    if (window.innerWidth >= 767) closeMenu();
+  });
+  
+}
+
+// ========================================
+// COUNTDOWN TIMER
+// ========================================
+function initCountdown() {
+  const el = $('#countdown');
+  if (!el) return;
+  
+  const kickoffISO = el.getAttribute('data-kickoff');
+  if (!kickoffISO) return;
+  
+  const kickoffTime = new Date(kickoffISO).getTime();
+  const daysEl = $('#cd-days');
+  const hrsEl = $('#cd-hrs');
+  const minEl = $('#cd-min');
+  const secEl = $('#cd-sec');
+  
+  const updateCountdown = () => {
+    const now = Date.now();
+    const diff = Math.max(0, kickoffTime - now);
+    
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    
+    if (daysEl) daysEl.textContent = String(days).padStart(2, '0');
+    if (hrsEl) hrsEl.textContent = String(hours).padStart(2, '0');
+    if (minEl) minEl.textContent = String(minutes).padStart(2, '0');
+    if (secEl) secEl.textContent = String(seconds).padStart(2, '0');
+  };
+  
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+  
+}
+
+// ========================================
+// DATE FORMATTING
+// ========================================
+const formatDate = (iso, includeTime = true) => {
+  if (!iso) return 'TBA';
+  
+  const date = new Date(iso);
+  const options = includeTime
+    ? { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: CONFIG.timezone, timeZoneName: 'short' }
+    : { month: 'short', day: 'numeric', timeZone: CONFIG.timezone };
+  
+  const formatted = new Intl.DateTimeFormat('en-US', options).format(date);
+  return formatted.replace(/\bE[DS]T\b/, 'ET');
+};
+
+// ========================================
+// GAME DATA HELPERS
+// ========================================
+const getKickoffTime = (game) => {
+  return game.start_time || (game.start_date ? `${game.start_date}T16:00:00Z` : null);
+};
+
+const getHomeTeam = (game) => game.home_team || game.homeTeam || game.home || '';
+const getAwayTeam = (game) => game.away_team || game.awayTeam || game.away || '';
+
+const getOpponent = (game) => {
+  const home = getHomeTeam(game);
+  return /tennessee/i.test(home) ? getAwayTeam(game) : home;
+};
+
+const getLocation = (game) => {
+  const home = getHomeTeam(game);
+  return /tennessee/i.test(home) ? 'Home' : (game.neutral_site ? 'Neutral' : 'Away');
+};
+
+const getResult = (game) => {
+  const hp = game.home_points ?? game.homePoints;
+  const ap = game.away_points ?? game.awayPoints;
+  
+  if (hp == null && ap == null) return '';
+  
+  const isAway = /tennessee/i.test(getAwayTeam(game));
+  const tnScore = isAway ? ap : hp;
+  const oppScore = isAway ? hp : ap;
+  
+  const outcome = tnScore > oppScore ? 'W' : tnScore < oppScore ? 'L' : 'T';
+  return `${outcome} ${tnScore}–${oppScore}`;
+};
+
+// ========================================
+// SCHEDULE TABLE
+// ========================================
+async function buildSchedule() {
+  const table = $('#schedTable');
+  const rowsEl = $('#schedRows');
+  const moreBtn = $('#schedMore');
+  const updatedEl = $('#updatedAt');
+  const recordEl = $('#seasonRecord');
+  const messageEl = $('#seasonMessage');
+  
+  if (!table || !rowsEl) return;
+  
+  try {
+    const [meta, schedule] = await Promise.all([
+      fetchJSON('meta_current.json'),
+      fetchJSON('ut_2025_schedule.json')
+    ]);
+    
+    if (updatedEl && meta?.lastUpdated) {
+      updatedEl.textContent = meta.lastUpdated.replace('T', ' ').replace('Z', '');
+    }
+    
+    if (!schedule || schedule.length === 0) {
+      rowsEl.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">Schedule data not available yet.</td></tr>';
+      return;
+    }
+    
+    const sorted = [...schedule].sort((a, b) => {
+      const aTime = getKickoffTime(a) || '2100-01-01T00:00:00Z';
+      const bTime = getKickoffTime(b) || '2100-01-01T00:00:00Z';
+      return new Date(aTime) - new Date(bTime);
+    });
+    
+    // Calculate season record
+    let wins = 0, losses = 0, ties = 0;
+    sorted.forEach(game => {
+      const result = getResult(game);
+      if (result.startsWith('W')) wins++;
+      else if (result.startsWith('L')) losses++;
+      else if (result.startsWith('T')) ties++;
+    });
+    
+    // Find completed and upcoming games
+    const now = Date.now();
+    const gamesWithTime = sorted.map(g => ({
+      game: g,
+      time: getKickoffTime(g) ? new Date(getKickoffTime(g)).getTime() : null
+    })).filter(g => g.time != null);
+    
+    const completed = gamesWithTime.filter(g => g.time < now).map(g => g.game);
+    const upcoming = gamesWithTime.filter(g => g.time >= now).map(g => g.game);
+    
+    // Determine season state and what to show
+    let visibleGames = [];
+    let defaultExpanded = false;
+    let seasonState = '';
+    
+    if (upcoming.length === 0 && completed.length > 0) {
+      // SEASON COMPLETE
+      seasonState = 'complete';
+      visibleGames = sorted;
+      defaultExpanded = true;
+      
+      if (recordEl) recordEl.textContent = `2025 Season: ${wins}-${losses}${ties > 0 ? `-${ties}` : ''}`;
+      if (messageEl) {
+        messageEl.textContent = 'Thanks for an amazing 2025 season! Check back in August 2026 for the new schedule.';
+        messageEl.style.display = 'block';
+        messageEl.style.color = 'var(--primary-light)';
+        messageEl.style.fontWeight = '600';
+      }
+    } else if (upcoming.length > 0 && completed.length > 0) {
+      // MID-SEASON: Show last 3 + next 3
+      seasonState = 'active';
+      const lastThree = completed.slice(-3);
+      const nextThree = upcoming.slice(0, 3);
+      visibleGames = [...lastThree, ...nextThree];
+      
+      if (recordEl && (wins > 0 || losses > 0)) {
+        recordEl.textContent = `Current Record: ${wins}-${losses}${ties > 0 ? `-${ties}` : ''}`;
+      }
+    } else if (upcoming.length > 0 && completed.length === 0) {
+      // PRE-SEASON: Show first 6 games
+      seasonState = 'preseason';
+      visibleGames = upcoming.slice(0, 6);
+      
+      if (recordEl) recordEl.textContent = '2025 Season Schedule';
+    } else {
+      // FALLBACK: Show first 6
+      visibleGames = sorted.slice(0, 6);
+    }
+    
+    let allVisible = defaultExpanded;
+    
+    const renderRows = () => {
+      const rowsToShow = allVisible ? sorted : visibleGames;
+      
+      rowsEl.innerHTML = rowsToShow.map(game => {
+        const kickoff = getKickoffTime(game);
+        return `
+          <tr>
+            <td>${formatDate(kickoff, !!game.start_time)}</td>
+            <td>${getOpponent(game) || '—'}</td>
+            <td>${getLocation(game)}</td>
+            <td>${game.tv || game.television || '—'}</td>
+            <td>${getResult(game)}</td>
+          </tr>
+        `;
+      }).join('');
+    };
+    
+    renderRows();
+    
+    // Handle "Show More" button
+    if (moreBtn) {
+      if (sorted.length <= visibleGames.length && !defaultExpanded) {
+        // Not enough games to need expansion
+        moreBtn.style.display = 'none';
+      } else if (defaultExpanded) {
+        // Season complete - already showing all
+        moreBtn.style.display = 'none';
+      } else {
+        // Normal operation
+        moreBtn.style.display = '';
+        moreBtn.innerHTML = '<i class="fa-solid fa-angles-down"></i><span>Show Full Schedule</span>';
+        
+        moreBtn.addEventListener('click', () => {
+          allVisible = !allVisible;
+          renderRows();
+          moreBtn.innerHTML = allVisible 
+            ? '<i class="fa-solid fa-angles-up"></i><span>Show Less</span>'
+            : '<i class="fa-solid fa-angles-down"></i><span>Show Full Schedule</span>';
+        });
+      }
+    }
+    
+  } catch (error) {
+    rowsEl.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">Schedule temporarily unavailable.</td></tr>';
+  }
+}
+
+// ========================================
+// TOP STATUS CARDS
+// ========================================
+async function buildStatusCards() {
+  try {
+    const [meta, schedule, ranks, lines] = await Promise.all([
+      fetchJSON('meta_current.json'),
+      fetchJSON('ut_2025_schedule.json'),
+      fetchJSON('current/rankings.json'),
+      fetchJSON('current/ut_lines.json')
+    ]);
+    
+    // Find next game
+    const games = (schedule || [])
+      .map(g => ({ game: g, time: getKickoffTime(g) ? new Date(getKickoffTime(g)).getTime() : null }))
+      .filter(g => g.time != null)
+      .sort((a, b) => a.time - b.time);
+    
+    const nextGame = games.find(g => g.time > Date.now())?.game || null;
+    
+    // Update score box
+    const scoreMsg = $('#scoreMsg');
+    const scoreDot = $('#scoreDot');
+    if (scoreMsg) {
+      if (nextGame) {
+        const kickoff = getKickoffTime(nextGame);
+        scoreMsg.textContent = `${getAwayTeam(nextGame)} @ ${getHomeTeam(nextGame)} — ${formatDate(kickoff)}`;
+        if (scoreDot) {
+          scoreDot.className = 'status-dot yellow';
+        }
+      } else {
+        scoreMsg.textContent = 'No upcoming games found.';
+      }
+    }
+    
+    // Update next game card
+    const nextLine = $('#nextLine');
+    const nextVenue = $('#nextVenue');
+    const countdownEl = $('#countdown');
+    
+    if (nextLine && nextGame) {
+      const kickoff = getKickoffTime(nextGame);
+      const opponent = getOpponent(nextGame);
+      const week = meta?.weekNext || meta?.week || nextGame.week || '—';
+      nextLine.textContent = `Week ${week}: Tennessee vs ${opponent}`;
+      if (nextVenue) nextVenue.textContent = nextGame.venue || '';
+      
+      // Update countdown timer data attribute
+      if (countdownEl && kickoff) {
+        countdownEl.setAttribute('data-kickoff', kickoff);
+      }
+      
+      // Calendar links
+      const calBtn = $('#addToCalendar');
+      if (calBtn && kickoff) {
+        const start = new Date(kickoff);
+        const end = new Date(start.getTime() + 3 * 60 * 60 * 1000);
+        const fmt = d => d.toISOString().replace(/[-:]|\.\d{3}/g, '');
+        const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(`Tennessee vs ${opponent}`)}&dates=${fmt(start)}/${fmt(end)}&location=${encodeURIComponent(nextGame.venue || '')}&details=${encodeURIComponent('Tennessee Gameday Hub')}`;
+        calBtn.href = url;
+      }
+    } else if (nextLine) {
+      nextLine.textContent = 'Schedule data loading...';
+    }
+    
+    // Update rankings
+    const rankLine = $('#rankLine');
+    if (rankLine && ranks && Array.isArray(ranks) && ranks.length) {
+      const latest = ranks.reduce((a, b) => 
+        ((b.season ?? 0) * 100 + (b.week ?? 0)) > ((a.season ?? 0) * 100 + (a.week ?? 0)) ? b : a
+      );
+      const polls = latest?.polls || [];
+      const findRank = name => {
+        const poll = polls.find(p => (p.poll || '').toLowerCase().includes(name));
+        const ranks = poll?.ranks || [];
+        const tn = ranks.find(r => /tennessee/i.test(r.school || r.team || ''));
+        return tn?.rank ?? 'NR';
+      };
+      rankLine.textContent = `AP: ${findRank('ap')}  •  Coaches: ${findRank('coach')}`;
+    }
+    
+    // Update odds
+    const oddsLine = $('#oddsLine');
+    if (oddsLine && lines && Array.isArray(lines) && lines.length) {
+      const match = lines.find(L => /tennessee/i.test(L.home_team || '') || /tennessee/i.test(L.away_team || ''));
+      const first = match?.lines?.[0];
+      if (first) {
+        oddsLine.textContent = `${first.provider || '—'}: spread ${first.spread ?? first.formattedSpread ?? '—'}, O/U ${first.overUnder ?? first.total ?? '—'}`;
+      }
+    }
+    
+  } catch (error) {
+    // Silently handle errors - status cards will show default values
+  }
+}
+
+// ========================================
+// PLACES LIST
+// ========================================
+async function buildPlaces() {
+  const list = $('#placesList');
+  const empty = $('#placesEmpty');
+  
+  if (!list) return;
+  
+  try {
+    const places = await fetchJSON('manual/places_knoxville.json');
+    
+    if (!places || places.length === 0) {
+      if (empty) empty.style.display = 'block';
+      return;
+    }
+    
+    if (empty) empty.style.display = 'none';
+    
+    list.innerHTML = places.map(p => `
+      <li class="icon-list-item">
+        <span><strong>${p.name}</strong> — ${p.tip || p.kind || ''}</span>
+      </li>
+    `).join('');
+    
+  } catch (error) {
+    // Silently handle errors - places list will show empty state
+  }
+}
+
+// ========================================
+// COLLAPSIBLE SECTIONS
+// ========================================
+function initCollapsibles() {
+  const guideBtn = $('#guideMore');
+  const guideExtra = $('#guideExtra');
+  
+  if (guideBtn && guideExtra) {
+    guideBtn.addEventListener('click', () => {
+      const isOpen = guideExtra.classList.contains('open');
+      guideExtra.classList.toggle('open');
+      guideBtn.innerHTML = isOpen
+        ? '<i class="fa-solid fa-angles-down"></i><span>Show More</span>'
+        : '<i class="fa-solid fa-angles-up"></i><span>Show Less</span>';
+    });
+  }
+  
+}
+
+// ========================================
+// NEWSLETTER FORM
+// ========================================
+function initNewsletter() {
+  const form = $('#newsletterForm');
+  if (!form) return;
+  
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const email = $('#newsEmail')?.value;
+    if (email) {
+      alert(`Thanks for subscribing with ${email}! (This is a demo)`);
+      form.reset();
+    }
+  });
+  
+}
+
+// ========================================
+// MAIN INITIALIZATION
+// ========================================
+async function init() {
+  
+  // Initialize background video first
+  initBackgroundVideo();
+  
+  // Initialize UI components (but NOT countdown yet - needs data first)
+  initMobileNav();
+  initCollapsibles();
+  initNewsletter();
+  
+  // Load data FIRST
+  await Promise.all([
+    buildSchedule(),
+    buildStatusCards(),
+    buildPlaces()
+  ]);
+  
+  // NOW initialize countdown with live data
+  initCountdown();
+  
+  // Play Rocky Top clip after page loads (with 1.5s delay)
+  setTimeout(() => {
+    playRockyTop();
+  }, 1500);
+  
+}
+
+// ========================================
+// BACKGROUND VIDEO HANDLER
+// ========================================
+function initBackgroundVideo() {
+  const video = document.getElementById('bgVideo');
+  
+  if (!video) {
+    return;
+  }
+  
+  // When video has enough data to play, fade it in
+  video.addEventListener('canplay', () => {
+    video.classList.add('loaded');
+  });
+  
+  // Attempt to play the video
+  const playPromise = video.play();
+  
+  if (playPromise !== undefined) {
+    playPromise.catch(error => {
+      // If autoplay fails, still fade in the poster
+      video.classList.add('loaded');
+    });
+  }
+  
+  // Handle video errors
+  video.addEventListener('error', (e) => {
+    video.classList.add('loaded');
+  });
+}
+
+// ========================================
+// ROCKY TOP AUDIO
+// ========================================
+function playRockyTop() {
+  const audio = document.getElementById('rockyTopClip');
+  
+  if (!audio) return;
+  
+  // Start muted to bypass autoplay restrictions
+  audio.muted = true;
+  audio.volume = 0.6; // Set target volume (60%)
+  
+  // Attempt to play
+  const playPromise = audio.play();
+  
+  if (playPromise !== undefined) {
+    playPromise
+      .then(() => {
+        // Successfully started playing - now unmute with fade in
+        setTimeout(() => {
+          audio.muted = false;
+          
+          // Fade in over 200ms
+          let currentVolume = 0;
+          const fadeInInterval = setInterval(() => {
+            if (currentVolume < 0.6) {
+              currentVolume += 0.05;
+              audio.volume = Math.min(currentVolume, 0.6);
+            } else {
+              clearInterval(fadeInInterval);
+            }
+          }, 20);
+          
+          // Fade out and stop after 4 seconds
+          setTimeout(() => {
+            let currentVolume = audio.volume;
+            const fadeOutInterval = setInterval(() => {
+              if (currentVolume > 0) {
+                currentVolume -= 0.05;
+                audio.volume = Math.max(currentVolume, 0);
+              } else {
+                clearInterval(fadeOutInterval);
+                audio.pause();
+                audio.currentTime = 0;
+              }
+            }, 20);
+          }, 4000);
+          
+        }, 100);
+      })
+      .catch(() => {
+        // Autoplay blocked - that's okay, we tried!
+      });
+  }
+}
+
+// Start the app when DOM is ready
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
+}
+  </script>
+
+</body>
+</html>
