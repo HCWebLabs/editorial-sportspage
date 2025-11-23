@@ -1,14 +1,14 @@
 {
-  "id": 401752775,
-  "week": 13,
-  "start_time": "2025-11-23T00:30:00.000Z",
-  "start_date": "2025-11-23",
-  "home_team": "Florida",
-  "away_team": "Tennessee",
+  "id": 401752791,
+  "week": 14,
+  "start_time": "2025-11-29T20:30:00.000Z",
+  "start_date": "2025-11-29",
+  "home_team": "Tennessee",
+  "away_team": "Vanderbilt",
   "home_points": null,
   "away_points": null,
   "status": null,
   "tv": null,
-  "venue": "Ben Hill Griffin Stadium",
+  "venue": "Neyland Stadium",
   "neutral_site": false
 }
