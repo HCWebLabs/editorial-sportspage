@@ -49,90 +49,51 @@
     ]
   },
   {
-    "id": 401752692,
+    "id": 401752720,
     "season": 2025,
     "seasonType": "regular",
-    "week": 2,
-    "startDate": "2025-09-06T19:30:00.000Z",
-    "homeTeamId": 2633,
-    "homeTeam": "Tennessee",
-    "homeConference": "SEC",
-    "homeClassification": "fbs",
-    "homeScore": 72,
-    "awayTeamId": 2193,
-    "awayTeam": "East Tennessee State",
-    "awayConference": "Southern",
-    "awayClassification": "fcs",
-    "awayScore": 17,
-    "lines": [
-      {
-        "provider": "Bovada",
-        "spread": -39.5,
-        "formattedSpread": "Tennessee -39.5",
-        "spreadOpen": -41,
-        "overUnder": 58.5,
-        "overUnderOpen": 56.5,
-        "homeMoneyline": null,
-        "awayMoneyline": null
-      },
-      {
-        "provider": "ESPN Bet",
-        "spread": -40.5,
-        "formattedSpread": "Tennessee -40.5",
-        "spreadOpen": -41,
-        "overUnder": 58.5,
-        "overUnderOpen": 56.5,
-        "homeMoneyline": null,
-        "awayMoneyline": null
-      }
-    ]
-  },
-  {
-    "id": 401752735,
-    "season": 2025,
-    "seasonType": "regular",
-    "week": 7,
-    "startDate": "2025-10-11T20:15:00.000Z",
-    "homeTeamId": 2633,
-    "homeTeam": "Tennessee",
+    "week": 5,
+    "startDate": "2025-09-27T20:15:00.000Z",
+    "homeTeamId": 344,
+    "homeTeam": "Mississippi State",
     "homeConference": "SEC",
     "homeClassification": "fbs",
     "homeScore": 34,
-    "awayTeamId": 8,
-    "awayTeam": "Arkansas",
+    "awayTeamId": 2633,
+    "awayTeam": "Tennessee",
     "awayConference": "SEC",
     "awayClassification": "fbs",
-    "awayScore": 31,
+    "awayScore": 41,
     "lines": [
       {
         "provider": "DraftKings",
-        "spread": -10,
-        "formattedSpread": "Tennessee -10",
-        "spreadOpen": -13.5,
-        "overUnder": 68.5,
+        "spread": 7.5,
+        "formattedSpread": "Tennessee -7.5",
+        "spreadOpen": 10,
+        "overUnder": 63.5,
         "overUnderOpen": null,
-        "homeMoneyline": -425,
-        "awayMoneyline": 330
+        "homeMoneyline": 235,
+        "awayMoneyline": -290
       },
       {
         "provider": "Bovada",
-        "spread": -10,
-        "formattedSpread": "Tennessee -10.0",
-        "spreadOpen": -13.5,
-        "overUnder": 68.5,
-        "overUnderOpen": 69.5,
-        "homeMoneyline": -500,
-        "awayMoneyline": 360
+        "spread": 7.5,
+        "formattedSpread": "Tennessee -7.5",
+        "spreadOpen": 9,
+        "overUnder": 63.5,
+        "overUnderOpen": 62.5,
+        "homeMoneyline": 235,
+        "awayMoneyline": -285
       },
       {
         "provider": "ESPN Bet",
-        "spread": -10.5,
-        "formattedSpread": "Tennessee -10.5",
-        "spreadOpen": -12.5,
-        "overUnder": 68.5,
-        "overUnderOpen": 69.5,
-        "homeMoneyline": -425,
-        "awayMoneyline": 320
+        "spread": 7.5,
+        "formattedSpread": "Tennessee -7.5",
+        "spreadOpen": 8.5,
+        "overUnder": 63.5,
+        "overUnderOpen": 62.5,
+        "homeMoneyline": 220,
+        "awayMoneyline": -270
       }
     ]
   },
@@ -186,100 +147,90 @@
     ]
   },
   {
-    "id": 401752757,
+    "id": 401752791,
     "season": 2025,
     "seasonType": "regular",
-    "week": 10,
-    "startDate": "2025-11-01T23:30:00.000Z",
+    "week": 14,
+    "startDate": "2025-11-29T20:30:00.000Z",
     "homeTeamId": 2633,
     "homeTeam": "Tennessee",
     "homeConference": "SEC",
     "homeClassification": "fbs",
-    "homeScore": 27,
-    "awayTeamId": 201,
-    "awayTeam": "Oklahoma",
+    "homeScore": null,
+    "awayTeamId": 238,
+    "awayTeam": "Vanderbilt",
     "awayConference": "SEC",
     "awayClassification": "fbs",
-    "awayScore": 33,
+    "awayScore": null,
     "lines": [
       {
         "provider": "DraftKings",
-        "spread": -3,
-        "formattedSpread": "Tennessee -3",
-        "spreadOpen": -2.5,
-        "overUnder": 55.5,
+        "spread": -2.5,
+        "formattedSpread": "Tennessee -2.5",
+        "spreadOpen": -5.5,
+        "overUnder": 64.5,
         "overUnderOpen": null,
-        "homeMoneyline": -155,
-        "awayMoneyline": 130
+        "homeMoneyline": -142,
+        "awayMoneyline": 120
       },
       {
         "provider": "ESPN Bet",
         "spread": -2.5,
         "formattedSpread": "Tennessee -2.5",
         "spreadOpen": -3.5,
-        "overUnder": 55.5,
-        "overUnderOpen": 56.5,
-        "homeMoneyline": -130,
-        "awayMoneyline": 110
+        "overUnder": 64.5,
+        "overUnderOpen": 64.5,
+        "homeMoneyline": null,
+        "awayMoneyline": null
       },
       {
         "provider": "Bovada",
-        "spread": -3,
-        "formattedSpread": "Tennessee -3.0",
+        "spread": -2.5,
+        "formattedSpread": "Tennessee -2.5",
         "spreadOpen": -3.5,
-        "overUnder": 56,
-        "overUnderOpen": 56,
-        "homeMoneyline": -170,
-        "awayMoneyline": 145
+        "overUnder": 65.5,
+        "overUnderOpen": 64.5,
+        "homeMoneyline": -165,
+        "awayMoneyline": 140
       }
     ]
   },
   {
-    "id": 401752720,
+    "id": 401752692,
     "season": 2025,
     "seasonType": "regular",
-    "week": 5,
-    "startDate": "2025-09-27T20:15:00.000Z",
-    "homeTeamId": 344,
-    "homeTeam": "Mississippi State",
+    "week": 2,
+    "startDate": "2025-09-06T19:30:00.000Z",
+    "homeTeamId": 2633,
+    "homeTeam": "Tennessee",
     "homeConference": "SEC",
     "homeClassification": "fbs",
-    "homeScore": 34,
-    "awayTeamId": 2633,
-    "awayTeam": "Tennessee",
-    "awayConference": "SEC",
-    "awayClassification": "fbs",
-    "awayScore": 41,
+    "homeScore": 72,
+    "awayTeamId": 2193,
+    "awayTeam": "East Tennessee State",
+    "awayConference": "Southern",
+    "awayClassification": "fcs",
+    "awayScore": 17,
     "lines": [
       {
-        "provider": "DraftKings",
-        "spread": 7.5,
-        "formattedSpread": "Tennessee -7.5",
-        "spreadOpen": 10,
-        "overUnder": 63.5,
-        "overUnderOpen": null,
-        "homeMoneyline": 235,
-        "awayMoneyline": -290
-      },
-      {
         "provider": "Bovada",
-        "spread": 7.5,
-        "formattedSpread": "Tennessee -7.5",
-        "spreadOpen": 9,
-        "overUnder": 63.5,
-        "overUnderOpen": 62.5,
-        "homeMoneyline": 235,
-        "awayMoneyline": -285
+        "spread": -39.5,
+        "formattedSpread": "Tennessee -39.5",
+        "spreadOpen": -41,
+        "overUnder": 58.5,
+        "overUnderOpen": 56.5,
+        "homeMoneyline": null,
+        "awayMoneyline": null
       },
       {
         "provider": "ESPN Bet",
-        "spread": 7.5,
-        "formattedSpread": "Tennessee -7.5",
-        "spreadOpen": 8.5,
-        "overUnder": 63.5,
-        "overUnderOpen": 62.5,
-        "homeMoneyline": 220,
-        "awayMoneyline": -270
+        "spread": -40.5,
+        "formattedSpread": "Tennessee -40.5",
+        "spreadOpen": -41,
+        "overUnder": 58.5,
+        "overUnderOpen": 56.5,
+        "homeMoneyline": null,
+        "awayMoneyline": null
       }
     ]
   },
@@ -333,6 +284,55 @@
     ]
   },
   {
+    "id": 401752735,
+    "season": 2025,
+    "seasonType": "regular",
+    "week": 7,
+    "startDate": "2025-10-11T20:15:00.000Z",
+    "homeTeamId": 2633,
+    "homeTeam": "Tennessee",
+    "homeConference": "SEC",
+    "homeClassification": "fbs",
+    "homeScore": 34,
+    "awayTeamId": 8,
+    "awayTeam": "Arkansas",
+    "awayConference": "SEC",
+    "awayClassification": "fbs",
+    "awayScore": 31,
+    "lines": [
+      {
+        "provider": "DraftKings",
+        "spread": -10,
+        "formattedSpread": "Tennessee -10",
+        "spreadOpen": -13.5,
+        "overUnder": 68.5,
+        "overUnderOpen": null,
+        "homeMoneyline": -425,
+        "awayMoneyline": 330
+      },
+      {
+        "provider": "Bovada",
+        "spread": -10,
+        "formattedSpread": "Tennessee -10.0",
+        "spreadOpen": -13.5,
+        "overUnder": 68.5,
+        "overUnderOpen": 69.5,
+        "homeMoneyline": -500,
+        "awayMoneyline": 360
+      },
+      {
+        "provider": "ESPN Bet",
+        "spread": -10.5,
+        "formattedSpread": "Tennessee -10.5",
+        "spreadOpen": -12.5,
+        "overUnder": 68.5,
+        "overUnderOpen": 69.5,
+        "homeMoneyline": -425,
+        "awayMoneyline": 320
+      }
+    ]
+  },
+  {
     "id": 401752738,
     "season": 2025,
     "seasonType": "regular",
@@ -382,6 +382,55 @@
     ]
   },
   {
+    "id": 401752757,
+    "season": 2025,
+    "seasonType": "regular",
+    "week": 10,
+    "startDate": "2025-11-01T23:30:00.000Z",
+    "homeTeamId": 2633,
+    "homeTeam": "Tennessee",
+    "homeConference": "SEC",
+    "homeClassification": "fbs",
+    "homeScore": 27,
+    "awayTeamId": 201,
+    "awayTeam": "Oklahoma",
+    "awayConference": "SEC",
+    "awayClassification": "fbs",
+    "awayScore": 33,
+    "lines": [
+      {
+        "provider": "DraftKings",
+        "spread": -3,
+        "formattedSpread": "Tennessee -3",
+        "spreadOpen": -2.5,
+        "overUnder": 55.5,
+        "overUnderOpen": null,
+        "homeMoneyline": -155,
+        "awayMoneyline": 130
+      },
+      {
+        "provider": "ESPN Bet",
+        "spread": -2.5,
+        "formattedSpread": "Tennessee -2.5",
+        "spreadOpen": -3.5,
+        "overUnder": 55.5,
+        "overUnderOpen": 56.5,
+        "homeMoneyline": -130,
+        "awayMoneyline": 110
+      },
+      {
+        "provider": "Bovada",
+        "spread": -3,
+        "formattedSpread": "Tennessee -3.0",
+        "spreadOpen": -3.5,
+        "overUnder": 56,
+        "overUnderOpen": 56,
+        "homeMoneyline": -170,
+        "awayMoneyline": 145
+      }
+    ]
+  },
+  {
     "id": 401752705,
     "season": 2025,
     "seasonType": "regular",
@@ -427,35 +476,6 @@
         "overUnderOpen": 50.5,
         "homeMoneyline": 150,
         "awayMoneyline": -210
-      }
-    ]
-  },
-  {
-    "id": 401752791,
-    "season": 2025,
-    "seasonType": "regular",
-    "week": 14,
-    "startDate": "2025-11-29T20:30:00.000Z",
-    "homeTeamId": 2633,
-    "homeTeam": "Tennessee",
-    "homeConference": "SEC",
-    "homeClassification": "fbs",
-    "homeScore": null,
-    "awayTeamId": 238,
-    "awayTeam": "Vanderbilt",
-    "awayConference": "SEC",
-    "awayClassification": "fbs",
-    "awayScore": null,
-    "lines": [
-      {
-        "provider": "DraftKings",
-        "spread": -3.5,
-        "formattedSpread": "Tennessee -3.5",
-        "spreadOpen": -5.5,
-        "overUnder": null,
-        "overUnderOpen": null,
-        "homeMoneyline": null,
-        "awayMoneyline": null
       }
     ]
   },
