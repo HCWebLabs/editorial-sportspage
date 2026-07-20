@@ -6,6 +6,7 @@
     "polls": [
       {
         "poll": "Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -211,6 +212,7 @@
       },
       {
         "poll": "FCS Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -416,6 +418,7 @@
       },
       {
         "poll": "AFCA Division III Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -621,6 +624,7 @@
       },
       {
         "poll": "AP Top 25",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -826,6 +830,7 @@
       },
       {
         "poll": "AFCA Division II Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -1038,6 +1043,7 @@
     "polls": [
       {
         "poll": "FCS Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -1251,6 +1257,7 @@
       },
       {
         "poll": "AFCA Division II Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -1456,6 +1463,7 @@
       },
       {
         "poll": "Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -1661,6 +1669,7 @@
       },
       {
         "poll": "AP Top 25",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -1873,6 +1882,7 @@
     "polls": [
       {
         "poll": "Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -2078,6 +2088,7 @@
       },
       {
         "poll": "FCS Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -2283,6 +2294,7 @@
       },
       {
         "poll": "AP Top 25",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -2488,6 +2500,7 @@
       },
       {
         "poll": "AFCA Division II Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -2693,6 +2706,7 @@
       },
       {
         "poll": "AFCA Division III Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -2905,6 +2919,7 @@
     "polls": [
       {
         "poll": "Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -3110,6 +3125,7 @@
       },
       {
         "poll": "AP Top 25",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -3315,6 +3331,7 @@
       },
       {
         "poll": "FCS Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -3520,6 +3537,7 @@
       },
       {
         "poll": "AFCA Division II Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -3725,6 +3743,7 @@
       },
       {
         "poll": "AFCA Division III Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -3937,6 +3956,7 @@
     "polls": [
       {
         "poll": "Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -4142,6 +4162,7 @@
       },
       {
         "poll": "FCS Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -4347,6 +4368,7 @@
       },
       {
         "poll": "AP Top 25",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -4552,6 +4574,7 @@
       },
       {
         "poll": "AFCA Division II Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -4757,6 +4780,7 @@
       },
       {
         "poll": "AFCA Division III Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -4969,6 +4993,7 @@
     "polls": [
       {
         "poll": "Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -5174,6 +5199,7 @@
       },
       {
         "poll": "FCS Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -5379,6 +5405,7 @@
       },
       {
         "poll": "AFCA Division III Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -5584,6 +5611,7 @@
       },
       {
         "poll": "AP Top 25",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -5789,6 +5817,7 @@
       },
       {
         "poll": "AFCA Division II Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -6001,6 +6030,7 @@
     "polls": [
       {
         "poll": "Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -6206,6 +6236,7 @@
       },
       {
         "poll": "FCS Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -6411,6 +6442,7 @@
       },
       {
         "poll": "AP Top 25",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -6616,6 +6648,7 @@
       },
       {
         "poll": "AFCA Division II Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -6829,6 +6862,7 @@
       },
       {
         "poll": "AFCA Division III Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -7041,6 +7075,7 @@
     "polls": [
       {
         "poll": "Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -7246,6 +7281,7 @@
       },
       {
         "poll": "FCS Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -7451,6 +7487,7 @@
       },
       {
         "poll": "AFCA Division II Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -7656,6 +7693,7 @@
       },
       {
         "poll": "AP Top 25",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -7861,6 +7899,7 @@
       },
       {
         "poll": "AFCA Division III Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -8073,6 +8112,7 @@
     "polls": [
       {
         "poll": "Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -8278,6 +8318,7 @@
       },
       {
         "poll": "FCS Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -8483,6 +8524,7 @@
       },
       {
         "poll": "AP Top 25",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -8688,6 +8730,7 @@
       },
       {
         "poll": "AFCA Division II Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -8893,6 +8936,7 @@
       },
       {
         "poll": "AFCA Division III Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -9105,6 +9149,7 @@
     "polls": [
       {
         "poll": "Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -9310,6 +9355,7 @@
       },
       {
         "poll": "FCS Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -9515,6 +9561,7 @@
       },
       {
         "poll": "AFCA Division III Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -9720,6 +9767,7 @@
       },
       {
         "poll": "AP Top 25",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -9925,6 +9973,7 @@
       },
       {
         "poll": "AFCA Division II Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -10137,6 +10186,7 @@
     "polls": [
       {
         "poll": "Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -10342,6 +10392,7 @@
       },
       {
         "poll": "FCS Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -10547,6 +10598,7 @@
       },
       {
         "poll": "Playoff Committee Rankings",
+        "isFinal": false,
         "ranks": [
           {
             "rank": 1,
@@ -10752,6 +10804,7 @@
       },
       {
         "poll": "AP Top 25",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -10957,6 +11010,7 @@
       },
       {
         "poll": "AFCA Division II Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -11162,6 +11216,7 @@
       },
       {
         "poll": "AFCA Division III Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -11374,6 +11429,7 @@
     "polls": [
       {
         "poll": "Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -11579,6 +11635,7 @@
       },
       {
         "poll": "AP Top 25",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -11784,6 +11841,7 @@
       },
       {
         "poll": "Playoff Committee Rankings",
+        "isFinal": false,
         "ranks": [
           {
             "rank": 1,
@@ -11989,6 +12047,7 @@
       },
       {
         "poll": "FCS Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -12194,6 +12253,7 @@
       },
       {
         "poll": "AFCA Division II Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -12399,6 +12459,7 @@
       },
       {
         "poll": "AFCA Division III Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -12611,6 +12672,7 @@
     "polls": [
       {
         "poll": "Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -12816,6 +12878,7 @@
       },
       {
         "poll": "FCS Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -13021,6 +13084,7 @@
       },
       {
         "poll": "AFCA Division II Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -13226,6 +13290,7 @@
       },
       {
         "poll": "AFCA Division III Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -13431,6 +13496,7 @@
       },
       {
         "poll": "Playoff Committee Rankings",
+        "isFinal": false,
         "ranks": [
           {
             "rank": 1,
@@ -13636,6 +13702,7 @@
       },
       {
         "poll": "AP Top 25",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -13848,6 +13915,7 @@
     "polls": [
       {
         "poll": "Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -14053,6 +14121,7 @@
       },
       {
         "poll": "FCS Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -14258,6 +14327,7 @@
       },
       {
         "poll": "AP Top 25",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -14463,6 +14533,7 @@
       },
       {
         "poll": "Playoff Committee Rankings",
+        "isFinal": false,
         "ranks": [
           {
             "rank": 1,
@@ -14675,6 +14746,7 @@
     "polls": [
       {
         "poll": "Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -14880,6 +14952,7 @@
       },
       {
         "poll": "AP Top 25",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -15085,6 +15158,7 @@
       },
       {
         "poll": "Playoff Committee Rankings",
+        "isFinal": false,
         "ranks": [
           {
             "rank": 1,
@@ -15297,6 +15371,7 @@
     "polls": [
       {
         "poll": "AP Top 25",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -15502,6 +15577,7 @@
       },
       {
         "poll": "Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -15707,6 +15783,7 @@
       },
       {
         "poll": "Playoff Committee Rankings",
+        "isFinal": true,
         "ranks": [
           {
             "rank": 1,
@@ -15919,6 +15996,7 @@
     "polls": [
       {
         "poll": "AFCA Division III Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -16124,6 +16202,7 @@
       },
       {
         "poll": "FCS Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -16329,6 +16408,7 @@
       },
       {
         "poll": "AP Top 25",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -16534,6 +16614,7 @@
       },
       {
         "poll": "AFCA Division II Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
@@ -16739,6 +16820,7 @@
       },
       {
         "poll": "Coaches Poll",
+        "isFinal": null,
         "ranks": [
           {
             "rank": 1,
